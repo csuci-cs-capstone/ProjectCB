@@ -9,5 +9,5 @@ CAPTURE BALL Dodgeball X Capture The Flag
 1. After pullling project right click the uproject file and select generate Visual Studio files
 
 1. After Visual Studio files are generated you can open the editor two ways:
-  * By opeinging the Visual Studio sln file and then building/running the project with or without debug
-  * Or open the uproeject file where the Unreal Editor will open, from there you can open Visual Studio *File->Open Visual Studio*
+  * By openinging the Visual Studio sln file and then building/running the project with or without debug
+  * Or open the uproject file where the Unreal Editor will open, from there you can open Visual Studio *File->Open Visual Studio*
