@@ -49,7 +49,7 @@ void ACB_PlayerController::MoveHorizontal(float amount)
 
 	if (playerBody != NULL)
 	{
-		playerBody->MoveHorizontal(amount);
+		playerBody->MoveHorizontal(2 * amount);
 	}
 }
 

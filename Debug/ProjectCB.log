@@ -1,0 +1,23 @@
+﻿  SharedPCH.Engine.ShadowErrors.cpp
+C:\Program Files\Epic Games\UE_4.25\Engine\Source\Runtime\Engine\Public\EngineSharedPCH.h(6,10): fatal error C1083: Cannot open include file: 'Containers/ContainersFwd.h': No such file or directory
+  CB_Captureball_GameMode.gen.cpp
+C:\Users\jackk\Documents\Unreal Projects\ProjectCB\intermediate\build\win64\ue4editor\inc\projectcb\CB_Captureball_GameMode.gen.cpp(7,10): fatal error C1083: Cannot open include file: 'UObject/GeneratedCppIncludes.h': No such file or directory
+  CB_PlayerCharacter.gen.cpp
+C:\Users\jackk\Documents\Unreal Projects\ProjectCB\intermediate\build\win64\ue4editor\inc\projectcb\CB_PlayerCharacter.gen.cpp(7,10): fatal error C1083: Cannot open include file: 'UObject/GeneratedCppIncludes.h': No such file or directory
+  CB_PlayerController.gen.cpp
+C:\Users\jackk\Documents\Unreal Projects\ProjectCB\intermediate\build\win64\ue4editor\inc\projectcb\CB_PlayerController.gen.cpp(7,10): fatal error C1083: Cannot open include file: 'UObject/GeneratedCppIncludes.h': No such file or directory
+  ProjectCB.init.gen.cpp
+C:\Users\jackk\Documents\Unreal Projects\ProjectCB\intermediate\build\win64\ue4editor\inc\projectcb\ProjectCB.init.gen.cpp(7,10): fatal error C1083: Cannot open include file: 'UObject/GeneratedCppIncludes.h': No such file or directory
+  ProjectCBGameModeBase.gen.cpp
+C:\Users\jackk\Documents\Unreal Projects\ProjectCB\intermediate\build\win64\ue4editor\inc\projectcb\ProjectCBGameModeBase.gen.cpp(7,10): fatal error C1083: Cannot open include file: 'UObject/GeneratedCppIncludes.h': No such file or directory
+  CB_Captureball_GameMode.cpp
+C:\Users\jackk\Documents\Unreal Projects\ProjectCB\source\projectcb\cbgamemodes\CB_Captureball_GameMode.h(5,10): fatal error C1083: Cannot open include file: 'CoreMinimal.h': No such file or directory
+  CB_PlayerCharacter.cpp
+C:\Users\jackk\Documents\Unreal Projects\ProjectCB\source\projectcb\cbplayer\CB_PlayerCharacter.h(5,10): fatal error C1083: Cannot open include file: 'CoreMinimal.h': No such file or directory
+  CB_PlayerController.cpp
+C:\Users\jackk\Documents\Unreal Projects\ProjectCB\source\projectcb\cbplayer\CB_PlayerController.h(5,10): fatal error C1083: Cannot open include file: 'CoreMinimal.h': No such file or directory
+  ProjectCB.cpp
+C:\Users\jackk\Documents\Unreal Projects\ProjectCB\source\projectcb\ProjectCB.h(5,10): fatal error C1083: Cannot open include file: 'CoreMinimal.h': No such file or directory
+  ProjectCBGameModeBase.cpp
+C:\Users\jackk\Documents\Unreal Projects\ProjectCB\source\projectcb\ProjectCBGameModeBase.h(5,10): fatal error C1083: Cannot open include file: 'CoreMinimal.h': No such file or directory
+  Generating Code...
