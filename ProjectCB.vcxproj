@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{52CE22A2-A70C-4E62-BE3D-3CB90022B24A}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="intermediate\build\win64\projectcbeditor\development\engine\SharedPCH.Engine.ShadowErrors.cpp" />
+    <ClCompile Include="intermediate\build\win64\ue4editor\inc\projectcb\CB_Captureball_GameMode.gen.cpp" />
+    <ClCompile Include="intermediate\build\win64\ue4editor\inc\projectcb\CB_PlayerCharacter.gen.cpp" />
+    <ClCompile Include="intermediate\build\win64\ue4editor\inc\projectcb\CB_PlayerController.gen.cpp" />
+    <ClCompile Include="intermediate\build\win64\ue4editor\inc\projectcb\ProjectCB.init.gen.cpp" />
+    <ClCompile Include="intermediate\build\win64\ue4editor\inc\projectcb\ProjectCBGameModeBase.gen.cpp" />
+    <ClCompile Include="source\projectcb\cbgamemodes\CB_Captureball_GameMode.cpp" />
+    <ClCompile Include="source\projectcb\cbplayer\CB_PlayerCharacter.cpp" />
+    <ClCompile Include="source\projectcb\cbplayer\CB_PlayerController.cpp" />
+    <ClCompile Include="source\projectcb\ProjectCB.cpp" />
+    <ClCompile Include="source\projectcb\ProjectCBGameModeBase.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="intermediate\build\win64\projectcbeditor\development\engine\SharedPCH.Engine.ShadowErrors.h" />
+    <ClInclude Include="intermediate\build\win64\ue4editor\development\projectcb\Definitions.ProjectCB.h" />
+    <ClInclude Include="intermediate\build\win64\ue4editor\inc\projectcb\CB_Captureball_GameMode.generated.h" />
+    <ClInclude Include="intermediate\build\win64\ue4editor\inc\projectcb\CB_PlayerCharacter.generated.h" />
+    <ClInclude Include="intermediate\build\win64\ue4editor\inc\projectcb\CB_PlayerController.generated.h" />
+    <ClInclude Include="intermediate\build\win64\ue4editor\inc\projectcb\ProjectCBClasses.h" />
+    <ClInclude Include="intermediate\build\win64\ue4editor\inc\projectcb\ProjectCBGameModeBase.generated.h" />
+    <ClInclude Include="source\projectcb\cbgamemodes\CB_Captureball_GameMode.h" />
+    <ClInclude Include="source\projectcb\cbplayer\CB_PlayerCharacter.h" />
+    <ClInclude Include="source\projectcb\cbplayer\CB_PlayerController.h" />
+    <ClInclude Include="source\projectcb\ProjectCB.h" />
+    <ClInclude Include="source\projectcb\ProjectCBGameModeBase.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="intermediate\assetregistrycache\089bc3de.bin" />
+    <None Include="intermediate\assetregistrycache\09b713d3.bin" />
+    <None Include="intermediate\assetregistrycache\1f683343.bin" />
+    <None Include="intermediate\assetregistrycache\218409f6.bin" />
+    <None Include="intermediate\assetregistrycache\2657c409.bin" />
+    <None Include="intermediate\assetregistrycache\50a675f9.bin" />
+    <None Include="intermediate\assetregistrycache\52ed2538.bin" />
+    <None Include="intermediate\assetregistrycache\58fb7916.bin" />
+    <None Include="intermediate\assetregistrycache\6bead350.bin" />
+    <None Include="intermediate\assetregistrycache\7b241018.bin" />
+    <None Include="intermediate\assetregistrycache\866581fd.bin" />
+    <None Include="intermediate\assetregistrycache\8c0e1344.bin" />
+    <None Include="intermediate\assetregistrycache\8e9331e2.bin" />
+    <None Include="intermediate\assetregistrycache\9c1a1723.bin" />
+    <None Include="intermediate\assetregistrycache\a02d411d.bin" />
+    <None Include="intermediate\assetregistrycache\c788b007.bin" />
+    <None Include="intermediate\assetregistrycache\d63b3057.bin" />
+    <None Include="intermediate\assetregistrycache\d859983c.bin" />
+    <None Include="intermediate\assetregistrycache\f0d5030c.bin" />
+    <None Include="intermediate\build\SourceFileCache.bin" />
+    <None Include="intermediate\build\win64\projectcbeditor\development\DependencyCache.bin" />
+    <None Include="intermediate\build\win64\projectcbeditor\development\Makefile.bin" />
+    <None Include="intermediate\CachedAssetRegistry.bin" />
+    <None Include="intermediate\reimportcache\3688439234.bin" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

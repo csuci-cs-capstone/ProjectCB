@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="intermediate\build\win64\projectcbeditor\development\engine\SharedPCH.Engine.ShadowErrors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="intermediate\build\win64\ue4editor\inc\projectcb\CB_Captureball_GameMode.gen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="intermediate\build\win64\ue4editor\inc\projectcb\CB_PlayerCharacter.gen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="intermediate\build\win64\ue4editor\inc\projectcb\CB_PlayerController.gen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="intermediate\build\win64\ue4editor\inc\projectcb\ProjectCB.init.gen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="intermediate\build\win64\ue4editor\inc\projectcb\ProjectCBGameModeBase.gen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\projectcb\ProjectCB.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\projectcb\ProjectCBGameModeBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\projectcb\cbgamemodes\CB_Captureball_GameMode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\projectcb\cbplayer\CB_PlayerCharacter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\projectcb\cbplayer\CB_PlayerController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="intermediate\build\win64\projectcbeditor\development\engine\SharedPCH.Engine.ShadowErrors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="intermediate\build\win64\ue4editor\development\projectcb\Definitions.ProjectCB.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="intermediate\build\win64\ue4editor\inc\projectcb\CB_Captureball_GameMode.generated.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="intermediate\build\win64\ue4editor\inc\projectcb\CB_PlayerCharacter.generated.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="intermediate\build\win64\ue4editor\inc\projectcb\CB_PlayerController.generated.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="intermediate\build\win64\ue4editor\inc\projectcb\ProjectCBClasses.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="intermediate\build\win64\ue4editor\inc\projectcb\ProjectCBGameModeBase.generated.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\projectcb\ProjectCB.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\projectcb\ProjectCBGameModeBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\projectcb\cbgamemodes\CB_Captureball_GameMode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\projectcb\cbplayer\CB_PlayerCharacter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\projectcb\cbplayer\CB_PlayerController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="intermediate\CachedAssetRegistry.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="intermediate\assetregistrycache\089bc3de.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="intermediate\assetregistrycache\09b713d3.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="intermediate\assetregistrycache\1f683343.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="intermediate\assetregistrycache\218409f6.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="intermediate\assetregistrycache\2657c409.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="intermediate\assetregistrycache\50a675f9.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="intermediate\assetregistrycache\52ed2538.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="intermediate\assetregistrycache\58fb7916.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="intermediate\assetregistrycache\6bead350.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="intermediate\assetregistrycache\7b241018.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="intermediate\assetregistrycache\866581fd.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="intermediate\assetregistrycache\8c0e1344.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="intermediate\assetregistrycache\8e9331e2.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="intermediate\assetregistrycache\9c1a1723.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="intermediate\assetregistrycache\a02d411d.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="intermediate\assetregistrycache\c788b007.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="intermediate\assetregistrycache\d63b3057.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="intermediate\assetregistrycache\d859983c.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="intermediate\assetregistrycache\f0d5030c.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="intermediate\build\SourceFileCache.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="intermediate\build\win64\projectcbeditor\development\DependencyCache.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="intermediate\build\win64\projectcbeditor\development\Makefile.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="intermediate\reimportcache\3688439234.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>
