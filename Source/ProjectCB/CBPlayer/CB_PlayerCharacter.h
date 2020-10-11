@@ -11,6 +11,13 @@ class PROJECTCB_API ACB_PlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+private:
+
+	const float m_walkSpeed = 500.0f;
+	const float m_baseGravity = 4.0f;
+	const float m_fastGravity = m_baseGravity * 1.5f;
+	const float m_jumpVelocity = 1200;
+
 public:
 	// Sets default values for this character's properties
 	ACB_PlayerCharacter();
