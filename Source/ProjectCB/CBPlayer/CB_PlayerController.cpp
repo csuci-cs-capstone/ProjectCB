@@ -85,20 +85,50 @@ void ACB_PlayerController::JumpAction()
 
 void ACB_PlayerController::StopJumpAction()
 {
+	auto playerBody = Cast<ACB_PlayerCharacter>(this->GetCharacter());
+
+	if (playerBody != NULL)
+	{
+		playerBody->StopJumpAction();
+	}
 }
 
 void ACB_PlayerController::RunAction()
 {
+	auto playerBody = Cast<ACB_PlayerCharacter>(this->GetCharacter());
+
+	if (playerBody != NULL)
+	{
+		playerBody->RunAction();
+	}
 }
 
 void ACB_PlayerController::StopRunAction()
 {
+	auto playerBody = Cast<ACB_PlayerCharacter>(this->GetCharacter());
+
+	if (playerBody != NULL)
+	{
+		playerBody->StopRunAction();
+	}
 }
 
 void ACB_PlayerController::ShootAction()
 {
+	auto playerBody = Cast<ACB_PlayerCharacter>(this->GetCharacter());
+
+	if (playerBody != NULL)
+	{
+		playerBody->ShootAction();
+	}
 }
 
 void ACB_PlayerController::StopShootAction()
 {
+	auto playerBody = Cast<ACB_PlayerCharacter>(this->GetCharacter());
+
+	if (playerBody != NULL)
+	{
+		playerBody->StopShootAction();
+	}
 }

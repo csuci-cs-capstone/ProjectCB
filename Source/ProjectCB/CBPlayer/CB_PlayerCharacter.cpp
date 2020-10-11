@@ -8,6 +8,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+#define print(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("%s")), text);
+
 // Sets default values
 ACB_PlayerCharacter::ACB_PlayerCharacter()
 {
@@ -27,9 +29,9 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	BaseLookUpRate = 45.f;
 
 	//Customize the character movement component here!
-	GetCharacterMovement()->MaxWalkSpeed = 430.0f;
-	GetCharacterMovement()->GravityScale = 5.0f;
-	GetCharacterMovement()->JumpZVelocity = 1450.f;
+	GetCharacterMovement()->MaxWalkSpeed = this->m_walkSpeed;
+	GetCharacterMovement()->GravityScale = this->m_baseGravity;
+	GetCharacterMovement()->JumpZVelocity = this->m_jumpVelocity;
 	GetCharacterMovement()->AirControl = 0.75f;
 
 	bUseControllerRotationPitch = false;
@@ -49,14 +51,12 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 
 	camera->bUsePawnControlRotation = false;
 	cameraArm->bUsePawnControlRotation = true;
-
 }
 
 // Called when the game starts or when spawned
 void ACB_PlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
@@ -64,13 +64,18 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	auto characterMovement = GetCharacterMovement();
+
+	if (characterMovement->Velocity.Z <= 0)
+		characterMovement->GravityScale = this->m_fastGravity;
+	else
+		characterMovement->GravityScale = this->m_baseGravity;
 }
 
 // Called to bind functionality to input
 void ACB_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
 void ACB_PlayerCharacter::MoveVertical(float amount)

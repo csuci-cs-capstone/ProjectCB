@@ -14,6 +14,10 @@ class PROJECTCB_API ACB_PlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
+private:
+
+	float m_playerSpeed;
+
 public:
 
 	ACB_PlayerController();
