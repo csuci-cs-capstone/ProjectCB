@@ -16,6 +16,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Components")
 		UStaticMeshComponent* m_mesh;
 
+	//UPROPERTY(EditAnywhere, Category = "Components")
+	//class UProjectileMovementComponent* m_movement;
+
 	const float m_speed = 2.0f;
 
 public:	

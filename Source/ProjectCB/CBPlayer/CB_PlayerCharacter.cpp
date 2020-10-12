@@ -132,6 +132,33 @@ void ACB_PlayerCharacter::StopRunAction()
 
 void ACB_PlayerCharacter::ShootAction()
 {
+	//if (this->DodgeballClass)
+	//{
+	//	FActorSpawnParameters spawnParameters;
+
+	//	spawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	//	spawnParameters.bNoFail = true;
+	//	spawnParameters.Owner = this;
+	//	spawnParameters.Instigator = this;
+	//	
+	//	FTransform spawnTransform;
+
+	//	spawnTransform.SetLocation(GetActorForwardVector() * 500.0f + GetActorLocation());
+	//	spawnTransform.SetRotation(GetActorRotation().Quaternion());
+	//	spawnTransform.SetScale3D(FVector(1.0f));
+
+	//	GetWorld()->SpawnActor<class ACB_Dodgeball>(this->DodgeballClass, spawnTransform, spawnParameters);
+	//}
+
+	
+
+	// TODO check if player has a ball
+
+	// Create ball
+
+	// Set velocity to x in players current direction
+
+	// FIRE!!!
 }
 
 void ACB_PlayerCharacter::StopShootAction()

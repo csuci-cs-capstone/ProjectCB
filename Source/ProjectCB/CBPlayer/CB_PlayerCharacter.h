@@ -5,11 +5,16 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "CB_PlayerCharacter.generated.h"
+//#include "../CBObjects/CB_Dodgeball.h"
 
 UCLASS()
 class PROJECTCB_API ACB_PlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
+
+public:
+	// Sets default values for this character's properties
+	ACB_PlayerCharacter();
 
 private:
 
@@ -18,9 +23,8 @@ private:
 	const float m_fastGravity = m_baseGravity * 1.5f;
 	const float m_jumpVelocity = 1200;
 
-public:
-	// Sets default values for this character's properties
-	ACB_PlayerCharacter();
+	//UPROPERTY(EditAnywhere, Category("Throwing"))
+	//class TSubclassOf<class ACB_Dodgeball> DodgeballClass;
 
 protected:
 	// Called when the game starts or when spawned
