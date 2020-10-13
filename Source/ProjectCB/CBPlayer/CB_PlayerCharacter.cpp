@@ -2,6 +2,7 @@
 
 
 #include "CB_PlayerCharacter.h"
+#include "ProjectCB/CBObjects/CB_Dodgeball.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Camera/CameraComponent.h"
@@ -175,28 +176,25 @@ void ACB_PlayerCharacter::StopRunAction()
 
 void ACB_PlayerCharacter::ShootAction()
 {
-	//ACB_Dodgeball* spawnedDodgeball = (ACB_Dodgeball*) GetWorld()->SpawnActor(ACB_Dodgeball::StaticClass(), NAME_None, FVector(2,2,2));
 
-	//if (this->DodgeballClass)
-	//{
-	//FActorSpawnParameters spawnParameters;
-	//FRotator rotation = Controller->GetControlRotation();
-	//FVector location = rotation.RotateVector(this->m_dodgeballOffset) + GetActorLocation();
-	//ACB_Dodgeball* actorRef = GetWorld()->SpawnActor<ACB_Dodgeball>(this->DodgeballClass, location, rotation, spawnParameters);
+	if (DodgeballClass != nullptr)
+	{
+		FActorSpawnParameters spawnParameters;
 
-	//	spawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	//	spawnParameters.bNoFail = true;
-	//	spawnParameters.Owner = this;
-	//	spawnParameters.Instigator = this;
-	//	
-	//	FTransform spawnTransform;
+		spawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		spawnParameters.bNoFail = true;
+		spawnParameters.Owner = this;
+		spawnParameters.Instigator = this;
 
-	//	spawnTransform.SetLocation(GetActorForwardVector() * 500.0f + GetActorLocation());
-	//	spawnTransform.SetRotation(GetActorRotation().Quaternion());
-	//	spawnTransform.SetScale3D(FVector(1.0f));
+		FTransform spawnTransform;
 
-	//	GetWorld()->SpawnActor<class ACB_Dodgeball>(this->DodgeballClass, spawnTransform, spawnParameters);
-	//}
+		spawnTransform.SetLocation(GetActorForwardVector() * 500.0f + GetActorLocation());
+		spawnTransform.SetRotation(GetActorRotation().Quaternion());
+		spawnTransform.SetScale3D(FVector(1.0f));
+
+		GetWorld()->SpawnActor<class ACB_Dodgeball>(DodgeballClass, spawnTransform, spawnParameters);
+	}
+
 
 	
 
