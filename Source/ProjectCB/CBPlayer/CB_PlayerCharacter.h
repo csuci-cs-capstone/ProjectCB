@@ -6,7 +6,6 @@
 #include "GameFramework/Character.h"
 #include "CB_PlayerCharacter.generated.h"
 
-
 UCLASS()
 class PROJECTCB_API ACB_PlayerCharacter : public ACharacter
 {
@@ -18,11 +17,7 @@ public:
 
 private:
 
-	//// Dodgeball class to spawn.
-	//UPROPERTY(EditDefaultsOnly, Category = Projectile)
-	//	TSubclassOf<class ACB_Dodgeball> DodgeballClass;
-
-	//FVector m_dodgeballOffset;
+	FVector m_throwDirection = FVector(1, 0, 0.5).GetUnsafeNormal();
 
 	const float m_walkSpeed = 500.0f;
 	const float m_baseGravity = 4.0f;
@@ -36,10 +31,6 @@ private:
 	bool m_startedLeap;
 	bool m_inLeap;
 	
-
-	//UPROPERTY(EditAnywhere, Category("Throwing"))
-	//class TSubclassOf<class ACB_Dodgeball> DodgeballClass;
-
 	UPROPERTY(EditAnywhere, Category = "Throwing")
 	TSubclassOf<class ACB_Dodgeball> DodgeballClass;
 
