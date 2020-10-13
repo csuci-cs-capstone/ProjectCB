@@ -14,10 +14,14 @@ ACB_Dodgeball::ACB_Dodgeball()
 
 	SetRootComponent(this->m_mesh);
 
-	//this->m_movement = CreateDefaultSubobject<UProjectileMovementComponent>("DodgeballMovement");
-
-	//this->m_movement->InitialSpeed = this->m_speed;
-	//this->m_movement->MaxSpeed = this->m_speed;
+	//// Use this component to drive this projectile's movement.
+	//ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
+	//ProjectileMovementComponent->SetUpdatedComponent(CollisionComponent);
+	//ProjectileMovementComponent->InitialSpeed = 3000.0f;
+	//ProjectileMovementComponent->MaxSpeed = 3000.0f;
+	//ProjectileMovementComponent->bRotationFollowsVelocity = true;
+	//ProjectileMovementComponent->bShouldBounce = true;
+	//ProjectileMovementComponent->Bounciness = 0.3f;
 }
 
 // Called when the game starts or when spawned
@@ -31,10 +35,20 @@ void ACB_Dodgeball::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	FVector nextLocation = GetActorLocation();
+	SetActorLocation(GetActorLocation() + this->m_velocity);
 
-	nextLocation.Y += this->m_speed;
+	//FVector nextLocation = GetActorLocation();
 
-	SetActorLocation(nextLocation);
+	//nextLocation.Y += this->m_speed;
+
+	//SetActorLocation(nextLocation);
+}
+
+// Function that initializes the projectile's velocity in the shoot direction.
+void ACB_Dodgeball::FireInDirection(const FVector& ShootDirection)
+{
+	this->m_velocity = this->m_speed * ShootDirection;
+
+	//ProjectileMovementComponent->Velocity = ShootDirection * ProjectileMovementComponent->InitialSpeed;
 }
 
