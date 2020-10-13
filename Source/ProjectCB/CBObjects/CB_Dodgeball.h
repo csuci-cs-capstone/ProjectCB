@@ -34,9 +34,4 @@ public:
 
 	// Function that initializes the projectile's velocity in the shoot direction.
 	void FireInDirection(const FVector& ShootDirection);
-
-	//// Projectile movement component.
-	//UPROPERTY(VisibleAnywhere, Category = "Movement")
-	//	UProjectileMovementComponent* ProjectileMovementComponent;
-
 };
