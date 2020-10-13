@@ -18,10 +18,24 @@ public:
 
 private:
 
+	//// Dodgeball class to spawn.
+	//UPROPERTY(EditDefaultsOnly, Category = Projectile)
+	//	TSubclassOf<class ACB_Dodgeball> DodgeballClass;
+
+	//FVector m_dodgeballOffset;
+
 	const float m_walkSpeed = 500.0f;
 	const float m_baseGravity = 4.0f;
 	const float m_fastGravity = m_baseGravity * 1.5f;
 	const float m_jumpVelocity = 1200;
+	const float m_baseAirControl = 0.75f;
+
+	float xMovement;
+	float yMovement;
+
+	bool m_startedLeap;
+	bool m_inLeap;
+	
 
 	//UPROPERTY(EditAnywhere, Category("Throwing"))
 	//class TSubclassOf<class ACB_Dodgeball> DodgeballClass;

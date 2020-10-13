@@ -9,11 +9,19 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-#define print(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("%s")), text);
+#define print(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("%s"), text));
 
 // Sets default values
 ACB_PlayerCharacter::ACB_PlayerCharacter()
 {
+	//this->m_dodgeballOffset = FVector(1, 0, 0);
+
+	this->xMovement = 0;
+	this->yMovement = 0;
+
+	this->m_startedLeap = false;
+	this->m_inLeap = false;
+
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -33,7 +41,7 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = this->m_walkSpeed;
 	GetCharacterMovement()->GravityScale = this->m_baseGravity;
 	GetCharacterMovement()->JumpZVelocity = this->m_jumpVelocity;
-	GetCharacterMovement()->AirControl = 0.75f;
+	GetCharacterMovement()->AirControl = this->m_baseAirControl;
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
@@ -71,6 +79,35 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 		characterMovement->GravityScale = this->m_fastGravity;
 	else
 		characterMovement->GravityScale = this->m_baseGravity;
+
+	if (this->m_startedLeap) // TODO make into roll
+	{
+		characterMovement->GravityScale = this->m_baseGravity / 2;
+		characterMovement->AirControl = 0;
+
+		if (!this->m_inLeap)
+		{
+			const FRotator controlRotation = Controller->GetControlRotation();
+			const FRotator YawRotation(0, controlRotation.Yaw, 0);
+
+			const FVector movementDirection = (this->xMovement * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X))
+				+ (this->yMovement * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y));
+
+			characterMovement->Velocity = (4 * this->m_walkSpeed) * movementDirection.GetSafeNormal();
+
+			characterMovement->SetJumpAllowed(true);
+			Jump();
+
+			this->m_inLeap = true;
+		}
+
+		if (characterMovement->IsMovingOnGround())
+		{
+			this->m_startedLeap = false;
+			this->m_inLeap = false;
+			characterMovement->AirControl = this->m_baseAirControl;
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -81,6 +118,8 @@ void ACB_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 void ACB_PlayerCharacter::MoveVertical(float amount)
 {
+	this->xMovement = amount;
+
 	if ((Controller != NULL) && (amount != 0.0f)) 
 	{
 		const FRotator controlRotation = Controller->GetControlRotation();
@@ -93,6 +132,8 @@ void ACB_PlayerCharacter::MoveVertical(float amount)
 
 void ACB_PlayerCharacter::MoveHorizontal(float amount)
 {
+	this->yMovement = amount;
+
 	if ((Controller != NULL) && (amount != 0.0f))
 	{
 		const FRotator controlRotation = Controller->GetControlRotation();
@@ -125,6 +166,8 @@ void ACB_PlayerCharacter::StopJumpAction()
 
 void ACB_PlayerCharacter::RunAction()
 {
+	if (!this->m_startedLeap)
+		this->m_startedLeap = true;
 }
 
 void ACB_PlayerCharacter::StopRunAction()
@@ -133,6 +176,7 @@ void ACB_PlayerCharacter::StopRunAction()
 
 void ACB_PlayerCharacter::ShootAction()
 {
+
 	if (DodgeballClass != nullptr)
 	{
 		FActorSpawnParameters spawnParameters;
@@ -151,6 +195,7 @@ void ACB_PlayerCharacter::ShootAction()
 		GetWorld()->SpawnActor<class ACB_Dodgeball>(DodgeballClass, spawnTransform, spawnParameters);
 	}
 
+
 	
 
 	// TODO check if player has a ball
@@ -165,4 +210,3 @@ void ACB_PlayerCharacter::ShootAction()
 void ACB_PlayerCharacter::StopShootAction()
 {
 }
-
