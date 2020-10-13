@@ -176,7 +176,6 @@ void ACB_PlayerCharacter::StopRunAction()
 
 void ACB_PlayerCharacter::ShootAction()
 {
-
 	if (DodgeballClass != nullptr)
 	{
 		FActorSpawnParameters spawnParameters;
@@ -188,23 +187,16 @@ void ACB_PlayerCharacter::ShootAction()
 
 		FTransform spawnTransform;
 
-		spawnTransform.SetLocation(GetActorForwardVector() * 500.0f + GetActorLocation());
+		FVector location = GetActorLocation() + Controller->GetControlRotation().RotateVector(FVector(75, 0, 0));
+
+		spawnTransform.SetLocation(location);
 		spawnTransform.SetRotation(GetActorRotation().Quaternion());
-		spawnTransform.SetScale3D(FVector(1.0f));
+		spawnTransform.SetScale3D(FVector(0.5f));
 
-		GetWorld()->SpawnActor<class ACB_Dodgeball>(DodgeballClass, spawnTransform, spawnParameters);
+		auto dodgeball = GetWorld()->SpawnActor<class ACB_Dodgeball>(DodgeballClass, spawnTransform, spawnParameters);
+
+		dodgeball->FireInDirection(Controller->GetControlRotation().RotateVector(this->m_throwDirection));
 	}
-
-
-	
-
-	// TODO check if player has a ball
-
-	// Create ball
-
-	// Set velocity to x in players current direction
-
-	// FIRE!!!
 }
 
 void ACB_PlayerCharacter::StopShootAction()
