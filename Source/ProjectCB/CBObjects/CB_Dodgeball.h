@@ -16,10 +16,8 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Components")
 		UStaticMeshComponent* m_mesh;
 
-	//UPROPERTY(EditAnywhere, Category = "Components")
-	//class UProjectileMovementComponent* m_movement;
-
-	const float m_speed = 2.0f;
+	FVector m_velocity;
+	float m_speed;
 
 public:	
 	// Sets default values for this actor's properties
@@ -33,5 +31,12 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	// Function that initializes the projectile's velocity in the shoot direction.
+	void FireInDirection(const FVector& ShootDirection);
+
+	//// Projectile movement component.
+	//UPROPERTY(VisibleAnywhere, Category = "Movement")
+	//	UProjectileMovementComponent* ProjectileMovementComponent;
 
 };
