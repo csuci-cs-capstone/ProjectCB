@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "CB_PlayerCharacter.generated.h"
-//#include "../CBObjects/CB_Dodgeball.h"
+
 
 UCLASS()
 class PROJECTCB_API ACB_PlayerCharacter : public ACharacter
@@ -25,6 +25,9 @@ private:
 
 	//UPROPERTY(EditAnywhere, Category("Throwing"))
 	//class TSubclassOf<class ACB_Dodgeball> DodgeballClass;
+
+	UPROPERTY(EditAnywhere, Category = "Throwing")
+	TSubclassOf<class ACB_Dodgeball> DodgeballClass;
 
 protected:
 	// Called when the game starts or when spawned
