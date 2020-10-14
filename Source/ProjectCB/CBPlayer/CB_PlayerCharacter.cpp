@@ -2,7 +2,7 @@
 
 
 #include "CB_PlayerCharacter.h"
-#include "ProjectCB/CBObjects/CB_Dodgeball.h"
+#include "ProjectCB/CBObjects/CB_DodgeballProjectile.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Camera/CameraComponent.h"
@@ -48,18 +48,21 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	bUseControllerRotationYaw = false;
 
 	//Character will look in the direction of movement
-	GetCharacterMovement()->bOrientRotationToMovement = true;
+	//GetCharacterMovement()->bOrientRotationToMovement = true;
+	//Character will look in the direction of the axis controlling the camera
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 
 	cameraArm = CreateDefaultSubobject<USpringArmComponent>("CameraSpringArm");
 	cameraArm->SetupAttachment(staticMesh);
-	cameraArm->TargetArmLength = 185.0f;
+	cameraArm->SetRelativeLocation(FVector(0.0f, 60.0f, 0.0f));
+	cameraArm->TargetArmLength = 285.0f;
 
 	camera = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
 	camera->SetRelativeLocation(FVector(0.0f, 0.0f, 40.0f));
 	camera->SetupAttachment(cameraArm);
 
 	camera->bUsePawnControlRotation = false;
-	cameraArm->bUsePawnControlRotation = true;
+	cameraArm->bUsePawnControlRotation = false;
 }
 
 // Called when the game starts or when spawned
@@ -181,11 +184,12 @@ void ACB_PlayerCharacter::MoveHorizontal(float amount)
 
 void ACB_PlayerCharacter::LookVertical(float amount)
 {
+	
 	AddControllerPitchInput(amount * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
 void ACB_PlayerCharacter::LookHorizontal(float amount)
-{
+{	
 	AddControllerYawInput(amount * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
@@ -214,7 +218,7 @@ void ACB_PlayerCharacter::StopRunAction()
 
 void ACB_PlayerCharacter::ShootAction()
 {
-	if (this->DodgeballClass != nullptr && !this->m_isLeaping)
+	if (this->DodgeballProjectileClass != nullptr && !this->m_isLeaping)
 	{
 		FActorSpawnParameters spawnParameters;
 
@@ -225,15 +229,20 @@ void ACB_PlayerCharacter::ShootAction()
 
 		FTransform spawnTransform;
 
-		FVector location = GetActorLocation() + Controller->GetControlRotation().RotateVector(FVector(75, 0, 0));
+		//FVector location = GetActorLocation() + Controller->GetControlRotation().RotateVector(FVector(75, 0, 0));
 
-		spawnTransform.SetLocation(location);
-		spawnTransform.SetRotation(GetActorRotation().Quaternion());
+		//Scale forward vector by 20.0f so it won't clip into the capsule collider
+		FVector spawnLocation = GetActorForwardVector() * 125.0f + FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 35.0f);
+
+		FRotator spawnRotation(Controller->GetControlRotation().Pitch, GetActorRotation().Yaw, 0);
+
+		spawnTransform.SetLocation(spawnLocation);
+		spawnTransform.SetRotation(spawnRotation.Quaternion());
 		spawnTransform.SetScale3D(FVector(0.5f));
 
-		auto dodgeball = GetWorld()->SpawnActor<class ACB_Dodgeball>(DodgeballClass, spawnTransform, spawnParameters);
+		auto dodgeball = GetWorld()->SpawnActor<ACB_DodgeballProjectile>(this->DodgeballProjectileClass, spawnTransform, spawnParameters);
 
-		dodgeball->FireInDirection(Controller->GetControlRotation().RotateVector(this->m_throwDirection));
+		//dodgeball->FireInDirection(Controller->GetControlRotation().RotateVector(this->m_throwDirection));
 	}
 }
 

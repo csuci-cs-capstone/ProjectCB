@@ -37,7 +37,7 @@ private:
 
 	
 	UPROPERTY(EditAnywhere, Category = "Throwing")
-	TSubclassOf<class ACB_Dodgeball> DodgeballClass;
+	TSubclassOf<class ACB_DodgeballProjectile> DodgeballProjectileClass;
 
 	void adjustGravity(UCharacterMovementComponent* characterMovement);
 

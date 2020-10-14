@@ -32,6 +32,7 @@ private:
 	FVector m_velocity;
 	const float m_speed = 2000.0f;
 	const float m_gravity = 24.0f;
+	
 
 public:	
 	// Sets default values for this actor's properties
