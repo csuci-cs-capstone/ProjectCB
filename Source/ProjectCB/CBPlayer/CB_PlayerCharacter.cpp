@@ -14,13 +14,13 @@
 // Sets default values
 ACB_PlayerCharacter::ACB_PlayerCharacter()
 {
-	//this->m_dodgeballOffset = FVector(1, 0, 0);
-
 	this->xMovement = 0;
 	this->yMovement = 0;
-
-	this->m_startedLeap = false;
-	this->m_inLeap = false;
+	
+	this->m_rollFrame = 0;
+	this->m_canLeap = true;
+	this->m_isLeaping = false;
+	this->m_groundedAfterLeap = false;
 
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -73,40 +73,65 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	auto characterMovement = GetCharacterMovement();
+	UCharacterMovementComponent* characterMovement = GetCharacterMovement();
 
+	adjustGravity(characterMovement);
+
+	updateLeap(characterMovement);
+}
+
+void ACB_PlayerCharacter::adjustGravity(UCharacterMovementComponent* characterMovement)
+{
 	if (characterMovement->Velocity.Z <= 0)
 		characterMovement->GravityScale = this->m_fastGravity;
 	else
 		characterMovement->GravityScale = this->m_baseGravity;
+}
 
-	if (this->m_startedLeap) // TODO make into roll
+void ACB_PlayerCharacter::updateLeap(UCharacterMovementComponent* characterMovement)
+{
+	if (this->m_isLeaping)
 	{
 		characterMovement->GravityScale = this->m_baseGravity / 2;
 		characterMovement->AirControl = 0;
 
-		if (!this->m_inLeap)
+		const FRotator controlRotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, controlRotation.Yaw, 0);
+
+		const FVector movementDirection = (this->xMovement * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X))
+			+ (this->yMovement * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y));
+
+		auto normal = movementDirection.GetSafeNormal();
+
+		if (normal.IsNearlyZero())
 		{
-			const FRotator controlRotation = Controller->GetControlRotation();
-			const FRotator YawRotation(0, controlRotation.Yaw, 0);
-
-			const FVector movementDirection = (this->xMovement * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X))
-				+ (this->yMovement * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y));
-
-			characterMovement->Velocity = (4 * this->m_walkSpeed) * movementDirection.GetSafeNormal();
-
 			characterMovement->SetJumpAllowed(true);
 			Jump();
-
-			this->m_inLeap = true;
 		}
+		else
+			characterMovement->Velocity = this->m_rollSpeed * normal;
 
-		if (characterMovement->IsMovingOnGround())
+		if (this->m_rollFrame >= this->m_maxRollFrames)
 		{
-			this->m_startedLeap = false;
-			this->m_inLeap = false;
+			characterMovement->Velocity = FVector(0, 0, 0);
+			characterMovement->GravityScale = this->m_baseGravity;
 			characterMovement->AirControl = this->m_baseAirControl;
+			this->m_isLeaping = false;
+			this->m_groundedAfterLeap = false;
+			this->m_rollFrame = 0;
 		}
+		else
+			this->m_rollFrame++;
+	}
+	else if (!this->m_canLeap)
+	{
+		if (this->m_rollFrame >= this->m_rollCooldownFrames)
+		{
+			this->m_canLeap = true;
+			this->m_rollFrame = 0;
+		}
+		else
+			this->m_rollFrame++;
 	}
 }
 
@@ -118,30 +143,40 @@ void ACB_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 void ACB_PlayerCharacter::MoveVertical(float amount)
 {
-	this->xMovement = amount;
-
-	if ((Controller != NULL) && (amount != 0.0f)) 
+	if (!this->m_isLeaping)
 	{
-		const FRotator controlRotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, controlRotation.Yaw, 0);
+		this->xMovement = amount;
 
-		const FVector movementDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		AddMovementInput(movementDirection, amount);
+		if ((Controller != NULL) && (amount != 0.0f))
+		{
+			const FRotator controlRotation = Controller->GetControlRotation();
+			const FRotator YawRotation(0, controlRotation.Yaw, 0);
+
+			const FVector movementDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+			AddMovementInput(movementDirection, amount);
+		}
 	}
+	else
+		this->xMovement = ((1 - this->m_rollControl) * this->xMovement) + (this->m_rollControl * amount);
 }
 
 void ACB_PlayerCharacter::MoveHorizontal(float amount)
 {
-	this->yMovement = amount;
-
-	if ((Controller != NULL) && (amount != 0.0f))
+	if (!this->m_isLeaping)
 	{
-		const FRotator controlRotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, controlRotation.Yaw, 0);
+		this->yMovement = amount;
 
-		const FVector movementDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		AddMovementInput(movementDirection, amount);
+		if ((Controller != NULL) && (amount != 0.0f))
+		{
+			const FRotator controlRotation = Controller->GetControlRotation();
+			const FRotator YawRotation(0, controlRotation.Yaw, 0);
+
+			const FVector movementDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+			AddMovementInput(movementDirection, amount);
+		}
 	}
+	else
+		this->yMovement = ((1 - this->m_rollControl) * this->yMovement) + (this->m_rollControl * amount);
 }
 
 void ACB_PlayerCharacter::LookVertical(float amount)
@@ -166,8 +201,11 @@ void ACB_PlayerCharacter::StopJumpAction()
 
 void ACB_PlayerCharacter::RunAction()
 {
-	if (!this->m_startedLeap)
-		this->m_startedLeap = true;
+	if (this->m_canLeap)
+	{
+		this->m_isLeaping = true;
+		this->m_canLeap = false;
+	}
 }
 
 void ACB_PlayerCharacter::StopRunAction()
@@ -176,7 +214,7 @@ void ACB_PlayerCharacter::StopRunAction()
 
 void ACB_PlayerCharacter::ShootAction()
 {
-	if (DodgeballClass != nullptr)
+	if (this->DodgeballClass != nullptr && !this->m_isLeaping)
 	{
 		FActorSpawnParameters spawnParameters;
 
