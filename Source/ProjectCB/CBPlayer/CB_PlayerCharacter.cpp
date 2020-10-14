@@ -17,10 +17,9 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	this->xMovement = 0;
 	this->yMovement = 0;
 	
-	this->m_rollFrame = 0;
+	this->m_leapFrame = 0;
 	this->m_canLeap = true;
 	this->m_isLeaping = false;
-	this->m_groundedAfterLeap = false;
 
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -95,47 +94,62 @@ void ACB_PlayerCharacter::updateLeap(UCharacterMovementComponent* characterMovem
 {
 	if (this->m_isLeaping)
 	{
-		characterMovement->GravityScale = this->m_baseGravity / 2;
-		characterMovement->AirControl = 0;
-
 		const FRotator controlRotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, controlRotation.Yaw, 0);
 
 		const FVector movementDirection = (this->xMovement * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X))
 			+ (this->yMovement * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y));
 
-		auto normal = movementDirection.GetSafeNormal();
+		FVector direction = movementDirection.GetSafeNormal();
 
-		if (normal.IsNearlyZero())
-		{
-			characterMovement->SetJumpAllowed(true);
-			Jump();
-		}
+		if (direction.IsNearlyZero())
+			endLeap(characterMovement);
 		else
-			characterMovement->Velocity = this->m_rollSpeed * normal;
+			leap(characterMovement, direction);
 
-		if (this->m_rollFrame >= this->m_maxRollFrames)
-		{
-			characterMovement->Velocity = FVector(0, 0, 0);
-			characterMovement->GravityScale = this->m_baseGravity;
-			characterMovement->AirControl = this->m_baseAirControl;
-			this->m_isLeaping = false;
-			this->m_groundedAfterLeap = false;
-			this->m_rollFrame = 0;
-		}
+		if (this->m_leapFrame >= this->m_maxLeapFrames)
+			endLeap(characterMovement);
 		else
-			this->m_rollFrame++;
+			this->m_leapFrame++;
 	}
 	else if (!this->m_canLeap)
 	{
-		if (this->m_rollFrame >= this->m_rollCooldownFrames)
+		if (this->m_leapFrame >= this->m_leapCooldownFrames)
 		{
 			this->m_canLeap = true;
-			this->m_rollFrame = 0;
+			this->m_leapFrame = 0;
 		}
 		else
-			this->m_rollFrame++;
+			this->m_leapFrame++;
 	}
+}
+
+void ACB_PlayerCharacter::leap(UCharacterMovementComponent* characterMovement, const FVector& direction)
+{
+	if (this->m_canLeap)
+	{
+		this->m_actionVelocity = this->m_leapSpeed * direction;
+		this->m_canLeap = false;
+	}
+
+	characterMovement->GravityScale = this->m_baseGravity;
+	characterMovement->AirControl = 0;
+	characterMovement->Velocity = this->m_actionVelocity;
+
+	float currentMagnitude = this->m_actionVelocity.Size2D();
+	float newMagnitude = currentMagnitude - this->m_leapDeceleration;
+
+	this->m_actionVelocity.X *= newMagnitude / currentMagnitude;
+	this->m_actionVelocity.Y *= newMagnitude / currentMagnitude;
+}
+
+void ACB_PlayerCharacter::endLeap(UCharacterMovementComponent* characterMovement)
+{
+	characterMovement->Velocity = FVector(0, 0, 0);
+	characterMovement->GravityScale = this->m_baseGravity;
+	characterMovement->AirControl = this->m_baseAirControl;
+	this->m_isLeaping = false;
+	this->m_leapFrame = 0;
 }
 
 // Called to bind functionality to input
@@ -160,7 +174,7 @@ void ACB_PlayerCharacter::MoveVertical(float amount)
 		}
 	}
 	else
-		this->xMovement = ((1 - this->m_rollControl) * this->xMovement) + (this->m_rollControl * amount);
+		this->xMovement = ((1 - this->m_leapControl) * this->xMovement) + (this->m_leapControl * amount);
 }
 
 void ACB_PlayerCharacter::MoveHorizontal(float amount)
@@ -179,7 +193,7 @@ void ACB_PlayerCharacter::MoveHorizontal(float amount)
 		}
 	}
 	else
-		this->yMovement = ((1 - this->m_rollControl) * this->yMovement) + (this->m_rollControl * amount);
+		this->yMovement = ((1 - this->m_leapControl) * this->yMovement) + (this->m_leapControl * amount);
 }
 
 void ACB_PlayerCharacter::LookVertical(float amount)
@@ -206,10 +220,7 @@ void ACB_PlayerCharacter::StopJumpAction()
 void ACB_PlayerCharacter::RunAction()
 {
 	if (this->m_canLeap)
-	{
 		this->m_isLeaping = true;
-		this->m_canLeap = false;
-	}
 }
 
 void ACB_PlayerCharacter::StopRunAction()

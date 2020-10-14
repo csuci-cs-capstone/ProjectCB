@@ -18,9 +18,9 @@ public:
 private:
 
 	FVector m_throwDirection = FVector(1, 0, 0.5).GetUnsafeNormal();
+	FVector m_actionVelocity;
 
 	const float m_walkSpeed = 500.0f;
-	const float m_rollSpeed = 4 * this->m_walkSpeed;
 	const float m_baseGravity = 4.0f;
 	const float m_fastGravity = m_baseGravity * 1.5f;
 	const float m_jumpVelocity = 1200;
@@ -29,12 +29,11 @@ private:
 	float xMovement;
 	float yMovement;
 
-	const short m_maxRollFrames = 10, m_rollCooldownFrames = 20;
-	const float m_rollControl = 0.25f;
-	short m_rollFrame;
-
-	bool m_canLeap, m_isLeaping, m_groundedAfterLeap;
-
+	// Leap Variables
+	const short m_maxLeapFrames = 10, m_leapCooldownFrames = 20;
+	const float m_leapSpeed = 4 * this->m_walkSpeed, m_leapDeceleration = 4.0f, m_leapControl = 0.25f;
+	bool m_canLeap, m_isLeaping;
+	short m_leapFrame;
 	
 	UPROPERTY(EditAnywhere, Category = "Throwing")
 	TSubclassOf<class ACB_DodgeballProjectile> DodgeballProjectileClass;
@@ -42,6 +41,8 @@ private:
 	void adjustGravity(UCharacterMovementComponent* characterMovement);
 
 	void updateLeap(UCharacterMovementComponent* characterMovement);
+	void leap(UCharacterMovementComponent* characterMovement, const FVector& direction);
+	void endLeap(UCharacterMovementComponent* characterMovement);
 
 protected:
 	// Called when the game starts or when spawned
