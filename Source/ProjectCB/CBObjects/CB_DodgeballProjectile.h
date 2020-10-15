@@ -14,7 +14,7 @@ class PROJECTCB_API ACB_DodgeballProjectile : public AActor
 private:
 
 	FVector m_velocity;
-	const float m_speed = 2300.0f;
+	const float m_speed = 2500.0f;
 	const float m_gravity = 1.0f;
 	const float m_bounce = 5.0f;
 
@@ -35,5 +35,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void launch(const FVector& direction);
 
 };

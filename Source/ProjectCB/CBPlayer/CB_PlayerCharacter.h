@@ -17,7 +17,7 @@ public:
 
 private:
 
-	FVector m_throwDirection = FVector(1, 0, 0.5).GetUnsafeNormal();
+	FVector m_throwDirection = FVector(1, 0, 0.3).GetUnsafeNormal();
 
 	const float m_walkSpeed = 500.0f;
 	const float m_rollSpeed = 4 * this->m_walkSpeed;
