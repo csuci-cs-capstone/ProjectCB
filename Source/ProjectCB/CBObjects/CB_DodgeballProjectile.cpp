@@ -16,11 +16,10 @@ ACB_DodgeballProjectile::ACB_DodgeballProjectile()
 	SetRootComponent(DodgeballMesh);
 
 	this->DodgeballMovement = CreateDefaultSubobject<UProjectileMovementComponent>("DodgeballMovement");
-	this->DodgeballMovement->InitialSpeed = this->m_speed;
+	this->DodgeballMovement->InitialSpeed = 0;
 	this->DodgeballMovement->MaxSpeed = this->m_speed;
 	this->DodgeballMovement->ProjectileGravityScale = this->m_gravity;
 	this->DodgeballMovement->bShouldBounce = true;
-
 }
 
 // Called when the game starts or when spawned
@@ -34,6 +33,10 @@ void ACB_DodgeballProjectile::BeginPlay()
 void ACB_DodgeballProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
 
+void ACB_DodgeballProjectile::launch(const FVector& direction)
+{
+	this->DodgeballMovement->AddForce(this->m_speed * 1000 * direction);
 }
 

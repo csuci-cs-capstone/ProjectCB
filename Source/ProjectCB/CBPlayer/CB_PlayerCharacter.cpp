@@ -229,20 +229,17 @@ void ACB_PlayerCharacter::ShootAction()
 
 		FTransform spawnTransform;
 
-		//FVector location = GetActorLocation() + Controller->GetControlRotation().RotateVector(FVector(75, 0, 0));
-
 		//Scale forward vector by 20.0f so it won't clip into the capsule collider
 		FVector spawnLocation = GetActorForwardVector() * 125.0f + FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 35.0f);
 
 		FRotator spawnRotation(Controller->GetControlRotation().Pitch, GetActorRotation().Yaw, 0);
 
 		spawnTransform.SetLocation(spawnLocation);
-		spawnTransform.SetRotation(spawnRotation.Quaternion());
 		spawnTransform.SetScale3D(FVector(0.5f));
 
 		auto dodgeball = GetWorld()->SpawnActor<ACB_DodgeballProjectile>(this->DodgeballProjectileClass, spawnTransform, spawnParameters);
 
-		//dodgeball->FireInDirection(Controller->GetControlRotation().RotateVector(this->m_throwDirection));
+		dodgeball->launch(Controller->GetControlRotation().RotateVector(this->m_throwDirection));
 	}
 }
 
