@@ -67,16 +67,19 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 
 	cameraArm = CreateDefaultSubobject<USpringArmComponent>("CameraSpringArm");
 	cameraArm->SetupAttachment(staticMesh);
-	cameraArm->SetRelativeLocation(FVector(0.0f, 60.0f, 0.0f));
 	cameraArm->TargetArmLength = 285.0f;
-	cameraArm->SetWorldRotation(FRotator(-60.0f, 0.0f, 0.0f));
+	
 	 
 	camera = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
-	camera->SetRelativeLocation(FVector(0.0f, 0.0f, 40.0f));
 	camera->SetupAttachment(cameraArm);
-
-	camera->bUsePawnControlRotation = false;
+	
 	cameraArm->bUsePawnControlRotation = false;
+	camera->bUsePawnControlRotation = false;
+
+	//Set Locations and Rotations after attachments have been set
+	cameraArm->SetRelativeLocation(FVector(0.0f, 0.0f, 110.0f));
+	cameraArm->SetRelativeRotation(FRotator(-25.0f, 0.0f, 0.0f));
+	camera->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 }
 
 // Called when the game starts or when spawned

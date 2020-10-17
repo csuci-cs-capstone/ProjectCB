@@ -93,6 +93,12 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Throwing")
 	TSubclassOf<class ACB_DodgeballProjectile> DodgeballProjectileClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"),Category = "Components")
+		class UCameraComponent* camera;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"),Category = "Components")
+		class USpringArmComponent* cameraArm;
+
 	void adjustGravity(UCharacterMovementComponent* characterMovement);
 
 protected:
@@ -105,11 +111,7 @@ protected:
 	
 	//Add a camera to the character and an arm which will handle clipping through geometry
 	//They get setup in the constructor of the cpp file
-	UPROPERTY(EditAnywhere, Category = "Components")
-		class UCameraComponent* camera;
-
-	UPROPERTY(EditAnywhere, Category = "Components")
-		class USpringArmComponent* cameraArm;
+	
 
 public:
 
