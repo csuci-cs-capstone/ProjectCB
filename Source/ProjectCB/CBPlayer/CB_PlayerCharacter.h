@@ -42,7 +42,12 @@ private:
 
 	//const float m_duckHeight;
 
-	const short m_duckStartupFrames = 15;
+	const float m_duckColliderSize = 25.0f;
+
+	const short m_duckStartupFrames = 6;
+	const short m_duckActionFrames = 24;
+
+	// TODO 'fix' the camera at the original center of character (based on character size) [smoothly update]
 
 	bool m_ducked;
 
@@ -50,8 +55,12 @@ private:
 
 	const float m_dodgeHeight = 1;
 	const float m_dodgeControl = 0.0f;
+	const float m_dodgeApexColliderSize = 25.0f;
+	const float m_dodgeEndColliderSize = 50.0f;
+	const float m_dodgeCooldownColliderSize = 50.f;
 
-	const short m_dodgeCooldownFrames = 15;
+	const short m_dodgeCooldownFrames = 150;
+	const short m_dodgeFramesToApex = 7;
 
 	bool m_dodged;
 
@@ -60,12 +69,14 @@ private:
 	const float m_diveHeight = m_dodgeHeight / 2;
 	const float m_diveHorizontalVelocity = 1.75f * m_walkSpeed;
 	const float m_diveControl = 0.0f;
+	const float m_diveApexColliderSize = 25.0f;
+	const float m_diveEndColliderSize = 50.0f;
+	const float m_diveCooldownColliderSize = 50.f;
 
-	const short m_diveCooldownFrames = 15;
+	const short m_diveCooldownFrames = 150;
+	const short m_diveFramesToApex = 5;
 
-	float m_diveAmount;
-
-	bool m_dived; // TODO remove
+	float m_diveProportion;
 
 		// Dodge (Move)
 
@@ -79,6 +90,8 @@ private:
 
 	void dodgeUpdate(UCharacterMovementComponent* characterMovement);
 
+	inline float dodgeProportion(float dodgeValue, float diveValue);
+
 	// Grab
 
 		// TODO implement
@@ -87,13 +100,29 @@ private:
 
 		// TODO implement
 
-	
+
+	// Size updates // TODO put in general
+
+	float m_previousSize;
+	float m_currentSize;
+	// end size and frames are dependant on move
+
+	// TODO do the same for rotation
+
+	// Frame counter (for debugging only) TODO remove
+
+	short m_frameCounter;
+
+	bool m_frameCounterActive;
+
 
 	
 	UPROPERTY(EditAnywhere, Category = "Throwing")
 	TSubclassOf<class ACB_DodgeballProjectile> DodgeballProjectileClass;
 
 	void adjustGravity(UCharacterMovementComponent* characterMovement);
+
+	float getAnimationPoint(float x);
 
 protected:
 	// Called when the game starts or when spawned
