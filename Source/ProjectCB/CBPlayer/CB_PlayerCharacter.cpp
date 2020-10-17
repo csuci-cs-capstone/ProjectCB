@@ -14,19 +14,31 @@
 // Sets default values
 ACB_PlayerCharacter::ACB_PlayerCharacter()
 {
+	// General Variables
+
 	this->m_movementX = 0;
 	this->m_movementY = 0;
 
 	this->m_canMove = true;
 
-	this->m_leapFrame = 0;
-	this->m_leaped = false;
-	this->m_leapCooldownStarted = false;
+	// Dodge Variables
+
+	this->m_duckFrame = 0;
+	this->m_dodgeFrame = 0;
+
+	this->m_ducked = false;
+	this->m_dodged = false;
+	this->m_dived = false;
+	this->m_dodgeCooldownStarted = false;
+
+	// Other
 
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	GetCapsuleComponent()->InitCapsuleSize(28.0f, 50.0f);
+	//GetCapsuleComponent()->InitCapsuleSize(28.0f, 50.0f);
+
+	GetCapsuleComponent()->InitCapsuleSize(25.0f, 50.0f);
 
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
@@ -41,8 +53,8 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	//Customize the character movement component here!
 	GetCharacterMovement()->MaxWalkSpeed = this->m_walkSpeed;
 	GetCharacterMovement()->GravityScale = this->m_baseGravity;
-	GetCharacterMovement()->JumpZVelocity = this->m_jumpVelocity;
-	GetCharacterMovement()->AirControl = this->m_jumpControl;
+	//GetCharacterMovement()->JumpZVelocity = this->m_jumpVelocity;
+	//GetCharacterMovement()->AirControl = this->m_jumpControl;
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
@@ -82,7 +94,7 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 
 	adjustGravity(characterMovement);
 
-	leapCooldownUpdate(characterMovement);
+	dodgeUpdate(characterMovement);
 }
 
 void ACB_PlayerCharacter::adjustGravity(UCharacterMovementComponent* characterMovement)
@@ -93,26 +105,49 @@ void ACB_PlayerCharacter::adjustGravity(UCharacterMovementComponent* characterMo
 		characterMovement->GravityScale = this->m_baseGravity;
 }
 
-void ACB_PlayerCharacter::leapCooldownUpdate(UCharacterMovementComponent* characterMovement)
+void ACB_PlayerCharacter::dodgeUpdate(UCharacterMovementComponent* characterMovement)
 {
-	if (this->m_leaped)
-	{
-		if (characterMovement->IsMovingOnGround())
-			this->m_leapCooldownStarted = true;
+	UCapsuleComponent* capsuleComponent = GetCapsuleComponent();
 
-		if (this->m_leapCooldownStarted)
+	// TODO combine dodge and dive
+
+	if (this->m_dodged)
+	{
+		// TODO update size dynamically
+		capsuleComponent->SetCapsuleSize(25.0f, 50.0f); // TODO make it shrink down into jump
+		// TODO rotate capsule and stuff according to dodge dive
+
+		this->m_canMove = true;
+
+		if (characterMovement->IsMovingOnGround())
+			this->m_dodgeCooldownStarted = true;
+
+		if (this->m_dodgeCooldownStarted)
 		{
+			//capsuleComponent->SetCapsuleSize(25.0f, 25.0f);
 			this->m_canMove = false;
 
-			this->m_leapFrame++;
+			this->m_dodgeFrame++;
 
-			if (this->m_leapFrame >= this->m_leapCooldownFrames)
+			if (this->m_dodgeFrame >= this->m_diveCooldownFrames)
 			{
+				capsuleComponent->SetCapsuleSize(25.0f, 50.0f); // TODO make based on relationship
+
 				this->m_canMove = true;
-				this->m_leapFrame = 0;
-				this->m_leaped = false;
-				this->m_leapCooldownStarted = false;
+				this->m_dodgeFrame = 0;
+				this->m_dodged = false;
+				this->m_dodgeCooldownStarted = false;
 			}
+		}
+	}
+	else if (this->m_ducked)
+	{
+		this->m_duckFrame++;
+
+		if (this->m_duckFrame >= this->m_duckStartupFrames)
+		{
+			capsuleComponent->SetCapsuleSize(25.0f, 25.0f); // TODO make it go towards based on frame data
+			this->m_canMove = false;
 		}
 	}
 }
@@ -164,40 +199,45 @@ void ACB_PlayerCharacter::LookHorizontal(float amount)
 
 void ACB_PlayerCharacter::JumpAction()
 {
-	UCharacterMovementComponent* characterMovement = GetCharacterMovement();
+	if (!this->m_ducked)
+		this->m_duckFrame = 0;
 
-	if (characterMovement->IsMovingOnGround())
-	{
-		const FRotator controlRotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, controlRotation.Yaw, 0);
-
-		const FVector movementDirection = (this->m_movementX * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X))
-			+ (this->m_movementY * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y));
-
-		const FVector normal = movementDirection.GetSafeNormal();
-
-		// Jump
-		if (normal.IsNearlyZero())
-		{
-			characterMovement->JumpZVelocity = this->m_jumpVelocity;
-			characterMovement->AirControl = this->m_jumpControl;
-		}
-		// Leap
-		else
-		{
-			this->m_leaped = true;
-			characterMovement->Velocity = this->m_leapHorizontalVelocity * normal;
-			characterMovement->JumpZVelocity = this->m_leapVerticalVelocity;
-			characterMovement->AirControl = this->m_leapControl;
-		}
-
-		this->Jump();
-	}
+	this->m_ducked = true;
 }
 
 void ACB_PlayerCharacter::StopJumpAction()
 {
-	StopJumping();
+	UCharacterMovementComponent* characterMovement = GetCharacterMovement();
+
+	if (this->m_ducked)
+	{
+		if (characterMovement->IsMovingOnGround())
+		{
+			this->m_dodged = true;
+
+			const FRotator controlRotation = Controller->GetControlRotation();
+			const FRotator YawRotation(0, controlRotation.Yaw, 0);
+
+			FVector direction = (this->m_movementX * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X))
+				+ (this->m_movementY * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y));
+
+			direction = direction.Size() > 1 ? direction.GetUnsafeNormal() : direction;
+
+			this->m_diveAmount = direction.Size();
+
+			characterMovement->Velocity = (this->m_diveHorizontalVelocity * this->m_diveAmount) * direction;
+
+			characterMovement->JumpZVelocity = this->m_dodgeVelocity * (1 - this->m_diveAmount)
+				+ this->m_diveVerticalVelocity * this->m_diveAmount;
+			
+			characterMovement->AirControl = this->m_dodgeControl * (1 - this->m_diveAmount)
+				+ this->m_diveControl * this->m_diveAmount;
+
+			this->Jump();
+		}
+
+		this->m_ducked = false;
+	}
 }
 
 void ACB_PlayerCharacter::RunAction()

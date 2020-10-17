@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <math.h>
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "CB_PlayerCharacter.generated.h"
@@ -31,21 +32,52 @@ private:
 	
 	// Jump
 
-	const float m_jumpVelocity = 1300;
-	const float m_jumpControl = 0.75f;
+	
 
-	// Leap
+	// Dodge Dip Duck Dive Dodge
 
-	const float m_leapHorizontalVelocity = 1.75f * m_walkSpeed;
-	const float m_leapVerticalVelocity = 1000;
-	const float m_leapControl = 0.0f;
+	// Dodge (Move)
 
-	const short m_leapCooldownFrames = 15;
-	short m_leapFrame;
+		// Duck (Hold)
 
-	bool m_leapCooldownStarted, m_leaped;
+	//const float m_duckHeight;
 
-	void leapCooldownUpdate(UCharacterMovementComponent* characterMovement);
+	const short m_duckStartupFrames = 15;
+
+	bool m_ducked;
+
+		// Dodge (Release)
+
+	const float m_dodgeHeight = 1;
+	const float m_dodgeControl = 0.0f;
+
+	const short m_dodgeCooldownFrames = 15;
+
+	bool m_dodged;
+
+		// Dive (Release + Direction)
+
+	const float m_diveHeight = m_dodgeHeight / 2;
+	const float m_diveHorizontalVelocity = 1.75f * m_walkSpeed;
+	const float m_diveControl = 0.0f;
+
+	const short m_diveCooldownFrames = 15;
+
+	float m_diveAmount;
+
+	bool m_dived; // TODO remove
+
+		// Dodge (Move)
+
+	const float m_dodgeVelocity = sqrt(400000 * m_dodgeHeight * m_baseGravity);
+	const float m_diveVerticalVelocity = sqrt(400000 * m_diveHeight * m_baseGravity);
+
+	short m_duckFrame;
+	short m_dodgeFrame;
+
+	bool m_dodgeCooldownStarted;
+
+	void dodgeUpdate(UCharacterMovementComponent* characterMovement);
 
 	// Grab
 
