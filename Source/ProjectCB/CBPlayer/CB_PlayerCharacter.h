@@ -27,8 +27,13 @@ private:
 	const float m_fastGravity = m_baseGravity * 1.5f;
 	float m_movementX;
 	float m_movementY;
+	float m_mobility;
 
-	bool m_canMove;
+	const float m_startWorldLocationZ = 250.0f;
+	float m_currentWorldLocationZ = this->m_startWorldLocationZ;
+	float m_worldLocationProportionZ = 0.75f;
+
+	void cameraUpdate();
 	
 	// Jump
 
@@ -49,8 +54,6 @@ private:
 
 	// TODO 'fix' the camera at the original center of character (based on character size) [smoothly update]
 
-	bool m_ducked;
-
 		// Dodge (Release)
 
 	const float m_dodgeHeight = 1;
@@ -59,10 +62,8 @@ private:
 	const float m_dodgeEndColliderSize = 50.0f;
 	const float m_dodgeCooldownColliderSize = 50.f;
 
-	const short m_dodgeCooldownFrames = 150;
+	const short m_dodgeCooldownFrames = 15;
 	const short m_dodgeFramesToApex = 7;
-
-	bool m_dodged;
 
 		// Dive (Release + Direction)
 
@@ -73,7 +74,7 @@ private:
 	const float m_diveEndColliderSize = 50.0f;
 	const float m_diveCooldownColliderSize = 50.f;
 
-	const short m_diveCooldownFrames = 150;
+	const short m_diveCooldownFrames = 15;
 	const short m_diveFramesToApex = 5;
 
 	float m_diveProportion;
@@ -85,12 +86,12 @@ private:
 
 	short m_duckFrame;
 	short m_dodgeFrame;
-
-	bool m_dodgeCooldownStarted;
+	short m_dodgeCooldownFrame;
 
 	void dodgeUpdate(UCharacterMovementComponent* characterMovement);
 
 	inline float dodgeProportion(float dodgeValue, float diveValue);
+
 
 	// Grab
 
@@ -104,7 +105,7 @@ private:
 	// Size updates // TODO put in general
 
 	float m_previousSize;
-	float m_currentSize;
+	float m_currentSize = 50.0f;
 	// end size and frames are dependant on move
 
 	// TODO do the same for rotation

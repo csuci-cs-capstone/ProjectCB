@@ -22,16 +22,13 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	this->m_movementX = 0;
 	this->m_movementY = 0;
 
-	this->m_canMove = true;
+	this->m_mobility = 1;
 
 	// Dodge Variables
 
-	this->m_duckFrame = 0;
-	this->m_dodgeFrame = 0;
-
-	this->m_ducked = false;
-	this->m_dodged = false;
-	this->m_dodgeCooldownStarted = false;
+	this->m_duckFrame = false;
+	this->m_dodgeFrame = false;
+	this->m_dodgeCooldownFrame = false;
 
 	// Other
 
@@ -67,21 +64,21 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	//Character will look in the direction of the axis controlling the camera
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 
-	cameraArm = CreateDefaultSubobject<USpringArmComponent>("CameraSpringArm");
-	cameraArm->SetupAttachment(staticMesh);
-	cameraArm->TargetArmLength = 285.0f;
+	this->cameraArm = CreateDefaultSubobject<USpringArmComponent>("CameraSpringArm");
+	this->cameraArm->SetupAttachment(staticMesh);
+	this->cameraArm->TargetArmLength = 285.0f;
 	
 	 
-	camera = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
-	camera->SetupAttachment(cameraArm);
+	this->camera = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
+	this->camera->SetupAttachment(cameraArm);
 	
-	cameraArm->bUsePawnControlRotation = false;
-	camera->bUsePawnControlRotation = false;
+	this->cameraArm->bUsePawnControlRotation = false;
+	this->camera->bUsePawnControlRotation = false;
 
 	//Set Locations and Rotations after attachments have been set
-	cameraArm->SetRelativeLocation(FVector(0.0f, 0.0f, 110.0f));
-	cameraArm->SetRelativeRotation(FRotator(-25.0f, 0.0f, 0.0f));
-	camera->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+	this->cameraArm->SetRelativeLocation(FVector(0.0f, 0.0f, 110.0f));
+	this->cameraArm->SetRelativeRotation(FRotator(-35.0f, 0.0f, 0.0f));
+	this->camera->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 }
 
 float ACB_PlayerCharacter::getAnimationPoint(float x) // ranges between 0 and 1
@@ -106,8 +103,20 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 
 	dodgeUpdate(characterMovement);
 
+	cameraUpdate();
+
 	if (this->m_frameCounterActive)
 		this->m_frameCounter++;
+}
+
+void ACB_PlayerCharacter::cameraUpdate()
+{
+	FVector currentLocation = this->cameraArm->GetComponentLocation();
+
+	this->m_currentWorldLocationZ = ((1 - this->m_worldLocationProportionZ) * this->GetActorLocation().Z)
+		+ (this->m_worldLocationProportionZ * this->m_startWorldLocationZ);
+
+	this->cameraArm->SetWorldLocation(FVector(currentLocation.X, currentLocation.Y, this->m_currentWorldLocationZ));
 }
 
 void ACB_PlayerCharacter::adjustGravity(UCharacterMovementComponent* characterMovement)
@@ -122,110 +131,89 @@ void ACB_PlayerCharacter::dodgeUpdate(UCharacterMovementComponent* characterMove
 {
 	UCapsuleComponent* capsuleComponent = GetCapsuleComponent();
 
-	if (this->m_dodged)
+	if (this->m_dodgeFrame)
 	{
-		if (characterMovement->IsMovingOnGround())
-			this->m_dodgeCooldownStarted = true;
+		if (this->m_dodgeFrame == 1)
+			this->m_previousSize = this->m_currentSize;
 
-		if (this->m_dodgeCooldownStarted)
+		this->m_mobility = 1; // TODO make variable
+
+		float proportion = this->m_dodgeFrame / dodgeProportion(this->m_dodgeFramesToApex, this->m_diveFramesToApex);
+
+		// TODO make rotate for dive
+
+		if (proportion >= 1)
 		{
-			if (this->m_canMove) // TODO remove canMove and have it set dodgeFrame
+			if (proportion >= 2)
 			{
-				this->m_canMove = false; // TODO remove canMove, and add mobility
-				this->m_dodgeFrame = 0;
-			}
-
-			if (this->m_dodgeFrame == 0)
-				this->m_previousSize = this->m_currentSize;
-
-			this->m_dodgeFrame++;
-
-			short maxCooldownFrames = dodgeProportion(this->m_dodgeCooldownFrames, this->m_diveCooldownFrames);
-
-			if (this->m_dodgeFrame >= maxCooldownFrames)
-			{
-				this->m_currentSize = dodgeProportion(this->m_dodgeCooldownColliderSize, this->m_diveCooldownColliderSize);
-
-				capsuleComponent->SetCapsuleSize(25.0f, this->m_currentSize);
-
-				this->m_canMove = true;
-				this->m_dodgeFrame = 0;
-				this->m_dodged = false;
-				this->m_dodgeCooldownStarted = false;
+				this->m_currentSize = dodgeProportion(this->m_dodgeEndColliderSize, this->m_diveEndColliderSize);
 			}
 			else
 			{
-				float proportion = getAnimationPoint(this->m_dodgeFrame / (maxCooldownFrames * 1.0f));
+				proportion = getAnimationPoint(proportion - 1);
 
-				float colliderSize = dodgeProportion(this->m_dodgeCooldownColliderSize, this->m_diveCooldownColliderSize);
+				float apexColliderSize = dodgeProportion(this->m_dodgeApexColliderSize, this->m_diveApexColliderSize);
 
-				this->m_currentSize = ((1 - proportion) * this->m_previousSize) + (proportion * colliderSize);
+				float endColliderSize = dodgeProportion(this->m_dodgeEndColliderSize, this->m_diveEndColliderSize);
 
-				capsuleComponent->SetCapsuleSize(25.0f, this->m_currentSize);
+				this->m_currentSize = ((1 - proportion) * apexColliderSize) + (proportion * endColliderSize);
 			}
 		}
 		else
 		{
-			if (this->m_dodgeFrame == 0)
-				this->m_previousSize = this->m_currentSize;
+			proportion = getAnimationPoint(proportion);
 
-			this->m_canMove = true;
+			float apexColliderSize = dodgeProportion(this->m_dodgeApexColliderSize, this->m_diveApexColliderSize);
 
+			this->m_currentSize = (1 - proportion) * this->m_previousSize + proportion * apexColliderSize;
+		}
+
+		if (characterMovement->IsMovingOnGround())
+		{
+			this->m_dodgeFrame = false;
+			this->m_dodgeCooldownFrame = true;
+			this->m_previousSize = this->m_currentSize;
+		}
+		else
 			this->m_dodgeFrame++;
+	}
+	else if (this->m_dodgeCooldownFrame)
+	{
+		this->m_mobility = 0; // TODO make variable
 
-			float proportion = this->m_dodgeFrame / dodgeProportion(this->m_dodgeFramesToApex, this->m_diveFramesToApex);
+		short maxCooldownFrames = dodgeProportion(this->m_dodgeCooldownFrames, this->m_diveCooldownFrames);
 
-			// TODO make rotate for dive
+		if (this->m_dodgeCooldownFrame >= maxCooldownFrames)
+		{
+			this->m_dodgeCooldownFrame = false;
 
-			if (proportion >= 1)
-			{
-				if (proportion >= 2)
-				{
-					this->m_currentSize = dodgeProportion(this->m_dodgeEndColliderSize, this->m_diveEndColliderSize);
+			this->m_currentSize = dodgeProportion(this->m_dodgeCooldownColliderSize, this->m_diveCooldownColliderSize);
 
-					capsuleComponent->SetCapsuleSize(25.0f, this->m_currentSize);
-				}
-				else
-				{
-					proportion = getAnimationPoint(proportion - 1);
+			this->m_mobility = 1; // TODO make variable
+		}
+		else
+		{
+			this->m_dodgeCooldownFrame++;
 
-					float apexColliderSize = dodgeProportion(this->m_dodgeApexColliderSize, this->m_diveApexColliderSize);
+			float proportion = getAnimationPoint(this->m_dodgeCooldownFrame / (maxCooldownFrames * 1.0f));
 
-					float endColliderSize = dodgeProportion(this->m_dodgeEndColliderSize, this->m_diveEndColliderSize);
+			float colliderSize = dodgeProportion(this->m_dodgeCooldownColliderSize, this->m_diveCooldownColliderSize);
 
-					this->m_currentSize = ((1 - proportion) * apexColliderSize) + (proportion * endColliderSize);
-
-					capsuleComponent->SetCapsuleSize(25.0f, this->m_currentSize);
-				}
-			}
-			else
-			{
-				proportion = getAnimationPoint(proportion);
-
-				float apexColliderSize = dodgeProportion(this->m_dodgeApexColliderSize, this->m_diveApexColliderSize);
-
-				this->m_currentSize = (1 - proportion) * this->m_previousSize + proportion * apexColliderSize;
-
-				capsuleComponent->SetCapsuleSize(25.0f, this->m_currentSize);
-			}
+			this->m_currentSize = ((1 - proportion) * this->m_previousSize) + (proportion * colliderSize);
 		}
 	}
-	else if (this->m_ducked) // TODO remove booleans and just use frames
+	else if (this->m_duckFrame) // TODO remove booleans and just use frames
 	{
-		if (this->m_duckFrame == 0)
+		if (this->m_duckFrame == 1)
 			this->m_previousSize = this->m_currentSize;
-
-		this->m_duckFrame++;
 
 		if (this->m_duckFrame >= this->m_duckStartupFrames)
 		{
 			if (this->m_duckFrame >= (this->m_duckStartupFrames + this->m_duckActionFrames))
 			{
+				this->m_mobility = 0; // TODO make variable
+
 				this->m_currentSize = this->m_duckColliderSize;
-
-				capsuleComponent->SetCapsuleSize(25.0f, this->m_currentSize);
-
-				this->m_canMove = false;
 			}
 			else
 			{
@@ -234,11 +222,13 @@ void ACB_PlayerCharacter::dodgeUpdate(UCharacterMovementComponent* characterMove
 				proportion = getAnimationPoint(proportion);
 
 				this->m_currentSize = (1 - proportion) * this->m_previousSize + proportion * this->m_duckColliderSize;
-
-				capsuleComponent->SetCapsuleSize(25.0f, this->m_currentSize);
 			}
 		}
+
+		this->m_duckFrame++;
 	}
+
+	capsuleComponent->SetCapsuleSize(25.0f, this->m_currentSize);
 }
 
 float ACB_PlayerCharacter::dodgeProportion(float dodgeValue, float diveValue)
@@ -256,7 +246,9 @@ void ACB_PlayerCharacter::MoveVertical(float amount)
 {
 	this->m_movementX = amount;
 
-	if (this->m_canMove && (Controller != NULL) && (amount != 0.0f))
+	amount *= this->m_mobility;
+
+	if ((Controller != NULL) && (amount != 0.0f))
 	{
 		const FRotator controlRotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, controlRotation.Yaw, 0);
@@ -270,7 +262,9 @@ void ACB_PlayerCharacter::MoveHorizontal(float amount)
 {
 	this->m_movementY = amount;
 
-	if (this->m_canMove && (Controller != NULL) && (amount != 0.0f))
+	amount *= this->m_mobility;
+
+	if ((Controller != NULL) && (amount != 0.0f))
 	{
 		const FRotator controlRotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, controlRotation.Yaw, 0);
@@ -282,8 +276,8 @@ void ACB_PlayerCharacter::MoveHorizontal(float amount)
 
 void ACB_PlayerCharacter::LookVertical(float amount)
 {
-	//AddControllerPitchInput(amount * BaseTurnRate * GetWorld()->GetDeltaSeconds());
-	AddControllerYawInput(amount * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+	AddControllerPitchInput(amount * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+	//AddControllerYawInput(amount * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
 void ACB_PlayerCharacter::LookHorizontal(float amount)
@@ -293,21 +287,19 @@ void ACB_PlayerCharacter::LookHorizontal(float amount)
 
 void ACB_PlayerCharacter::JumpAction()
 {
-	if (!this->m_ducked)
-		this->m_duckFrame = 0;
-
-	this->m_ducked = true;
+	if (!this->m_duckFrame)
+		this->m_duckFrame = true;
 }
 
 void ACB_PlayerCharacter::StopJumpAction()
 {
 	UCharacterMovementComponent* characterMovement = GetCharacterMovement();
 
-	if (this->m_ducked)
+	if (this->m_duckFrame)
 	{
-		if (!this->m_dodgeCooldownStarted && characterMovement->IsMovingOnGround())
+		if (!this->m_dodgeCooldownFrame && characterMovement->IsMovingOnGround())
 		{
-			this->m_dodged = true;
+			this->m_dodgeFrame = true;
 
 			const FRotator controlRotation = Controller->GetControlRotation();
 			const FRotator YawRotation(0, controlRotation.Yaw, 0);
@@ -328,7 +320,7 @@ void ACB_PlayerCharacter::StopJumpAction()
 			this->Jump();
 		}
 
-		this->m_ducked = false;
+		this->m_duckFrame = false;
 	}
 }
 
