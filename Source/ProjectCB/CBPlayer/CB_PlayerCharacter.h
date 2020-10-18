@@ -3,9 +3,24 @@
 #pragma once
 
 #include <math.h>
+//#include "../CBMoves/Duck.h"
 #include "CoreMinimal.h"
+#include "../CBMoves/Dodge/Hold.h"
 #include "GameFramework/Character.h"
 #include "CB_PlayerCharacter.generated.h"
+
+//struct Duck
+//{
+//// Mutable
+//	const float m_colliderSize = 25.0f;
+//
+//	const short m_startupFrames = 6;
+//	const short m_actionFrames = 24;
+//
+//// Immutable
+//
+//	short m_frame;
+//};
 
 UCLASS()
 class PROJECTCB_API ACB_PlayerCharacter : public ACharacter
@@ -47,10 +62,7 @@ private:
 
 	//const float m_duckHeight;
 
-	const float m_duckColliderSize = 25.0f;
-
-	const short m_duckStartupFrames = 6;
-	const short m_duckActionFrames = 24;
+	Hold m_duck;
 
 	// TODO 'fix' the camera at the original center of character (based on character size) [smoothly update]
 
@@ -84,7 +96,6 @@ private:
 	const float m_dodgeVelocity = sqrt(400000 * m_dodgeHeight * m_baseGravity);
 	const float m_diveVerticalVelocity = sqrt(400000 * m_diveHeight * m_baseGravity);
 
-	short m_duckFrame;
 	short m_dodgeFrame;
 	short m_dodgeCooldownFrame;
 
