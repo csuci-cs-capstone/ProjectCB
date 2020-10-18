@@ -27,70 +27,78 @@ private:
 	const float m_fastGravity = m_baseGravity * 1.5f;
 	float m_movementX;
 	float m_movementY;
+	float m_mobility;
 
-	bool m_canMove;
+	//bool m_canMove;
 	
 	// Jump
 
-	
-
-	// Dodge Dip Duck Dive Dodge
-
-	// Dodge (Move)
-
-		// Duck (Hold)
-
-	//const float m_duckHeight;
-
-	const float m_duckColliderSize = 25.0f;
-
-	const short m_duckStartupFrames = 6;
-	const short m_duckActionFrames = 24;
-
-	// TODO 'fix' the camera at the original center of character (based on character size) [smoothly update]
-
-	bool m_ducked;
-
-		// Dodge (Release)
+	//const DodgeMove<(int) this->m_baseGravity * 100> m_dodgeMove;
 
 	const float m_dodgeHeight = 1;
-	const float m_dodgeControl = 0.0f;
+	const float m_dodgeActionMobility = 0.0f;
+
 	const float m_dodgeApexColliderSize = 25.0f;
 	const float m_dodgeEndColliderSize = 50.0f;
 	const float m_dodgeCooldownColliderSize = 50.f;
 
-	const short m_dodgeCooldownFrames = 150;
-	const short m_dodgeFramesToApex = 7;
+	const short m_dodgeFramesToApex = 7; // TODO rename
+	const short m_dodgeCooldownFrames = 15;
 
-	bool m_dodged;
+	// Automatic
 
-		// Dive (Release + Direction)
+	const float m_dodgeVelocity = sqrt(4000 * m_diveHeight * m_baseGravity);
+
+	// dive
 
 	const float m_diveHeight = m_dodgeHeight / 2;
 	const float m_diveHorizontalVelocity = 1.75f * m_walkSpeed;
-	const float m_diveControl = 0.0f;
+	const float m_diveActionMobility = 0.0f;
 	const float m_diveApexColliderSize = 25.0f;
 	const float m_diveEndColliderSize = 50.0f;
 	const float m_diveCooldownColliderSize = 50.f;
 
-	const short m_diveCooldownFrames = 150;
+	const short m_diveCooldownFrames = 15;
 	const short m_diveFramesToApex = 5;
 
 	float m_diveProportion;
 
-		// Dodge (Move)
+	const float m_diveVerticalVelocity = sqrt(4000 * m_diveHeight * m_baseGravity);
 
-	const float m_dodgeVelocity = sqrt(400000 * m_dodgeHeight * m_baseGravity);
-	const float m_diveVerticalVelocity = sqrt(400000 * m_diveHeight * m_baseGravity);
-
-	short m_duckFrame;
-	short m_dodgeFrame;
+	short m_duckFrame, m_dodgeFrame;
 
 	bool m_dodgeCooldownStarted;
 
+	inline float dodgeProportion(float dodgeValue, float diveValue);
+
 	void dodgeUpdate(UCharacterMovementComponent* characterMovement);
 
-	inline float dodgeProportion(float dodgeValue, float diveValue);
+	// Cooldown
+
+	const float m_jumpCooldownColliderSize = 50.f;
+	const float m_jumpCooldownMobility = 0.0f;
+
+	const short m_jumpCooldownFrames = 15;
+
+	const float m_leapCooldownColliderSize = 50.f;
+	const float m_leapCooldownMobility = 0.0f;
+
+	const short m_leapCooldownFrames = 15;
+
+	// Immutable
+
+	short m_cooldownFrame;
+
+	// duck
+
+	const float m_duckColliderSize = 25.0f; // TODO add in rotation and stuff?
+
+	const short m_duckStartupFrames = 6;
+	const short m_duckActionFrames = 24;
+
+	
+
+
 
 	// Grab
 
