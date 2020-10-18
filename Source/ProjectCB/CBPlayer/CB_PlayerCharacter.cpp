@@ -26,7 +26,7 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 
 	// Dodge Variables
 
-	this->m_duckFrame = false;
+	this->m_duck.m_frame = false;
 	this->m_dodgeFrame = false;
 	this->m_dodgeCooldownFrame = false;
 
@@ -202,30 +202,30 @@ void ACB_PlayerCharacter::dodgeUpdate(UCharacterMovementComponent* characterMove
 			this->m_currentSize = ((1 - proportion) * this->m_previousSize) + (proportion * colliderSize);
 		}
 	}
-	else if (this->m_duckFrame) // TODO remove booleans and just use frames
+	else if (this->m_duck.m_frame) // TODO remove booleans and just use frames
 	{
-		if (this->m_duckFrame == 1)
+		if (this->m_duck.m_frame == 1)
 			this->m_previousSize = this->m_currentSize;
 
-		if (this->m_duckFrame >= this->m_duckStartupFrames)
+		if (this->m_duck.m_frame >= this->m_duck.m_startupFrames)
 		{
-			if (this->m_duckFrame >= (this->m_duckStartupFrames + this->m_duckActionFrames))
+			if (this->m_duck.m_frame >= (this->m_duck.m_startupFrames + this->m_duck.m_actionFrames))
 			{
 				this->m_mobility = 0; // TODO make variable
 
-				this->m_currentSize = this->m_duckColliderSize;
+				this->m_currentSize = this->m_duck.m_colliderSize;
 			}
 			else
 			{
-				float proportion = (this->m_duckFrame - this->m_duckStartupFrames) / (this->m_duckActionFrames * 1.0f);
+				float proportion = (this->m_duck.m_frame - this->m_duck.m_startupFrames) / (this->m_duck.m_actionFrames * 1.0f);
 
 				proportion = getAnimationPoint(proportion);
 
-				this->m_currentSize = (1 - proportion) * this->m_previousSize + proportion * this->m_duckColliderSize;
+				this->m_currentSize = (1 - proportion) * this->m_previousSize + proportion * this->m_duck.m_colliderSize;
 			}
 		}
 
-		this->m_duckFrame++;
+		this->m_duck.m_frame++;
 	}
 
 	capsuleComponent->SetCapsuleSize(25.0f, this->m_currentSize);
@@ -287,15 +287,15 @@ void ACB_PlayerCharacter::LookHorizontal(float amount)
 
 void ACB_PlayerCharacter::JumpAction()
 {
-	if (!this->m_duckFrame)
-		this->m_duckFrame = true;
+	if (!this->m_duck.m_frame)
+		this->m_duck.m_frame = true;
 }
 
 void ACB_PlayerCharacter::StopJumpAction()
 {
 	UCharacterMovementComponent* characterMovement = GetCharacterMovement();
 
-	if (this->m_duckFrame)
+	if (this->m_duck.m_frame)
 	{
 		if (!this->m_dodgeCooldownFrame && characterMovement->IsMovingOnGround())
 		{
@@ -320,7 +320,7 @@ void ACB_PlayerCharacter::StopJumpAction()
 			this->Jump();
 		}
 
-		this->m_duckFrame = false;
+		this->m_duck.m_frame = false;
 	}
 }
 
