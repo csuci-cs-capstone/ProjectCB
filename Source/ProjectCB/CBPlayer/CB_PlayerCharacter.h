@@ -5,8 +5,8 @@
 #include <math.h>
 #include "CoreMinimal.h"
 #include "PlayerBasics.h"
-#include "../CBMoves/Dodge/Hold.h"
-#include "../CBMoves/Dodge/Release.h"
+#include "../CBMoves/Dodge/Dodge_Hold.h"
+#include "../CBMoves/Dodge/Dodge_Release.h"
 #include "GameFramework/Character.h"
 #include "CB_PlayerCharacter.generated.h"
 
@@ -21,24 +21,17 @@ public:
 
 private:
 
-	FVector m_throwDirection = FVector(1, 0, 0.3).GetUnsafeNormal();
+	FVector m_throwDirection = FVector(1, 0, 0.05).GetUnsafeNormal();
 
 	// General
 	
-	//PlayerBasics m_basics; // TODO rename to PlayerConstants ?
-
-	float m_currentWorldLocationZ = g_playerStartWorldLocationZ;
-	float m_worldLocationProportionZ = 0.75f;
-
-	float m_movementX;
-	float m_movementY;
-	float m_mobility;
-
-	float m_currentSize = 50.0f;
-	float m_previousSize;
+	PlayerBasics m_basics; // TODO rename to PlayerConstants ?
 
 	
-	float getAnimationPoint(float x);
+
+	//float getAnimationPoint(float x);
+
+	//void dodgeCooldownUpdate(PlayerBasics playerBasics);
 	
 	// Jump
 
@@ -52,8 +45,8 @@ private:
 
 	//const float m_duckHeight;
 
-	Hold m_duck;
-	Release m_dodge;
+	Dodge_Hold m_duck;
+	Dodge_Release m_dodge;
 
 		// Dodge (Move)
 
@@ -61,7 +54,7 @@ private:
 
 	void dodgeUpdate(UCharacterMovementComponent* characterMovement);
 
-	inline float dodgeProportion(float dodgeValue, float diveValue);
+	//inline float dodgeProportion(float dodgeValue, float diveValue);
 
 
 	// Grab
