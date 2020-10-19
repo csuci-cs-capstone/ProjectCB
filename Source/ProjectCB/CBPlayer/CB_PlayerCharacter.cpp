@@ -19,16 +19,16 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 
 	// General Variables
 
-	this->m_movementX = 0;
-	this->m_movementY = 0;
+	this->m_basics.m_movementX = 0;
+	this->m_basics.m_movementY = 0;
 
-	this->m_mobility = 1;
+	this->m_basics.m_mobility = 1;
 
 	// Dodge Variables
 
 	this->m_duck.m_frame = false;
-	this->m_dodgeFrame = false;
-	this->m_dodgeCooldownFrame = false;
+	this->m_dodge.m_dodgeFrame = false;
+	this->m_dodge.m_dodgeCooldownFrame = false;
 
 	// Other
 
@@ -50,8 +50,8 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	BaseLookUpRate = 45.f;
 
 	//Customize the character movement component here!
-	GetCharacterMovement()->MaxWalkSpeed = this->m_walkSpeed;
-	GetCharacterMovement()->GravityScale = this->m_baseGravity;
+	GetCharacterMovement()->MaxWalkSpeed = g_playerWalkSpeed;
+	GetCharacterMovement()->GravityScale = g_playerBaseGravity;
 	//GetCharacterMovement()->JumpZVelocity = this->m_jumpVelocity;
 	//GetCharacterMovement()->AirControl = this->m_jumpControl;
 
@@ -77,13 +77,8 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 
 	//Set Locations and Rotations after attachments have been set
 	this->cameraArm->SetRelativeLocation(FVector(0.0f, 0.0f, 110.0f));
-	this->cameraArm->SetRelativeRotation(FRotator(-35.0f, 0.0f, 0.0f));
+	this->cameraArm->SetRelativeRotation(FRotator(-20.0f, 0.0f, 0.0f));
 	this->camera->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
-}
-
-float ACB_PlayerCharacter::getAnimationPoint(float x) // ranges between 0 and 1
-{
-	return x;// TODO adjust to sync with procedural animations (add additional parameters where needed)
 }
 
 // Called when the game starts or when spawned
@@ -113,32 +108,35 @@ void ACB_PlayerCharacter::cameraUpdate()
 {
 	FVector currentLocation = this->cameraArm->GetComponentLocation();
 
-	this->m_currentWorldLocationZ = ((1 - this->m_worldLocationProportionZ) * this->GetActorLocation().Z)
-		+ (this->m_worldLocationProportionZ * this->m_startWorldLocationZ);
+	FVector actorLocation = this->GetActorLocation();
 
-	this->cameraArm->SetWorldLocation(FVector(currentLocation.X, currentLocation.Y, this->m_currentWorldLocationZ));
+	this->m_basics.m_currentWorldLocationZ = ((1 - this->m_basics.m_worldLocationProportionZ) * actorLocation.Z)
+		+ (this->m_basics.m_worldLocationProportionZ * g_playerStartWorldLocationZ);
+
+	this->cameraArm->SetWorldLocation(FVector(currentLocation.X, actorLocation.Y + 100, this->m_basics.m_currentWorldLocationZ));
 }
 
 void ACB_PlayerCharacter::adjustGravity(UCharacterMovementComponent* characterMovement)
 {
 	if (characterMovement->Velocity.Z <= 0)
-		characterMovement->GravityScale = this->m_fastGravity;
+		characterMovement->GravityScale = g_playerFastGravity;
 	else
-		characterMovement->GravityScale = this->m_baseGravity;
+		characterMovement->GravityScale = g_playerBaseGravity;
 }
 
 void ACB_PlayerCharacter::dodgeUpdate(UCharacterMovementComponent* characterMovement)
 {
 	UCapsuleComponent* capsuleComponent = GetCapsuleComponent();
 
-	if (this->m_dodgeFrame)
+	if (this->m_dodge.m_dodgeFrame)
 	{
-		if (this->m_dodgeFrame == 1)
-			this->m_previousSize = this->m_currentSize;
+		if (this->m_dodge.m_dodgeFrame == 1)
+			this->m_basics.m_previousSize = this->m_basics.m_currentSize;
 
-		this->m_mobility = 1; // TODO make variable
+		this->m_basics.m_mobility = 1; // TODO make variable
 
-		float proportion = this->m_dodgeFrame / dodgeProportion(this->m_dodgeFramesToApex, this->m_diveFramesToApex);
+		float proportion = this->m_dodge.m_dodgeFrame / this->m_dodge.dodgeProportion(Dodge_Release::dodgeFramesToApex,
+			Dodge_Release::diveFramesToApex);
 
 		// TODO make rotate for dive
 
@@ -146,95 +144,103 @@ void ACB_PlayerCharacter::dodgeUpdate(UCharacterMovementComponent* characterMove
 		{
 			if (proportion >= 2)
 			{
-				this->m_currentSize = dodgeProportion(this->m_dodgeEndColliderSize, this->m_diveEndColliderSize);
+				this->m_basics.m_currentSize = this->m_dodge.dodgeProportion(Dodge_Release::dodgeEndColliderSize,
+					Dodge_Release::diveEndColliderSize);
 			}
 			else
 			{
-				proportion = getAnimationPoint(proportion - 1);
+				proportion = this->m_basics.getAnimationPoint(proportion - 1);
 
-				float apexColliderSize = dodgeProportion(this->m_dodgeApexColliderSize, this->m_diveApexColliderSize);
+				float apexColliderSize = this->m_dodge.dodgeProportion(Dodge_Release::dodgeApexColliderSize,
+					Dodge_Release::diveApexColliderSize);
 
-				float endColliderSize = dodgeProportion(this->m_dodgeEndColliderSize, this->m_diveEndColliderSize);
+				float endColliderSize = this->m_dodge.dodgeProportion(Dodge_Release::dodgeEndColliderSize,
+					Dodge_Release::diveEndColliderSize);
 
-				this->m_currentSize = ((1 - proportion) * apexColliderSize) + (proportion * endColliderSize);
+				this->m_basics.m_currentSize = ((1 - proportion) * apexColliderSize) + (proportion * endColliderSize);
 			}
 		}
 		else
 		{
-			proportion = getAnimationPoint(proportion);
+			proportion = this->m_basics.getAnimationPoint(proportion);
 
-			float apexColliderSize = dodgeProportion(this->m_dodgeApexColliderSize, this->m_diveApexColliderSize);
+			float apexColliderSize = this->m_dodge.dodgeProportion(Dodge_Release::dodgeApexColliderSize,
+				Dodge_Release::diveApexColliderSize);
 
-			this->m_currentSize = (1 - proportion) * this->m_previousSize + proportion * apexColliderSize;
+			this->m_basics.m_currentSize = (1 - proportion) * this->m_basics.m_previousSize + proportion * apexColliderSize;
 		}
 
 		if (characterMovement->IsMovingOnGround())
 		{
-			this->m_dodgeFrame = false;
-			this->m_dodgeCooldownFrame = true;
-			this->m_previousSize = this->m_currentSize;
+			this->m_dodge.m_dodgeFrame = false;
+			this->m_dodge.m_dodgeCooldownFrame = true;
+			this->m_basics.m_previousSize = this->m_basics.m_currentSize;
 		}
 		else
-			this->m_dodgeFrame++;
+			this->m_dodge.m_dodgeFrame++;
 	}
-	else if (this->m_dodgeCooldownFrame)
+	else if (this->m_dodge.m_dodgeCooldownFrame)
 	{
-		this->m_mobility = 0; // TODO make variable
-
-		short maxCooldownFrames = dodgeProportion(this->m_dodgeCooldownFrames, this->m_diveCooldownFrames);
-
-		if (this->m_dodgeCooldownFrame >= maxCooldownFrames)
-		{
-			this->m_dodgeCooldownFrame = false;
-
-			this->m_currentSize = dodgeProportion(this->m_dodgeCooldownColliderSize, this->m_diveCooldownColliderSize);
-
-			this->m_mobility = 1; // TODO make variable
-		}
-		else
-		{
-			this->m_dodgeCooldownFrame++;
-
-			float proportion = getAnimationPoint(this->m_dodgeCooldownFrame / (maxCooldownFrames * 1.0f));
-
-			float colliderSize = dodgeProportion(this->m_dodgeCooldownColliderSize, this->m_diveCooldownColliderSize);
-
-			this->m_currentSize = ((1 - proportion) * this->m_previousSize) + (proportion * colliderSize);
-		}
+		this->m_dodge.dodgeCooldownUpdate(this->m_basics);
 	}
 	else if (this->m_duck.m_frame) // TODO remove booleans and just use frames
 	{
 		if (this->m_duck.m_frame == 1)
-			this->m_previousSize = this->m_currentSize;
+			this->m_basics.m_previousSize = this->m_basics.m_currentSize;
 
-		if (this->m_duck.m_frame >= this->m_duck.m_startupFrames)
+		if (this->m_duck.m_frame >= Dodge_Hold::startupFrames)
 		{
-			if (this->m_duck.m_frame >= (this->m_duck.m_startupFrames + this->m_duck.m_actionFrames))
+			if (this->m_duck.m_frame >= (Dodge_Hold::startupFrames + Dodge_Hold::actionFrames))
 			{
-				this->m_mobility = 0; // TODO make variable
+				this->m_basics.m_mobility = 0; // TODO make variable
 
-				this->m_currentSize = this->m_duck.m_colliderSize;
+				this->m_basics.m_currentSize = Dodge_Hold::colliderSize;
 			}
 			else
 			{
-				float proportion = (this->m_duck.m_frame - this->m_duck.m_startupFrames) / (this->m_duck.m_actionFrames * 1.0f);
+				float proportion = (this->m_duck.m_frame - Dodge_Hold::startupFrames) / (Dodge_Hold::actionFrames * 1.0f);
 
-				proportion = getAnimationPoint(proportion);
+				proportion = this->m_basics.getAnimationPoint(proportion);
 
-				this->m_currentSize = (1 - proportion) * this->m_previousSize + proportion * this->m_duck.m_colliderSize;
+				this->m_basics.m_currentSize = (1 - proportion) * this->m_basics.m_previousSize
+					+ proportion * Dodge_Hold::colliderSize;
 			}
 		}
 
 		this->m_duck.m_frame++;
 	}
 
-	capsuleComponent->SetCapsuleSize(25.0f, this->m_currentSize);
+	capsuleComponent->SetCapsuleSize(25.0f, this->m_basics.m_currentSize);
 }
 
-float ACB_PlayerCharacter::dodgeProportion(float dodgeValue, float diveValue)
-{
-	return (1 - this->m_diveProportion) * dodgeValue + this->m_diveProportion * diveValue;
-}
+//void ACB_PlayerCharacter::dodgeCooldownUpdate(PlayerBasics playerBasics)
+//{
+//	playerBasics.m_mobility = 0; // TODO make variable
+//
+//	short maxCooldownFrames = this->m_dodge.dodgeProportion(Dodge_Release::dodgeCooldownFrames,
+//		Dodge_Release::diveCooldownFrames);
+//
+//	if (this->m_dodge.m_dodgeCooldownFrame >= maxCooldownFrames)
+//	{
+//		this->m_dodge.m_dodgeCooldownFrame = false;
+//
+//		playerBasics.m_currentSize = this->m_dodge.dodgeProportion(Dodge_Release::dodgeCooldownColliderSize,
+//			Dodge_Release::diveCooldownColliderSize);
+//
+//		playerBasics.m_mobility = 1; // TODO make variable
+//	}
+//	else
+//	{
+//		this->m_dodge.m_dodgeCooldownFrame++;
+//
+//		float proportion = playerBasics.getAnimationPoint(this->m_dodge.m_dodgeCooldownFrame / (maxCooldownFrames * 1.0f));
+//
+//		float colliderSize = this->m_dodge.dodgeProportion(Dodge_Release::dodgeCooldownColliderSize,
+//			Dodge_Release::diveCooldownColliderSize);
+//
+//		this->m_basics.m_currentSize = ((1 - proportion) * playerBasics.m_previousSize) + (proportion * colliderSize);
+//	}
+//}
 
 // Called to bind functionality to input
 void ACB_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -244,9 +250,9 @@ void ACB_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 void ACB_PlayerCharacter::MoveVertical(float amount)
 {
-	this->m_movementX = amount;
+	this->m_basics.m_movementX = amount;
 
-	amount *= this->m_mobility;
+	amount *= this->m_basics.m_mobility;
 
 	if ((Controller != NULL) && (amount != 0.0f))
 	{
@@ -260,9 +266,9 @@ void ACB_PlayerCharacter::MoveVertical(float amount)
 
 void ACB_PlayerCharacter::MoveHorizontal(float amount)
 {
-	this->m_movementY = amount;
+	this->m_basics.m_movementY = amount;
 
-	amount *= this->m_mobility;
+	amount *= this->m_basics.m_mobility;
 
 	if ((Controller != NULL) && (amount != 0.0f))
 	{
@@ -297,25 +303,28 @@ void ACB_PlayerCharacter::StopJumpAction()
 
 	if (this->m_duck.m_frame)
 	{
-		if (!this->m_dodgeCooldownFrame && characterMovement->IsMovingOnGround())
+		if (!this->m_dodge.m_dodgeCooldownFrame && characterMovement->IsMovingOnGround())
 		{
-			this->m_dodgeFrame = true;
+			this->m_dodge.m_dodgeFrame = true;
 
 			const FRotator controlRotation = Controller->GetControlRotation();
 			const FRotator YawRotation(0, controlRotation.Yaw, 0);
 
-			FVector direction = (this->m_movementX * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X))
-				+ (this->m_movementY * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y));
+			FVector direction = (this->m_basics.m_movementX * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X))
+				+ (this->m_basics.m_movementY * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y));
 
 			direction = direction.Size() > 1 ? direction.GetUnsafeNormal() : direction;
 
-			this->m_diveProportion = direction.Size();
+			this->m_dodge.m_diveProportion = direction.Size();
 
-			characterMovement->Velocity = (this->m_diveProportion * this->m_diveHorizontalVelocity) * direction;
+			characterMovement->Velocity = (this->m_dodge.m_diveProportion * Dodge_Release::diveHorizontalVelocity)
+				* direction;
 
-			characterMovement->JumpZVelocity = dodgeProportion(this->m_dodgeVelocity, this->m_diveVerticalVelocity);
+			characterMovement->JumpZVelocity = this->m_dodge.dodgeProportion(Dodge_Release::dodgeVelocity,
+				Dodge_Release::diveVerticalVelocity);
 			
-			characterMovement->AirControl = dodgeProportion(this->m_dodgeControl, this->m_diveControl);
+			characterMovement->AirControl = this->m_dodge.dodgeProportion(Dodge_Release::dodgeControl,
+				Dodge_Release::diveControl);
 
 			this->Jump();
 		}
