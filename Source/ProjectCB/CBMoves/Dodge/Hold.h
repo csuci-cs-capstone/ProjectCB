@@ -7,11 +7,18 @@
 /**
  * 
  */
-class PROJECTCB_API Hold
+struct PROJECTCB_API Hold
 {
-public:
+	// Warmup -> Hold, Cooldown -> Release
+	// Start (set frames)
+		// collision
+	// End (end function)
+
 	// Mutable
 	const float m_colliderSize = 25.0f;
+
+	const float m_startupMobility = 0.0f;
+	const float m_actionMobility = 0.0f;
 
 	const short m_startupFrames = 6;
 	const short m_actionFrames = 24;
