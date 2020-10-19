@@ -27,8 +27,8 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	// Dodge Variables
 
 	this->m_duck.m_frame = false;
-	this->m_dodgeFrame = false;
-	this->m_dodgeCooldownFrame = false;
+	this->m_dodge.m_dodgeFrame = false;
+	this->m_dodge.m_dodgeCooldownFrame = false;
 
 	// Other
 
@@ -50,8 +50,8 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	BaseLookUpRate = 45.f;
 
 	//Customize the character movement component here!
-	GetCharacterMovement()->MaxWalkSpeed = this->m_walkSpeed;
-	GetCharacterMovement()->GravityScale = this->m_baseGravity;
+	GetCharacterMovement()->MaxWalkSpeed = g_playerWalkSpeed;
+	GetCharacterMovement()->GravityScale = g_playerBaseGravity;
 	//GetCharacterMovement()->JumpZVelocity = this->m_jumpVelocity;
 	//GetCharacterMovement()->AirControl = this->m_jumpControl;
 
@@ -114,7 +114,7 @@ void ACB_PlayerCharacter::cameraUpdate()
 	FVector currentLocation = this->cameraArm->GetComponentLocation();
 
 	this->m_currentWorldLocationZ = ((1 - this->m_worldLocationProportionZ) * this->GetActorLocation().Z)
-		+ (this->m_worldLocationProportionZ * this->m_startWorldLocationZ);
+		+ (this->m_worldLocationProportionZ * g_playerStartWorldLocationZ);
 
 	this->cameraArm->SetWorldLocation(FVector(currentLocation.X, currentLocation.Y, this->m_currentWorldLocationZ));
 }
@@ -122,23 +122,23 @@ void ACB_PlayerCharacter::cameraUpdate()
 void ACB_PlayerCharacter::adjustGravity(UCharacterMovementComponent* characterMovement)
 {
 	if (characterMovement->Velocity.Z <= 0)
-		characterMovement->GravityScale = this->m_fastGravity;
+		characterMovement->GravityScale = g_playerFastGravity;
 	else
-		characterMovement->GravityScale = this->m_baseGravity;
+		characterMovement->GravityScale = g_playerBaseGravity;
 }
 
 void ACB_PlayerCharacter::dodgeUpdate(UCharacterMovementComponent* characterMovement)
 {
 	UCapsuleComponent* capsuleComponent = GetCapsuleComponent();
 
-	if (this->m_dodgeFrame)
+	if (this->m_dodge.m_dodgeFrame)
 	{
-		if (this->m_dodgeFrame == 1)
+		if (this->m_dodge.m_dodgeFrame == 1)
 			this->m_previousSize = this->m_currentSize;
 
 		this->m_mobility = 1; // TODO make variable
 
-		float proportion = this->m_dodgeFrame / dodgeProportion(this->m_dodgeFramesToApex, this->m_diveFramesToApex);
+		float proportion = this->m_dodge.m_dodgeFrame / dodgeProportion(this->m_dodge.m_dodgeFramesToApex, this->m_dodge.m_diveFramesToApex);
 
 		// TODO make rotate for dive
 
@@ -146,15 +146,15 @@ void ACB_PlayerCharacter::dodgeUpdate(UCharacterMovementComponent* characterMove
 		{
 			if (proportion >= 2)
 			{
-				this->m_currentSize = dodgeProportion(this->m_dodgeEndColliderSize, this->m_diveEndColliderSize);
+				this->m_currentSize = dodgeProportion(this->m_dodge.m_dodgeEndColliderSize, this->m_dodge.m_diveEndColliderSize);
 			}
 			else
 			{
 				proportion = getAnimationPoint(proportion - 1);
 
-				float apexColliderSize = dodgeProportion(this->m_dodgeApexColliderSize, this->m_diveApexColliderSize);
+				float apexColliderSize = dodgeProportion(this->m_dodge.m_dodgeApexColliderSize, this->m_dodge.m_diveApexColliderSize);
 
-				float endColliderSize = dodgeProportion(this->m_dodgeEndColliderSize, this->m_diveEndColliderSize);
+				float endColliderSize = dodgeProportion(this->m_dodge.m_dodgeEndColliderSize, this->m_dodge.m_diveEndColliderSize);
 
 				this->m_currentSize = ((1 - proportion) * apexColliderSize) + (proportion * endColliderSize);
 			}
@@ -163,41 +163,41 @@ void ACB_PlayerCharacter::dodgeUpdate(UCharacterMovementComponent* characterMove
 		{
 			proportion = getAnimationPoint(proportion);
 
-			float apexColliderSize = dodgeProportion(this->m_dodgeApexColliderSize, this->m_diveApexColliderSize);
+			float apexColliderSize = dodgeProportion(this->m_dodge.m_dodgeApexColliderSize, this->m_dodge.m_diveApexColliderSize);
 
 			this->m_currentSize = (1 - proportion) * this->m_previousSize + proportion * apexColliderSize;
 		}
 
 		if (characterMovement->IsMovingOnGround())
 		{
-			this->m_dodgeFrame = false;
-			this->m_dodgeCooldownFrame = true;
+			this->m_dodge.m_dodgeFrame = false;
+			this->m_dodge.m_dodgeCooldownFrame = true;
 			this->m_previousSize = this->m_currentSize;
 		}
 		else
-			this->m_dodgeFrame++;
+			this->m_dodge.m_dodgeFrame++;
 	}
-	else if (this->m_dodgeCooldownFrame)
+	else if (this->m_dodge.m_dodgeCooldownFrame)
 	{
 		this->m_mobility = 0; // TODO make variable
 
-		short maxCooldownFrames = dodgeProportion(this->m_dodgeCooldownFrames, this->m_diveCooldownFrames);
+		short maxCooldownFrames = dodgeProportion(this->m_dodge.m_dodgeCooldownFrames, this->m_dodge.m_diveCooldownFrames);
 
-		if (this->m_dodgeCooldownFrame >= maxCooldownFrames)
+		if (this->m_dodge.m_dodgeCooldownFrame >= maxCooldownFrames)
 		{
-			this->m_dodgeCooldownFrame = false;
+			this->m_dodge.m_dodgeCooldownFrame = false;
 
-			this->m_currentSize = dodgeProportion(this->m_dodgeCooldownColliderSize, this->m_diveCooldownColliderSize);
+			this->m_currentSize = dodgeProportion(this->m_dodge.m_dodgeCooldownColliderSize, this->m_dodge.m_diveCooldownColliderSize);
 
 			this->m_mobility = 1; // TODO make variable
 		}
 		else
 		{
-			this->m_dodgeCooldownFrame++;
+			this->m_dodge.m_dodgeCooldownFrame++;
 
-			float proportion = getAnimationPoint(this->m_dodgeCooldownFrame / (maxCooldownFrames * 1.0f));
+			float proportion = getAnimationPoint(this->m_dodge.m_dodgeCooldownFrame / (maxCooldownFrames * 1.0f));
 
-			float colliderSize = dodgeProportion(this->m_dodgeCooldownColliderSize, this->m_diveCooldownColliderSize);
+			float colliderSize = dodgeProportion(this->m_dodge.m_dodgeCooldownColliderSize, this->m_dodge.m_diveCooldownColliderSize);
 
 			this->m_currentSize = ((1 - proportion) * this->m_previousSize) + (proportion * colliderSize);
 		}
@@ -233,7 +233,7 @@ void ACB_PlayerCharacter::dodgeUpdate(UCharacterMovementComponent* characterMove
 
 float ACB_PlayerCharacter::dodgeProportion(float dodgeValue, float diveValue)
 {
-	return (1 - this->m_diveProportion) * dodgeValue + this->m_diveProportion * diveValue;
+	return (1 - this->m_dodge.m_diveProportion) * dodgeValue + this->m_dodge.m_diveProportion * diveValue;
 }
 
 // Called to bind functionality to input
@@ -297,9 +297,9 @@ void ACB_PlayerCharacter::StopJumpAction()
 
 	if (this->m_duck.m_frame)
 	{
-		if (!this->m_dodgeCooldownFrame && characterMovement->IsMovingOnGround())
+		if (!this->m_dodge.m_dodgeCooldownFrame && characterMovement->IsMovingOnGround())
 		{
-			this->m_dodgeFrame = true;
+			this->m_dodge.m_dodgeFrame = true;
 
 			const FRotator controlRotation = Controller->GetControlRotation();
 			const FRotator YawRotation(0, controlRotation.Yaw, 0);
@@ -309,13 +309,13 @@ void ACB_PlayerCharacter::StopJumpAction()
 
 			direction = direction.Size() > 1 ? direction.GetUnsafeNormal() : direction;
 
-			this->m_diveProportion = direction.Size();
+			this->m_dodge.m_diveProportion = direction.Size();
 
-			characterMovement->Velocity = (this->m_diveProportion * this->m_diveHorizontalVelocity) * direction;
+			characterMovement->Velocity = (this->m_dodge.m_diveProportion * this->m_dodge.m_diveHorizontalVelocity) * direction;
 
-			characterMovement->JumpZVelocity = dodgeProportion(this->m_dodgeVelocity, this->m_diveVerticalVelocity);
+			characterMovement->JumpZVelocity = dodgeProportion(this->m_dodge.m_dodgeVelocity, this->m_dodge.m_diveVerticalVelocity);
 			
-			characterMovement->AirControl = dodgeProportion(this->m_dodgeControl, this->m_diveControl);
+			characterMovement->AirControl = dodgeProportion(this->m_dodge.m_dodgeControl, this->m_dodge.m_diveControl);
 
 			this->Jump();
 		}

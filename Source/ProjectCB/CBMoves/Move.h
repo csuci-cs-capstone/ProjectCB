@@ -9,7 +9,21 @@
  */
 class PROJECTCB_API Move
 {
+	// Warmup -> Hold, Cooldown -> Release
+	// Start (set frames)
+	// End (end function)
+
 public:
-	Move();
-	~Move();
+	// Start
+
+	float m_colliderRadius;
+	float m_colliderHeight;
+
+	FVector m_position, m_velocity, m_accelertation;
+
+	FRotator m_colliderRotation;
+
+	// End
+
+	//bool shouldEnd();
 };

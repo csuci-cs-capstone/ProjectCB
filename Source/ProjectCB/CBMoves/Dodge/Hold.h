@@ -1,19 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 
-/**
- * 
- */
 struct PROJECTCB_API Hold
 {
-	// Warmup -> Hold, Cooldown -> Release
-	// Start (set frames)
-		// collision
-	// End (end function)
-
 	// Mutable
 	const float m_colliderSize = 25.0f;
 
