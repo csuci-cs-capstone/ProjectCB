@@ -14,30 +14,17 @@
 // Sets default values
 ACB_PlayerCharacter::ACB_PlayerCharacter()
 {
+	// FOR DEBUGGING ONLY (TODO remove)
+
 	this->m_frameCounterActive = false;
 	this->m_frameCounter = 0;
-
-	// General Variables
-
-	this->m_basics.m_movementX = 0;
-	this->m_basics.m_movementY = 0;
-
-	this->m_basics.m_mobility = 1;
-
-	// Dodge Variables
-
-	this->m_dodgeHold.m_frame = false;
-	this->m_dodgeRelease.m_dodgeFrame = false;
-	this->m_dodgeRelease.m_dodgeCooldownFrame = false; // TODO do in constructor of dodge release
 
 	// Other
 
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	//GetCapsuleComponent()->InitCapsuleSize(28.0f, 50.0f);
-
-	GetCapsuleComponent()->InitCapsuleSize(25.0f, 50.0f);
+	GetCapsuleComponent()->InitCapsuleSize(25.0f, 50.0f); // TODO create default size
 
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
@@ -50,8 +37,8 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	BaseLookUpRate = 45.f;
 
 	//Customize the character movement component here!
-	GetCharacterMovement()->MaxWalkSpeed = g_playerWalkSpeed;
-	GetCharacterMovement()->GravityScale = g_playerBaseGravity;
+	GetCharacterMovement()->MaxWalkSpeed = PlayerBasics::playerWalkSpeed;
+	GetCharacterMovement()->GravityScale = PlayerBasics::playerBaseGravity;
 	//GetCharacterMovement()->JumpZVelocity = this->m_jumpVelocity;
 	//GetCharacterMovement()->AirControl = this->m_jumpControl;
 
@@ -113,8 +100,8 @@ void ACB_PlayerCharacter::cameraUpdate()
 
 	FVector actorLocation = this->GetActorLocation();
 
-	this->m_basics.m_currentWorldLocationZ = ((1 - this->m_basics.m_worldLocationProportionZ) * actorLocation.Z)
-		+ (this->m_basics.m_worldLocationProportionZ * g_playerStartWorldLocationZ);
+	this->m_basics.m_currentWorldLocationZ = ((1 - PlayerBasics::worldLocationProportionZ) * actorLocation.Z)
+		+ (PlayerBasics::worldLocationProportionZ * PlayerBasics::playerStartWorldLocationZ);
 
 	this->cameraArm->SetWorldLocation(FVector(currentLocation.X, actorLocation.Y + 100, this->m_basics.m_currentWorldLocationZ));
 }
@@ -122,9 +109,9 @@ void ACB_PlayerCharacter::cameraUpdate()
 void ACB_PlayerCharacter::adjustGravity(UCharacterMovementComponent* characterMovement)
 {
 	if (characterMovement->Velocity.Z <= 0)
-		characterMovement->GravityScale = g_playerFastGravity;
+		characterMovement->GravityScale = PlayerBasics::playerFastGravity;
 	else
-		characterMovement->GravityScale = g_playerBaseGravity;
+		characterMovement->GravityScale = PlayerBasics::playerBaseGravity;
 }
 
 void ACB_PlayerCharacter::dodgeUpdate(UCharacterMovementComponent* characterMovement)

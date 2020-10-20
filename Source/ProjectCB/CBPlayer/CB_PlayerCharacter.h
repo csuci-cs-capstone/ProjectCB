@@ -25,69 +25,29 @@ private:
 
 	// General
 	
-	PlayerBasics m_basics; // TODO rename to PlayerConstants ?
+	PlayerBasics m_basics;
 
-	
-	// Jump
+	void cameraUpdate();
 
-	
+	void adjustGravity(UCharacterMovementComponent* characterMovement);
 
 	// Dodge Dip Duck Dive Dodge
-
-	// Dodge (Move)
-
-		// Duck (Hold)
-
-	//const float m_duckHeight;
 
 	Dodge_Hold m_dodgeHold;
 	Dodge_Release m_dodgeRelease;
 
-		// Dodge (Move)
-
-	
-
 	void dodgeUpdate(UCharacterMovementComponent* characterMovement);
 
-	//inline float dodgeProportion(float dodgeValue, float diveValue);
-
-
-	// Grab
+	// Grab/Catch/Pickup/Throw/Drop
 
 		// TODO implement
-
-	// Throw
-
-		// TODO implement
-
-
-	// Size updates // TODO put in general
-
-	
-	// end size and frames are dependant on move
-
-	// TODO do the same for rotation
 
 // FOR DEBUGGING ONLY (TODO remove)
 
 	short m_frameCounter;
 	bool m_frameCounterActive;
 
-///////////////////////////////////
-
-	
-	UPROPERTY(EditAnywhere, Category = "Throwing")
-	TSubclassOf<class ACB_DodgeballProjectile> DodgeballProjectileClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"),Category = "Components")
-		class UCameraComponent* camera;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"),Category = "Components")
-		class USpringArmComponent* cameraArm;
-
-	void cameraUpdate();
-
-	void adjustGravity(UCharacterMovementComponent* characterMovement);
+	///////////////////////////////////
 
 protected:
 	// Called when the game starts or when spawned
@@ -96,10 +56,15 @@ protected:
 	//For prototyping, TODO add character model and start ik system
 	UPROPERTY(EditAnywhere, Category = "Components")
 		UStaticMeshComponent* staticMesh;
-	
-	//Add a camera to the character and an arm which will handle clipping through geometry
-	//They get setup in the constructor of the cpp file
-	
+
+	UPROPERTY(EditAnywhere, Category = "Throwing")
+		TSubclassOf<class ACB_DodgeballProjectile> DodgeballProjectileClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = "Components")
+		class UCameraComponent* camera;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = "Components")
+		class USpringArmComponent* cameraArm;
 
 public:
 

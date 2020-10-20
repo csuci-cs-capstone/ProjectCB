@@ -1,22 +1,24 @@
 #pragma once
 
-const float g_playerWalkSpeed = 500.0f;
-const float g_playerBaseGravity = 4.0f;
-const float g_playerFastGravity = g_playerBaseGravity * 1.5f;
-const float g_playerStartWorldLocationZ = 250.0f;
-
-//float getAnimationPoint(float x);
-
 #include "CoreMinimal.h"
 
 struct PROJECTCB_API PlayerBasics
 {
-public:
+	// Mutable
+
+	static const float playerWalkSpeed;
+	static const float playerBaseGravity;
+	static const float playerFastGravity;
+	static const float playerStartWorldLocationZ;
+	static const float worldLocationProportionZ;
+
+	// Immutable
 
 	// TODO 'fix' the camera at the original center of character (based on character size) [smoothly update]
+		// make based on map? make off-center for better visualation of map and balls
+		// make player transparent?
 
-	float m_currentWorldLocationZ = g_playerStartWorldLocationZ;
-	float m_worldLocationProportionZ = 0.75f;
+	float m_currentWorldLocationZ;
 
 	float m_movementX;
 	float m_movementY;
@@ -24,6 +26,8 @@ public:
 
 	float m_currentSize = 50.0f;
 	float m_previousSize;
+
+	PlayerBasics();
 
 	float getAnimationPoint(float x);
 };

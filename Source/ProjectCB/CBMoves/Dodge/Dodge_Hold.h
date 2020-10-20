@@ -21,5 +21,7 @@ struct PROJECTCB_API Dodge_Hold
 
 	short m_frame;
 
+	Dodge_Hold();
+
 	void dodgeHoldUpdate(PlayerBasics playerBasics);
 };

@@ -14,7 +14,7 @@ const short Dodge_Release::dodgeFramesToApex = 7;
 // Dive (Release + Direction)
 
 const float Dodge_Release::diveHeight = Dodge_Release::dodgeHeight / 2;
-const float Dodge_Release::diveHorizontalVelocity = 1.75f * g_playerWalkSpeed;
+const float Dodge_Release::diveHorizontalVelocity = 1.75f * PlayerBasics::playerWalkSpeed;
 const float Dodge_Release::diveControl = 0.0f;
 const float Dodge_Release::diveApexColliderSize = 25.0f;
 const float Dodge_Release::diveEndColliderSize = 50.0f;
@@ -25,8 +25,16 @@ const short Dodge_Release::diveFramesToApex = 5;
 
 // Immutable
 
-const float Dodge_Release::dodgeVelocity = sqrt(400000 * Dodge_Release::dodgeHeight * g_playerBaseGravity);
-const float Dodge_Release::diveVerticalVelocity = sqrt(400000 * Dodge_Release::diveHeight * g_playerBaseGravity);
+const float Dodge_Release::dodgeVelocity = sqrt(400000 * Dodge_Release::dodgeHeight * PlayerBasics::playerBaseGravity);
+const float Dodge_Release::diveVerticalVelocity = sqrt(400000 * Dodge_Release::diveHeight * PlayerBasics::playerBaseGravity);
+
+Dodge_Release::Dodge_Release()
+{
+	this->m_diveProportion = 0;
+
+	this->m_dodgeFrame = false;
+	this->m_dodgeCooldownFrame = false;
+}
 
 float Dodge_Release::dodgeProportion(float dodgeValue, float diveValue)
 {

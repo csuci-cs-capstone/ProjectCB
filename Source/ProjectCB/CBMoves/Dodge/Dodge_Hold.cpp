@@ -8,6 +8,11 @@ const float Dodge_Hold::actionMobility = 0.0f;
 const short Dodge_Hold::startupFrames = 6;
 const short Dodge_Hold::actionFrames = 24;
 
+Dodge_Hold::Dodge_Hold()
+{
+	this->m_frame = false;
+}
+
 void Dodge_Hold::dodgeHoldUpdate(PlayerBasics playerBasics)
 {
 	if (this->m_frame == 1)

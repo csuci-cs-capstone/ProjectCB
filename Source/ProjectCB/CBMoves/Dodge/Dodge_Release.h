@@ -38,6 +38,8 @@ struct PROJECTCB_API Dodge_Release
 	short m_dodgeFrame;
 	short m_dodgeCooldownFrame;
 
+	Dodge_Release();
+
 	inline float dodgeProportion(float dodgeValue, float diveValue);
 
 	void dodgeActionUpdate(PlayerBasics playerBasics, bool grounded);
