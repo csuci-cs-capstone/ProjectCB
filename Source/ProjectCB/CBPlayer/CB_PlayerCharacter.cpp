@@ -233,6 +233,9 @@ void ACB_PlayerCharacter::StopRunAction()
 
 void ACB_PlayerCharacter::ShootAction()
 {
+	// TODO make into separate class
+		// TODO make based of player movement direction?
+
 	if (this->DodgeballProjectileClass != nullptr)
 	{
 		FActorSpawnParameters spawnParameters;
