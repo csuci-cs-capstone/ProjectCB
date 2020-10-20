@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "../../CBPlayer/PlayerBasics.h"
 
 struct PROJECTCB_API Dodge_Hold
 {
@@ -19,4 +20,6 @@ struct PROJECTCB_API Dodge_Hold
 	// Immutable
 
 	short m_frame;
+
+	void dodgeHoldUpdate(PlayerBasics playerBasics);
 };

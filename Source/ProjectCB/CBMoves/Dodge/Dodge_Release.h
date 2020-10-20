@@ -5,7 +5,6 @@
 
 struct PROJECTCB_API Dodge_Release
 {
-public:
 	// Dodge (Release)
 
 	static const float dodgeHeight;
@@ -41,6 +40,7 @@ public:
 
 	inline float dodgeProportion(float dodgeValue, float diveValue);
 
+	void dodgeActionUpdate(PlayerBasics playerBasics, bool grounded);
+
 	void dodgeCooldownUpdate(PlayerBasics playerBasics);
-	//void dodgeCooldownUpdate(ACB_PlayerCharacter* const player);
 };

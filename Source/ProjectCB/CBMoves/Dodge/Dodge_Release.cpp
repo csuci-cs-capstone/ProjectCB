@@ -33,6 +33,58 @@ float Dodge_Release::dodgeProportion(float dodgeValue, float diveValue)
 	return (1 - this->m_diveProportion) * dodgeValue + this->m_diveProportion * diveValue;
 }
 
+void Dodge_Release::dodgeActionUpdate(PlayerBasics playerBasics, bool grounded)
+{
+	if (this->m_dodgeFrame == 1)
+		playerBasics.m_previousSize = playerBasics.m_currentSize;
+
+	playerBasics.m_mobility = 1; // TODO make variable
+
+	float proportion = this->m_dodgeFrame / this->dodgeProportion(Dodge_Release::dodgeFramesToApex,
+		Dodge_Release::diveFramesToApex);
+
+	// TODO make rotate for dive
+
+	if (proportion >= 1)
+	{
+		if (proportion >= 2)
+		{
+			playerBasics.m_currentSize = this->dodgeProportion(Dodge_Release::dodgeEndColliderSize,
+				Dodge_Release::diveEndColliderSize);
+		}
+		else
+		{
+			proportion = playerBasics.getAnimationPoint(proportion - 1);
+
+			float apexColliderSize = this->dodgeProportion(Dodge_Release::dodgeApexColliderSize,
+				Dodge_Release::diveApexColliderSize);
+
+			float endColliderSize = this->dodgeProportion(Dodge_Release::dodgeEndColliderSize,
+				Dodge_Release::diveEndColliderSize);
+
+			playerBasics.m_currentSize = ((1 - proportion) * apexColliderSize) + (proportion * endColliderSize);
+		}
+	}
+	else
+	{
+		proportion = playerBasics.getAnimationPoint(proportion);
+
+		float apexColliderSize = this->dodgeProportion(Dodge_Release::dodgeApexColliderSize,
+			Dodge_Release::diveApexColliderSize);
+
+		playerBasics.m_currentSize = (1 - proportion) * playerBasics.m_previousSize + proportion * apexColliderSize;
+	}
+
+	if (grounded)
+	{
+		this->m_dodgeFrame = false;
+		this->m_dodgeCooldownFrame = true;
+		playerBasics.m_previousSize = playerBasics.m_currentSize;
+	}
+	else
+		this->m_dodgeFrame++;
+}
+
 void Dodge_Release::dodgeCooldownUpdate(PlayerBasics playerBasics)
 {
 	playerBasics.m_mobility = 0; // TODO make variable

@@ -28,11 +28,6 @@ private:
 	PlayerBasics m_basics; // TODO rename to PlayerConstants ?
 
 	
-
-	//float getAnimationPoint(float x);
-
-	//void dodgeCooldownUpdate(PlayerBasics playerBasics);
-	
 	// Jump
 
 	
@@ -45,8 +40,8 @@ private:
 
 	//const float m_duckHeight;
 
-	Dodge_Hold m_duck;
-	Dodge_Release m_dodge;
+	Dodge_Hold m_dodgeHold;
+	Dodge_Release m_dodgeRelease;
 
 		// Dodge (Move)
 
