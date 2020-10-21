@@ -13,7 +13,27 @@ Dodge_Hold::Dodge_Hold()
 	this->m_frame = false;
 }
 
-void Dodge_Hold::dodgeHoldUpdate(PlayerBasics playerBasics)
+//Dodge_Hold::ActionUpdater::ActionUpdater(Dodge_Hold& dodgeHold)
+//{
+//	this->m_dodgeHold = dodgeHold;
+//}
+//
+//void Dodge_Hold::ActionUpdater::set(float deltaTime)
+//{
+//	this->m_dodgeHold.m_playerBasics.m_mobility = Dodge_Hold::actionMobility;
+//
+//	this->m_dodgeHold.m_playerBasics.m_currentSize = Dodge_Hold::colliderSize;
+//}
+//
+//void Dodge_Hold::ActionUpdater::blend(float deltaTime, float amount)
+//{
+//	amount = this->m_dodgeHold.m_playerBasics.getAnimationPoint(amount);
+//
+//	this->m_dodgeHold.m_playerBasics.m_currentSize = (1 - amount) * this->m_dodgeHold.m_playerBasics.m_previousSize
+//		+ amount * Dodge_Hold::colliderSize;
+//}
+
+void Dodge_Hold::update(PlayerBasics& playerBasics)
 {
 	if (this->m_frame == 1)
 		playerBasics.m_previousSize = playerBasics.m_currentSize;
@@ -22,7 +42,7 @@ void Dodge_Hold::dodgeHoldUpdate(PlayerBasics playerBasics)
 	{
 		if (this->m_frame >= (Dodge_Hold::startupFrames + Dodge_Hold::actionFrames))
 		{
-			playerBasics.m_mobility = 0; // TODO make variable
+			playerBasics.m_mobility = Dodge_Hold::actionMobility;
 
 			playerBasics.m_currentSize = Dodge_Hold::colliderSize;
 		}

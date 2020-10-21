@@ -123,7 +123,7 @@ void ACB_PlayerCharacter::dodgeUpdate(UCharacterMovementComponent* characterMove
 		this->m_dodgeRelease.dodgeCooldownUpdate(this->m_basics);
 
 	else if (this->m_dodgeHold.m_frame)
-		this->m_dodgeHold.dodgeHoldUpdate(this->m_basics);
+		this->m_dodgeHold.update(this->m_basics);
 }
 
 // Called to bind functionality to input

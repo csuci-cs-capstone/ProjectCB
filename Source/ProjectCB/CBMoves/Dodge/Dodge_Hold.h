@@ -2,13 +2,36 @@
 
 #include "CoreMinimal.h"
 #include "../../CBPlayer/PlayerBasics.h"
+#include "../BlendUpdater.h"
 
-struct PROJECTCB_API Dodge_Hold
+class PROJECTCB_API Dodge_Hold
 {
 	// TODO The additional height required by jump to be equal is equal to...
 		// (StartSize - CurrentSize) / 2
 
-	// Mutable
+private:
+
+	//struct ActionUpdater : public BlendUpdater
+	//{
+	//private:
+
+	//	Dodge_Hold& m_dodgeHold;
+
+	//	void set(float deltaTime);
+
+	//	void blend(float deltaTime, float amount);
+
+	//public:
+
+	//	ActionUpdater(Dodge_Hold& dodgeHold);
+	//};
+
+	//PlayerBasics& m_playerBasics;
+
+public:
+
+// Mutable
+
 	static const float colliderSize;
 
 	static const float startupMobility;
@@ -17,11 +40,11 @@ struct PROJECTCB_API Dodge_Hold
 	static const short startupFrames;
 	static const short actionFrames;
 
-	// Immutable
+// Immutable
 
 	short m_frame;
 
 	Dodge_Hold();
 
-	void dodgeHoldUpdate(PlayerBasics playerBasics);
+	void update(PlayerBasics& playerBasics);
 };
