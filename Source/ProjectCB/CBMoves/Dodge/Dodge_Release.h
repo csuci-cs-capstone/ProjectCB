@@ -42,7 +42,7 @@ struct PROJECTCB_API Dodge_Release
 
 	inline float dodgeProportion(float dodgeValue, float diveValue);
 
-	void dodgeActionUpdate(PlayerBasics playerBasics, bool grounded);
+	void dodgeActionUpdate(PlayerBasics& playerBasics, bool grounded);
 
-	void dodgeCooldownUpdate(PlayerBasics playerBasics);
+	void dodgeCooldownUpdate(PlayerBasics& playerBasics);
 };

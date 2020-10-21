@@ -41,7 +41,7 @@ float Dodge_Release::dodgeProportion(float dodgeValue, float diveValue)
 	return (1 - this->m_diveProportion) * dodgeValue + this->m_diveProportion * diveValue;
 }
 
-void Dodge_Release::dodgeActionUpdate(PlayerBasics playerBasics, bool grounded)
+void Dodge_Release::dodgeActionUpdate(PlayerBasics& playerBasics, bool grounded)
 {
 	if (this->m_dodgeFrame == 1)
 		playerBasics.m_previousSize = playerBasics.m_currentSize;
@@ -93,7 +93,7 @@ void Dodge_Release::dodgeActionUpdate(PlayerBasics playerBasics, bool grounded)
 		this->m_dodgeFrame++;
 }
 
-void Dodge_Release::dodgeCooldownUpdate(PlayerBasics playerBasics)
+void Dodge_Release::dodgeCooldownUpdate(PlayerBasics& playerBasics)
 {
 	playerBasics.m_mobility = 0; // TODO make variable
 
