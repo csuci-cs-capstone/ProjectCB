@@ -10,21 +10,20 @@ const short Dodge_Hold::actionFrames = 24;
 
 Dodge_Hold::Dodge_Hold()
 {
-	//this->m_actionUpdater.m_dodgeHold = this;
 	this->m_frame = false;
 }
 
 Dodge_Hold::ActionUpdater::ActionUpdater(Dodge_Hold* const dodgeHold, unsigned short totalFrames)
-	: BlendUpdater(totalFrames), m_dodgeHold(dodgeHold) {}
+	: BoundedUpdater(totalFrames), m_dodgeHold(dodgeHold) {}
 
-void Dodge_Hold::ActionUpdater::set(float deltaTime)
+void Dodge_Hold::ActionUpdater::onEnd()
 {
 	this->m_dodgeHold->m_playerBasics->m_mobility = Dodge_Hold::actionMobility;
 
 	this->m_dodgeHold->m_playerBasics->m_currentSize = Dodge_Hold::colliderSize;
 }
 
-void Dodge_Hold::ActionUpdater::blend(float deltaTime, float amount)
+void Dodge_Hold::ActionUpdater::action(float deltaTime, float amount)
 {
 	amount = this->m_dodgeHold->m_playerBasics->getAnimationPoint(amount);
 
@@ -32,7 +31,7 @@ void Dodge_Hold::ActionUpdater::blend(float deltaTime, float amount)
 		+ amount * Dodge_Hold::colliderSize;
 }
 
-void Dodge_Hold::update()
+void Dodge_Hold::update() // TODO make in terms of BufferedUpdater, BlendUpdater, UnboundedUpdater
 {
 	if (this->m_frame == 1)
 		this->m_playerBasics->m_previousSize = this->m_playerBasics->m_currentSize;
