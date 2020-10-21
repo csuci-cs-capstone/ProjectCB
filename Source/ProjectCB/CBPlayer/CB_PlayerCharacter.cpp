@@ -83,7 +83,7 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 
 	adjustGravity(characterMovement);
 
-	dodgeUpdate(characterMovement);
+	dodgeUpdate(characterMovement, DeltaTime);
 
 	UCapsuleComponent* capsuleComponent = GetCapsuleComponent();
 	capsuleComponent->SetCapsuleSize(25.0f, this->m_basics.m_currentSize);
@@ -114,7 +114,7 @@ void ACB_PlayerCharacter::adjustGravity(UCharacterMovementComponent* characterMo
 		characterMovement->GravityScale = PlayerBasics::playerBaseGravity;
 }
 
-void ACB_PlayerCharacter::dodgeUpdate(UCharacterMovementComponent* characterMovement)
+void ACB_PlayerCharacter::dodgeUpdate(UCharacterMovementComponent* characterMovement, float deltaTime)
 {
 	if (this->m_dodgeRelease.m_dodgeFrame)
 		this->m_dodgeRelease.dodgeActionUpdate(this->m_basics, characterMovement->IsMovingOnGround());
@@ -122,8 +122,10 @@ void ACB_PlayerCharacter::dodgeUpdate(UCharacterMovementComponent* characterMove
 	else if (this->m_dodgeRelease.m_dodgeCooldownFrame)
 		this->m_dodgeRelease.dodgeCooldownUpdate(this->m_basics);
 
-	else if (this->m_dodgeHold.m_frame)
-		this->m_dodgeHold.update();
+	else if (this->m_dodgeHold.m_frame) // TODO make should start?
+		//this->m_dodgeHold.start();
+
+	this->m_dodgeHold.update(deltaTime);
 }
 
 // Called to bind functionality to input

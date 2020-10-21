@@ -11,6 +11,19 @@ class PROJECTCB_API Dodge_Hold
 
 private:
 
+	struct StartUpdater : public BoundedUpdater
+	{
+		Dodge_Hold* const m_dodgeHold;
+
+		StartUpdater(Dodge_Hold* const dodgeHold, unsigned short totalFrames);
+
+		void onStart();
+
+		void onEnd();
+
+		void action(float deltaTime, float amount);
+	};
+
 	struct ActionUpdater : public BoundedUpdater
 	{
 		Dodge_Hold* const m_dodgeHold;
@@ -21,6 +34,9 @@ private:
 
 		void action(float deltaTime, float amount);
 	};
+
+	StartUpdater m_startUpdater = StartUpdater(this, 10);
+	ActionUpdater m_actionUpdater = ActionUpdater(this, 10);
 
 public:
 
@@ -36,13 +52,13 @@ public:
 
 // Immutable
 
-	ActionUpdater m_actionUpdater = ActionUpdater(this, 10);
-
 	PlayerBasics* m_playerBasics;
 
 	short m_frame;
 
 	Dodge_Hold();
 
-	void update();
+	void start();
+
+	void update(float deltaTime);
 };
