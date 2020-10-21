@@ -11,10 +11,11 @@ private:
 
 protected:
 
+	BlendUpdater(unsigned short totalFrames);
+
 	virtual void set(float deltaTime) = 0;
 
 	virtual void blend(float deltaTime, float amount) = 0;
 
 	void run(float deltaTime);
-	
 };

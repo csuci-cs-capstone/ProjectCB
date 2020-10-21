@@ -14,10 +14,10 @@
 // Sets default values
 ACB_PlayerCharacter::ACB_PlayerCharacter()
 {
-	// FOR DEBUGGING ONLY (TODO remove)
+	this->m_dodgeHold.m_playerBasics = &(this->m_basics);
 
-	this->m_frameCounterActive = false;
-	this->m_frameCounter = 0;
+	this->m_frameCounterActive = false; // FOR DEBUGGING ONLY (TODO remove)
+	this->m_frameCounter = 0; // FOR DEBUGGING ONLY (TODO remove)
 
 	// Other
 
@@ -123,7 +123,7 @@ void ACB_PlayerCharacter::dodgeUpdate(UCharacterMovementComponent* characterMove
 		this->m_dodgeRelease.dodgeCooldownUpdate(this->m_basics);
 
 	else if (this->m_dodgeHold.m_frame)
-		this->m_dodgeHold.update(this->m_basics);
+		this->m_dodgeHold.update();
 }
 
 // Called to bind functionality to input

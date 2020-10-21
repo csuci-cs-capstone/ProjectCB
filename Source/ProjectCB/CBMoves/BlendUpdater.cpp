@@ -1,5 +1,7 @@
 #include "BlendUpdater.h"
 
+BlendUpdater::BlendUpdater(unsigned short totalFrames) : m_totalFrames(totalFrames) {}
+
 void BlendUpdater::run(float deltaTime)
 {
 	if (this->getFrame() >= this->m_totalFrames)

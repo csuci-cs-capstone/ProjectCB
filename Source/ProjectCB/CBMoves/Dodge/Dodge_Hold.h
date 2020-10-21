@@ -11,11 +11,21 @@ class PROJECTCB_API Dodge_Hold
 
 private:
 
+	struct ActionUpdater : public BlendUpdater
+	{
+		Dodge_Hold* const m_dodgeHold;
+
+		ActionUpdater(Dodge_Hold* const dodgeHold, unsigned short totalFrames);
+
+		void set(float deltaTime);
+
+		void blend(float deltaTime, float amount);
+	};
+	
+
 	//struct ActionUpdater : public BlendUpdater
 	//{
 	//private:
-
-	//	Dodge_Hold& m_dodgeHold;
 
 	//	void set(float deltaTime);
 
@@ -23,10 +33,8 @@ private:
 
 	//public:
 
-	//	ActionUpdater(Dodge_Hold& dodgeHold);
+	//	Dodge_Hold* m_dodgeHold;
 	//};
-
-	//PlayerBasics& m_playerBasics;
 
 public:
 
@@ -42,9 +50,13 @@ public:
 
 // Immutable
 
+	ActionUpdater m_actionUpdater = ActionUpdater(this, 10);
+
+	PlayerBasics* m_playerBasics;
+
 	short m_frame;
 
 	Dodge_Hold();
 
-	void update(PlayerBasics& playerBasics);
+	void update();
 };
