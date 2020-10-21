@@ -36,7 +36,7 @@ private:
 	Dodge_Hold m_dodgeHold;
 	Dodge_Release m_dodgeRelease;
 
-	void dodgeUpdate(UCharacterMovementComponent* characterMovement);
+	void dodgeUpdate(UCharacterMovementComponent* characterMovement, float deltaTime);
 
 	// Grab/Catch/Pickup/Throw/Drop
 

@@ -24,10 +24,12 @@ protected:
 
 	bool shouldUpdate();
 
-	void update(float deltaTime);
+public:
 
 	void start();
 
 	void end();
+
+	void update(float deltaTime);
 
 };

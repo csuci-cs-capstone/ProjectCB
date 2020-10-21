@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "../../CBPlayer/PlayerBasics.h"
-#include "../BlendUpdater.h"
+#include "../BoundedUpdater.h"
 
 class PROJECTCB_API Dodge_Hold
 {
@@ -11,22 +11,32 @@ class PROJECTCB_API Dodge_Hold
 
 private:
 
-	//struct ActionUpdater : public BlendUpdater
-	//{
-	//private:
+	struct StartUpdater : public BoundedUpdater
+	{
+		Dodge_Hold* const m_dodgeHold;
 
-	//	Dodge_Hold& m_dodgeHold;
+		StartUpdater(Dodge_Hold* const dodgeHold, unsigned short totalFrames);
 
-	//	void set(float deltaTime);
+		void onStart();
 
-	//	void blend(float deltaTime, float amount);
+		void onEnd();
 
-	//public:
+		void action(float deltaTime, float amount);
+	};
 
-	//	ActionUpdater(Dodge_Hold& dodgeHold);
-	//};
+	struct ActionUpdater : public BoundedUpdater
+	{
+		Dodge_Hold* const m_dodgeHold;
 
-	//PlayerBasics& m_playerBasics;
+		ActionUpdater(Dodge_Hold* const dodgeHold, unsigned short totalFrames);
+
+		void onEnd();
+
+		void action(float deltaTime, float amount);
+	};
+
+	StartUpdater m_startUpdater = StartUpdater(this, 10);
+	ActionUpdater m_actionUpdater = ActionUpdater(this, 10);
 
 public:
 
@@ -42,9 +52,13 @@ public:
 
 // Immutable
 
+	PlayerBasics* m_playerBasics;
+
 	short m_frame;
 
 	Dodge_Hold();
 
-	void update(PlayerBasics& playerBasics);
+	void start();
+
+	void update(float deltaTime);
 };
