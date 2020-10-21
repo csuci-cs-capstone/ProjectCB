@@ -7,8 +7,12 @@ struct PROJECTCB_API PlayerBasics
 	// Mutable
 
 	static const float playerWalkSpeed;
+
+	static const float playerSize;
+
 	static const float playerBaseGravity;
 	static const float playerFastGravity;
+
 	static const float playerStartWorldLocationZ;
 	static const float worldLocationProportionZ;
 
@@ -24,10 +28,33 @@ struct PROJECTCB_API PlayerBasics
 	float m_movementY;
 	float m_mobility;
 
-	float m_currentSize = 50.0f;
+	float m_currentSize;
 	float m_previousSize;
+
+	bool m_grounded; // TODO update all variables each frame (in beginning of frameUpdate)
+
+	// TODO make read only
+	FRotator m_controlRotation; // this->m_basics.m_controlRotation = Controller->GetControlRotation()
+	
+	FVector m_velocity; // characterMovement->Velocity = this->m_basics.m_velocity
+	// TODO add other update variables
+
+	float m_jumpZVelocity;
+	float m_airControl;
+
+	bool m_shouldJump;
 
 	PlayerBasics();
 
+	//FRotator controlRotation();
+
+	//void setVelocity();
+
+	//void jump();
+
 	float getAnimationPoint(float x);
+
+	void updateAttributes();
+
+	
 };

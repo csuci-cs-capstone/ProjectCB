@@ -1,3 +1,4 @@
+
 #include "Dodge_Hold.h"
 
 const float Dodge_Hold::colliderSize = 25.0f;
@@ -13,15 +14,35 @@ Dodge_Hold::Dodge_Hold()
 	this->m_frame = false;
 }
 
+bool Dodge_Hold::isRunning()
+{
+	return this->m_startUpdater.shouldUpdate() || this->m_actionUpdater.shouldUpdate();
+}
+
 void Dodge_Hold::start()
 {
 	this->m_startUpdater.start();
 }
 
+void Dodge_Hold::end()
+{
+	if (this->m_startUpdater.shouldUpdate())
+		this->m_startUpdater.end();
+
+	else if (this->m_actionUpdater.shouldUpdate())
+		this->m_actionUpdater.end();
+}
+
 void Dodge_Hold::update(float deltaTime)
 {
+	//if (this->m_startUpdater.shouldUpdate())
+	//	this->m_startUpdater.update(deltaTime);
+
+	//else if (this->m_actionUpdater.shouldUpdate())
+	//	this->m_actionUpdater.update(deltaTime);
+
 	if (this->m_frame == 1)
-		this->m_playerBasics->m_previousSize = this->m_playerBasics->m_currentSize;
+		this->m_playerBasics->updateAttributes();
 
 	if (this->m_frame >= Dodge_Hold::startupFrames)
 	{
@@ -52,7 +73,7 @@ Dodge_Hold::StartUpdater::StartUpdater(Dodge_Hold* const dodgeHold, unsigned sho
 
 void Dodge_Hold::StartUpdater::onStart()
 {
-	this->m_dodgeHold->m_playerBasics->m_previousSize = this->m_dodgeHold->m_playerBasics->m_currentSize;
+	this->m_dodgeHold->m_playerBasics->updateAttributes();
 }
 
 void Dodge_Hold::StartUpdater::onEnd()

@@ -5,8 +5,7 @@
 #include <math.h>
 #include "CoreMinimal.h"
 #include "PlayerBasics.h"
-#include "../CBMoves/Dodge/Dodge_Hold.h"
-#include "../CBMoves/Dodge/Dodge_Release.h"
+#include "../CBMoves/Dodge/Dodge.h"
 #include "GameFramework/Character.h"
 #include "CB_PlayerCharacter.generated.h"
 
@@ -27,16 +26,13 @@ private:
 	
 	PlayerBasics m_basics;
 
+	void playerUpdate();
+
 	void cameraUpdate();
 
 	void adjustGravity(UCharacterMovementComponent* characterMovement);
 
-	// Dodge Dip Duck Dive Dodge
-
-	Dodge_Hold m_dodgeHold;
-	Dodge_Release m_dodgeRelease;
-
-	void dodgeUpdate(UCharacterMovementComponent* characterMovement, float deltaTime);
+	Dodge m_dodge = Dodge(this->m_basics);
 
 	// Grab/Catch/Pickup/Throw/Drop
 
