@@ -58,7 +58,11 @@ public:
 
 	Dodge_Hold();
 
+	bool isRunning();
+
 	void start();
+
+	void end();
 
 	void update(float deltaTime);
 };

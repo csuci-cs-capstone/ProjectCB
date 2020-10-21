@@ -14,8 +14,6 @@
 // Sets default values
 ACB_PlayerCharacter::ACB_PlayerCharacter()
 {
-	this->m_dodgeHold.m_playerBasics = &(this->m_basics);
-
 	this->m_frameCounterActive = false; // FOR DEBUGGING ONLY (TODO remove)
 	this->m_frameCounter = 0; // FOR DEBUGGING ONLY (TODO remove)
 
@@ -79,11 +77,13 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	playerUpdate();
+
 	UCharacterMovementComponent* characterMovement = GetCharacterMovement();
 
 	adjustGravity(characterMovement);
 
-	dodgeUpdate(characterMovement, DeltaTime);
+	this->m_dodge.dodgeUpdate(DeltaTime);
 
 	UCapsuleComponent* capsuleComponent = GetCapsuleComponent();
 	capsuleComponent->SetCapsuleSize(25.0f, this->m_basics.m_currentSize);
@@ -92,6 +92,26 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 
 	if (this->m_frameCounterActive)
 		this->m_frameCounter++;
+}
+
+void ACB_PlayerCharacter::playerUpdate()
+{
+	this->m_basics.m_controlRotation = Controller->GetControlRotation();
+
+	UCharacterMovementComponent* characterMovement = GetCharacterMovement();
+
+	this->m_basics.m_grounded = characterMovement->IsMovingOnGround();
+
+	if (this->m_basics.m_shouldJump)
+	{
+		characterMovement->Velocity = this->m_basics.m_velocity;
+		characterMovement->JumpZVelocity = this->m_basics.m_jumpZVelocity;
+		characterMovement->AirControl = this->m_basics.m_airControl;
+
+		Jump();
+
+		this->m_basics.m_shouldJump = false;
+	}
 }
 
 void ACB_PlayerCharacter::cameraUpdate()
@@ -112,20 +132,6 @@ void ACB_PlayerCharacter::adjustGravity(UCharacterMovementComponent* characterMo
 		characterMovement->GravityScale = PlayerBasics::playerFastGravity;
 	else
 		characterMovement->GravityScale = PlayerBasics::playerBaseGravity;
-}
-
-void ACB_PlayerCharacter::dodgeUpdate(UCharacterMovementComponent* characterMovement, float deltaTime)
-{
-	if (this->m_dodgeRelease.m_dodgeFrame)
-		this->m_dodgeRelease.dodgeActionUpdate(this->m_basics, characterMovement->IsMovingOnGround());
-
-	else if (this->m_dodgeRelease.m_dodgeCooldownFrame)
-		this->m_dodgeRelease.dodgeCooldownUpdate(this->m_basics);
-
-	else if (this->m_dodgeHold.m_frame) // TODO make should start?
-		//this->m_dodgeHold.start();
-
-	this->m_dodgeHold.update(deltaTime);
 }
 
 // Called to bind functionality to input
@@ -179,44 +185,12 @@ void ACB_PlayerCharacter::LookHorizontal(float amount)
 
 void ACB_PlayerCharacter::JumpAction()
 {
-	if (!this->m_dodgeHold.m_frame)
-		this->m_dodgeHold.m_frame = true;
+	this->m_dodge.onPress();
 }
 
 void ACB_PlayerCharacter::StopJumpAction()
 {
-	UCharacterMovementComponent* characterMovement = GetCharacterMovement();
-
-	if (this->m_dodgeHold.m_frame)
-	{
-		if (!this->m_dodgeRelease.m_dodgeCooldownFrame && characterMovement->IsMovingOnGround())
-		{
-			this->m_dodgeRelease.m_dodgeFrame = true;
-
-			const FRotator controlRotation = Controller->GetControlRotation();
-			const FRotator YawRotation(0, controlRotation.Yaw, 0);
-
-			FVector direction = (this->m_basics.m_movementX * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X))
-				+ (this->m_basics.m_movementY * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y));
-
-			direction = direction.Size() > 1 ? direction.GetUnsafeNormal() : direction;
-
-			this->m_dodgeRelease.m_diveProportion = direction.Size();
-
-			characterMovement->Velocity = (this->m_dodgeRelease.m_diveProportion * Dodge_Release::diveHorizontalVelocity)
-				* direction;
-
-			characterMovement->JumpZVelocity = this->m_dodgeRelease.dodgeProportion(Dodge_Release::dodgeVelocity,
-				Dodge_Release::diveVerticalVelocity);
-			
-			characterMovement->AirControl = this->m_dodgeRelease.dodgeProportion(Dodge_Release::dodgeControl,
-				Dodge_Release::diveControl);
-
-			this->Jump();
-		}
-
-		this->m_dodgeHold.m_frame = false;
-	}
+	this->m_dodge.onRelease();
 }
 
 void ACB_PlayerCharacter::RunAction()

@@ -22,13 +22,13 @@ protected:
 
 	unsigned short getFrame();
 
-	bool shouldUpdate();
-
 public:
 
 	void start();
 
 	void end();
+
+	bool shouldUpdate();
 
 	void update(float deltaTime);
 
