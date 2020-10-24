@@ -31,13 +31,14 @@ struct PROJECTCB_API PlayerBasics
 	float m_currentSize;
 	float m_previousSize;
 
-	bool m_grounded; // TODO update all variables each frame (in beginning of frameUpdate)
+//////
 
-	// TODO make read only
-	FRotator m_controlRotation; // this->m_basics.m_controlRotation = Controller->GetControlRotation()
-	
-	FVector m_velocity; // characterMovement->Velocity = this->m_basics.m_velocity
-	// TODO add other update variables
+	bool m_grounded; // TODO should be read only
+
+	FRotator m_controlRotation; // TODO should be read only
+
+	// TODO have a method for updating velocity (etc.)
+	FVector m_velocity;
 
 	float m_jumpZVelocity;
 	float m_airControl;
@@ -46,15 +47,8 @@ struct PROJECTCB_API PlayerBasics
 
 	PlayerBasics();
 
-	//FRotator controlRotation();
-
-	//void setVelocity();
-
-	//void jump();
-
 	float getAnimationPoint(float x);
 
 	void updateAttributes();
 
-	
 };

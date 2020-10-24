@@ -22,6 +22,9 @@ bool Dodge_Hold::isRunning()
 void Dodge_Hold::start()
 {
 	this->m_startUpdater.start();
+
+	//if (GEngine)
+	//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("STARTED")));
 }
 
 void Dodge_Hold::end()
@@ -29,17 +32,18 @@ void Dodge_Hold::end()
 	if (this->m_startUpdater.shouldUpdate())
 		this->m_startUpdater.end();
 
-	else if (this->m_actionUpdater.shouldUpdate())
+	if (this->m_actionUpdater.shouldUpdate())
 		this->m_actionUpdater.end();
+
+	//if (GEngine)
+	//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("ENDED")));
 }
 
 void Dodge_Hold::update(float deltaTime)
 {
-	//if (this->m_startUpdater.shouldUpdate())
-	//	this->m_startUpdater.update(deltaTime);
+	//this->m_startUpdater.update(deltaTime);
 
-	//else if (this->m_actionUpdater.shouldUpdate())
-	//	this->m_actionUpdater.update(deltaTime);
+	//this->m_actionUpdater.update(deltaTime);
 
 	if (this->m_frame == 1)
 		this->m_playerBasics->updateAttributes();
@@ -74,11 +78,29 @@ Dodge_Hold::StartUpdater::StartUpdater(Dodge_Hold* const dodgeHold, unsigned sho
 void Dodge_Hold::StartUpdater::onStart()
 {
 	this->m_dodgeHold->m_playerBasics->updateAttributes();
+
+	//if (GEngine)
+	//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("START STARTED")));
+
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Start %d"),
+			this->getFrame()));
 }
 
 void Dodge_Hold::StartUpdater::onEnd()
 {
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Before %d"),
+			this->getFrame()));
+
 	this->m_dodgeHold->m_actionUpdater.start();
+
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("After %d"), 
+			this->getFrame()));
+
+	//if (GEngine)
+	//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("START ENDED")));
 }
 
 void Dodge_Hold::StartUpdater::action(float deltaTime, float amount) {}
@@ -88,11 +110,20 @@ void Dodge_Hold::StartUpdater::action(float deltaTime, float amount) {}
 Dodge_Hold::ActionUpdater::ActionUpdater(Dodge_Hold* const dodgeHold, unsigned short totalFrames)
 	: BoundedUpdater(totalFrames), m_dodgeHold(dodgeHold) {}
 
+void Dodge_Hold::ActionUpdater::onStart()
+{
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("ACTION STARTED")));
+}
+
 void Dodge_Hold::ActionUpdater::onEnd()
 {
 	this->m_dodgeHold->m_playerBasics->m_mobility = Dodge_Hold::actionMobility;
 
 	this->m_dodgeHold->m_playerBasics->m_currentSize = Dodge_Hold::colliderSize;
+
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("ACTION ENDED")));
 }
 
 void Dodge_Hold::ActionUpdater::action(float deltaTime, float amount)

@@ -30,6 +30,8 @@ private:
 
 		ActionUpdater(Dodge_Hold* const dodgeHold, unsigned short totalFrames);
 
+		void onStart();
+
 		void onEnd();
 
 		void action(float deltaTime, float amount);
