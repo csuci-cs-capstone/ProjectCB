@@ -3,40 +3,36 @@
 
 // Dodge (Release)
 
-const float Dodge_Release::dodgeHeight = 1;
-const float Dodge_Release::dodgeControl = 0.0f;
-const float Dodge_Release::dodgeApexColliderSize = 25.0f;
+const float Dodge_Release::dodgeHeight = 75.0f;
+const float Dodge_Release::dodgeMobility = 0.0f;
+const float Dodge_Release::dodgeApexColliderSize = 25.0f; // 25
 const float Dodge_Release::dodgeEndColliderSize = 50.0f;
-const float Dodge_Release::dodgeCooldownColliderSize = 50.f;
+const float Dodge_Release::dodgeCooldownMobility = 0.0f;
 
 const short Dodge_Release::dodgeCooldownFrames = 60;
-const short Dodge_Release::dodgeFramesToApex = 7;
+const short Dodge_Release::dodgeFramesToApex = 7; // TODO change
 
 // Dive (Release + Direction)
 
-const float Dodge_Release::diveHeight = Dodge_Release::dodgeHeight / 2;
+const float Dodge_Release::diveHeight = Dodge_Release::dodgeHeight / 1.5f;
 const float Dodge_Release::diveHorizontalVelocity = 1.75f * PlayerBasics::playerWalkSpeed;
-const float Dodge_Release::diveControl = 0.0f;
+const float Dodge_Release::diveMobility = 0.0f;
 const float Dodge_Release::diveApexColliderSize = 25.0f;
 const float Dodge_Release::diveEndColliderSize = 50.0f;
-const float Dodge_Release::diveCooldownColliderSize = 50.f;
+const float Dodge_Release::diveCooldownMobility = 0.0f;
 
 const short Dodge_Release::diveCooldownFrames = 60;
 const short Dodge_Release::diveFramesToApex = 5;
-
-// Immutable
-
-const float Dodge_Release::dodgeVelocity = sqrt(400000 * Dodge_Release::dodgeHeight * PlayerBasics::playerBaseGravity);
-const float Dodge_Release::diveVerticalVelocity = sqrt(400000 * Dodge_Release::diveHeight * PlayerBasics::playerBaseGravity);
 
 float Dodge::dodgeProportion(float dodgeValue, float diveValue)
 {
 	return (1 - this->m_diveProportion) * dodgeValue + this->m_diveProportion * diveValue;
 }
 
-void Dodge::dodgeActionUpdate()
+void Dodge::jumpUpdate(float deltaTime)
 {
-	this->m_playerBasics->m_mobility = 1; // TODO make variable
+	this->m_playerBasics->m_currentMobility = this->dodgeProportion(Dodge_Release::dodgeMobility,
+		Dodge_Release::diveMobility);
 
 	float proportion = this->m_frame / this->dodgeProportion(Dodge_Release::dodgeFramesToApex,
 		Dodge_Release::diveFramesToApex);
@@ -52,7 +48,8 @@ void Dodge::dodgeActionUpdate()
 		}
 		else
 		{
-			this->m_state = FALL;
+			// Update Jump Fall
+
 			proportion = this->m_playerBasics->getAnimationPoint(proportion - 1);
 
 			float apexColliderSize = this->dodgeProportion(Dodge_Release::dodgeApexColliderSize,
@@ -66,6 +63,8 @@ void Dodge::dodgeActionUpdate()
 	}
 	else
 	{
+		// Update Jump Rise
+
 		proportion = this->m_playerBasics->getAnimationPoint(proportion);
 
 		float apexColliderSize = this->dodgeProportion(Dodge_Release::dodgeApexColliderSize,
@@ -78,6 +77,7 @@ void Dodge::dodgeActionUpdate()
 	if (this->m_playerBasics->m_grounded)
 	{
 		// Start Cooldown
+
 		this->m_state = COOLDOWN;
 		this->m_frame = true;
 
@@ -87,9 +87,10 @@ void Dodge::dodgeActionUpdate()
 		this->m_frame++;
 }
 
-void Dodge::dodgeCooldownUpdate()
+void Dodge::cooldownUpdate(float deltaTime)
 {
-	this->m_playerBasics->m_mobility = 0; // TODO make variable
+	this->m_playerBasics->m_currentMobility = this->dodgeProportion(Dodge_Release::dodgeCooldownMobility,
+		Dodge_Release::diveCooldownMobility);
 
 	short maxCooldownFrames = this->dodgeProportion(Dodge_Release::dodgeCooldownFrames, Dodge_Release::diveCooldownFrames);
 
@@ -100,10 +101,8 @@ void Dodge::dodgeCooldownUpdate()
 		this->m_state = OFF;
 		this->m_frame = false;
 
-		this->m_playerBasics->m_currentSize = this->dodgeProportion(Dodge_Release::dodgeCooldownColliderSize,
-			Dodge_Release::diveCooldownColliderSize);
-
-		this->m_playerBasics->m_mobility = 1; // TODO make variable
+		this->m_playerBasics->m_currentMobility = 1;
+		this->m_playerBasics->m_currentSize = PlayerBasics::playerSize;
 
 		this->m_playerBasics->updateAttributes();
 	}
@@ -111,14 +110,11 @@ void Dodge::dodgeCooldownUpdate()
 	{
 		// Cooldown Update
 
-		this->m_frame++;
-
 		float proportion = this->m_playerBasics->getAnimationPoint(this->m_frame / (maxCooldownFrames * 1.0f));
 
-		float colliderSize = this->dodgeProportion(Dodge_Release::dodgeCooldownColliderSize,
-			Dodge_Release::diveCooldownColliderSize);
-
 		this->m_playerBasics->m_currentSize = ((1 - proportion) * this->m_playerBasics->m_previousSize)
-			+ (proportion * colliderSize);
+			+ (proportion * PlayerBasics::playerSize);
+
+		this->m_frame++;
 	}
 }

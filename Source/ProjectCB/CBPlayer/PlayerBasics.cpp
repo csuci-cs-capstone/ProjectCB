@@ -16,20 +16,22 @@ PlayerBasics::PlayerBasics()
 
 	this->m_movementX = 0.0f;
 	this->m_movementY = 0.0f;
-	this->m_mobility = 1.0f;
+
+	this->m_currentMobility = 1.0f;
+	this->m_previousMobility = this->m_currentMobility;
 
 	this->m_currentSize = PlayerBasics::playerSize;
-	this->m_previousSize = PlayerBasics::playerSize;
-
-	//this.m_controlRotation = 0;
-
-	//FVector m_velocity; // characterMovement->Velocity = this->m_basics.m_velocity
-	// TODO add other update variables
+	this->m_previousSize = this->m_currentSize;
 
 	this->m_jumpZVelocity = 0;
-	this->m_airControl = 0;
 
 	this->m_shouldJump = false;
+}
+
+float PlayerBasics::getJumpVelocity(float height)
+{
+	return sqrt(5000 * (height + ((PlayerBasics::playerSize - this->m_currentSize) / 20.0f))
+		* PlayerBasics::playerBaseGravity);
 }
 
 float PlayerBasics::getAnimationPoint(float x)
@@ -39,5 +41,6 @@ float PlayerBasics::getAnimationPoint(float x)
 
 void PlayerBasics::updateAttributes()
 {
+	this->m_previousMobility = this->m_currentMobility;
 	this->m_previousSize = this->m_currentSize;
 }

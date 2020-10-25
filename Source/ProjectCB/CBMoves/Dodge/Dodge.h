@@ -9,10 +9,7 @@ class PROJECTCB_API Dodge // Dodge Dip Duck Dive Dodge
 {
 private:
 
-	//Dodge_Hold m_dodgeHold;
-	//Dodge_Release m_dodgeRelease; // TODO remove
-
-	enum State { OFF = 0, START, DUCK, IDLE, JUMP, FALL, COOLDOWN } m_state;
+	enum State { OFF = 0, START, DUCK, IDLE, JUMP, COOLDOWN } m_state;
 
 	PlayerBasics* m_playerBasics;
 
@@ -20,23 +17,24 @@ private:
 
 	float m_diveProportion;
 
+	bool m_buffer;
+
 	float dodgeProportion(float dodgeValue, float diveValue);
 
+	void startDuck();
 	void startDodge();
 
-	void dodgeActionUpdate();
-
-	void dodgeCooldownUpdate();
-
-	void holdUpdate(float deltaTime);
+	void startUpdate(float deltaTime);
+	void duckUpdate(float deltaTime);
+	void idleUpdate(float deltaTime);
+	void jumpUpdate(float deltaTime);
+	void cooldownUpdate(float deltaTime);
 
 public:
 
 	Dodge(PlayerBasics& playerBasics);
 
 	void onPress();
-
 	void onRelease();
-
 	void update(float deltaTime);
 };

@@ -11,11 +11,9 @@ class PROJECTCB_API Dodge_Hold
 
 public:
 
+	static const float mobility;
 	static const float colliderSize;
-
-	static const float startupMobility;
-	static const float actionMobility;
-
+	
 	static const short startupFrames;
 	static const short actionFrames;
 };

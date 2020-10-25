@@ -106,7 +106,6 @@ void ACB_PlayerCharacter::playerUpdate()
 	{
 		characterMovement->Velocity = this->m_basics.m_velocity;
 		characterMovement->JumpZVelocity = this->m_basics.m_jumpZVelocity;
-		characterMovement->AirControl = this->m_basics.m_airControl;
 
 		Jump();
 
@@ -123,7 +122,8 @@ void ACB_PlayerCharacter::cameraUpdate()
 	this->m_basics.m_currentWorldLocationZ = ((1 - PlayerBasics::worldLocationProportionZ) * actorLocation.Z)
 		+ (PlayerBasics::worldLocationProportionZ * PlayerBasics::playerStartWorldLocationZ);
 
-	this->cameraArm->SetWorldLocation(FVector(currentLocation.X, actorLocation.Y + 100, this->m_basics.m_currentWorldLocationZ));
+	this->cameraArm->SetWorldLocation(FVector(currentLocation.X, actorLocation.Y /* + 100*/,
+		this->m_basics.m_currentWorldLocationZ));
 }
 
 void ACB_PlayerCharacter::adjustGravity(UCharacterMovementComponent* characterMovement)
@@ -144,7 +144,7 @@ void ACB_PlayerCharacter::MoveVertical(float amount)
 {
 	this->m_basics.m_movementX = amount;
 
-	amount *= this->m_basics.m_mobility;
+	amount *= this->m_basics.m_currentMobility;
 
 	if ((Controller != NULL) && (amount != 0.0f))
 	{
@@ -160,7 +160,7 @@ void ACB_PlayerCharacter::MoveHorizontal(float amount)
 {
 	this->m_basics.m_movementY = amount;
 
-	amount *= this->m_basics.m_mobility;
+	amount *= this->m_basics.m_currentMobility;
 
 	if ((Controller != NULL) && (amount != 0.0f))
 	{
