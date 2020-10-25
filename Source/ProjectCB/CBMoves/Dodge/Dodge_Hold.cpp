@@ -1,4 +1,4 @@
-
+#include "Dodge.h"
 #include "Dodge_Hold.h"
 
 const float Dodge_Hold::colliderSize = 25.0f;
@@ -9,45 +9,8 @@ const float Dodge_Hold::actionMobility = 0.0f;
 const short Dodge_Hold::startupFrames = 6;
 const short Dodge_Hold::actionFrames = 24;
 
-Dodge_Hold::Dodge_Hold()
+void Dodge::holdUpdate(float deltaTime)
 {
-	this->m_frame = false;
-}
-
-bool Dodge_Hold::isRunning()
-{
-	return this->m_startUpdater.shouldUpdate() || this->m_actionUpdater.shouldUpdate();
-}
-
-void Dodge_Hold::start()
-{
-	this->m_startUpdater.start();
-
-	//if (GEngine)
-	//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("STARTED")));
-}
-
-void Dodge_Hold::end()
-{
-	if (this->m_startUpdater.shouldUpdate())
-		this->m_startUpdater.end();
-
-	if (this->m_actionUpdater.shouldUpdate())
-		this->m_actionUpdater.end();
-
-	//if (GEngine)
-	//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("ENDED")));
-}
-
-void Dodge_Hold::update(float deltaTime)
-{
-	//this->m_startUpdater.update(deltaTime);
-
-	//this->m_actionUpdater.update(deltaTime);
-
-	if (this->m_frame == 1)
-		this->m_playerBasics->updateAttributes();
-
 	if (this->m_frame >= Dodge_Hold::startupFrames)
 	{
 		if (this->m_frame >= (Dodge_Hold::startupFrames + Dodge_Hold::actionFrames))
@@ -70,66 +33,33 @@ void Dodge_Hold::update(float deltaTime)
 	this->m_frame++;
 }
 
-// Start Updater
-
-Dodge_Hold::StartUpdater::StartUpdater(Dodge_Hold* const dodgeHold, unsigned short totalFrames)
-	: BoundedUpdater(totalFrames), m_dodgeHold(dodgeHold) {}
-
-void Dodge_Hold::StartUpdater::onStart()
+void Dodge::startDodge()
 {
-	this->m_dodgeHold->m_playerBasics->updateAttributes();
+	if (this->m_playerBasics->m_grounded)
+	{
+		this->m_state = JUMP;
+		this->m_frame = true;
 
-	//if (GEngine)
-	//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("START STARTED")));
+		const FRotator YawRotation(0, this->m_playerBasics->m_controlRotation.Yaw, 0);
 
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Start %d"),
-			this->getFrame()));
-}
+		FVector direction = (this->m_playerBasics->m_movementX * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X))
+			+ (this->m_playerBasics->m_movementY * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y));
 
-void Dodge_Hold::StartUpdater::onEnd()
-{
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Before %d"),
-			this->getFrame()));
+		direction = direction.Size() > 1 ? direction.GetUnsafeNormal() : direction;
 
-	this->m_dodgeHold->m_actionUpdater.start();
+		this->m_diveProportion = direction.Size();
 
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("After %d"), 
-			this->getFrame()));
+		this->m_playerBasics->m_velocity = (this->m_diveProportion * Dodge_Release::diveHorizontalVelocity)
+			* direction;
 
-	//if (GEngine)
-	//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("START ENDED")));
-}
+		this->m_playerBasics->m_jumpZVelocity = this->dodgeProportion(Dodge_Release::dodgeVelocity,
+			Dodge_Release::diveVerticalVelocity);
 
-void Dodge_Hold::StartUpdater::action(float deltaTime, float amount) {}
+		this->m_playerBasics->m_airControl = this->dodgeProportion(Dodge_Release::dodgeControl,
+			Dodge_Release::diveControl);
 
-// Action Updater
+		this->m_playerBasics->m_shouldJump = true;
 
-Dodge_Hold::ActionUpdater::ActionUpdater(Dodge_Hold* const dodgeHold, unsigned short totalFrames)
-	: BoundedUpdater(totalFrames), m_dodgeHold(dodgeHold) {}
-
-void Dodge_Hold::ActionUpdater::onStart()
-{
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("ACTION STARTED")));
-}
-
-void Dodge_Hold::ActionUpdater::onEnd()
-{
-	this->m_dodgeHold->m_playerBasics->m_mobility = Dodge_Hold::actionMobility;
-
-	this->m_dodgeHold->m_playerBasics->m_currentSize = Dodge_Hold::colliderSize;
-
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("ACTION ENDED")));
-}
-
-void Dodge_Hold::ActionUpdater::action(float deltaTime, float amount)
-{
-	amount = this->m_dodgeHold->m_playerBasics->getAnimationPoint(amount);
-
-	this->m_dodgeHold->m_playerBasics->m_currentSize = (1 - amount) * this->m_dodgeHold->m_playerBasics->m_previousSize
-		+ amount * Dodge_Hold::colliderSize;
+		this->m_playerBasics->updateAttributes();
+	}
 }

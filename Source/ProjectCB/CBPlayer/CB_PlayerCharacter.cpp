@@ -83,7 +83,7 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 
 	adjustGravity(characterMovement);
 
-	this->m_dodge.dodgeUpdate(DeltaTime);
+	this->m_dodge.update(DeltaTime);
 
 	UCapsuleComponent* capsuleComponent = GetCapsuleComponent();
 	capsuleComponent->SetCapsuleSize(25.0f, this->m_basics.m_currentSize);

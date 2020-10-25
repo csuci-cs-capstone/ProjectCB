@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "../../CBPlayer/PlayerBasics.h"
 
 struct PROJECTCB_API Dodge_Release
 {
@@ -32,17 +31,4 @@ struct PROJECTCB_API Dodge_Release
 
 	static const float dodgeVelocity;
 	static const float diveVerticalVelocity;
-
-	float m_diveProportion;
-
-	short m_dodgeFrame;
-	short m_dodgeCooldownFrame;
-
-	Dodge_Release();
-
-	inline float dodgeProportion(float dodgeValue, float diveValue);
-
-	void dodgeActionUpdate(PlayerBasics& playerBasics, bool grounded);
-
-	void dodgeCooldownUpdate(PlayerBasics& playerBasics);
 };

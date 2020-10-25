@@ -12,38 +12,23 @@ private:
 	//Dodge_Hold m_dodgeHold;
 	//Dodge_Release m_dodgeRelease; // TODO remove
 
+	enum State { OFF = 0, START, DUCK, IDLE, JUMP, FALL, COOLDOWN } m_state;
+
 	PlayerBasics* m_playerBasics;
 
-	struct Hold
-	{
-		enum State { OFF = 0, START, DUCK, IDLE } m_state;
+	unsigned short m_frame;
 
-		PlayerBasics* m_playerBasics;
+	float m_diveProportion;
 
-		unsigned short m_frame;
+	float dodgeProportion(float dodgeValue, float diveValue);
 
-		void update(float deltaTime);
-	};
+	void startDodge();
 
-	struct Release
-	{
-		enum State { OFF = 0, JUMP, FALL, COOLDOWN } m_state;
+	void dodgeActionUpdate();
 
-		unsigned short m_dodgeFrame, m_dodgeCooldownFrame;
+	void dodgeCooldownUpdate();
 
-		float m_diveProportion;
-
-		float dodgeProportion(float dodgeValue, float diveValue);
-
-		void dodgeActionUpdate(PlayerBasics& playerBasics);
-
-		void dodgeCooldownUpdate(PlayerBasics& playerBasics);
-	};
-
-	Hold m_hold;
-	Release m_release;
-
-	//enum State { OFF = 0, HOLD_START, HOLD_ACTION, HOLD_END } m_state;
+	void holdUpdate(float deltaTime);
 
 public:
 
@@ -53,5 +38,5 @@ public:
 
 	void onRelease();
 
-	void dodgeUpdate(float deltaTime);
+	void update(float deltaTime);
 };
