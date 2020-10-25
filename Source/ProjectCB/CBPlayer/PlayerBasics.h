@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include <math.h>
 
 struct PROJECTCB_API PlayerBasics
 {
@@ -18,43 +19,34 @@ struct PROJECTCB_API PlayerBasics
 
 	// Immutable
 
-	// TODO 'fix' the camera at the original center of character (based on character size) [smoothly update]
-		// make based on map? make off-center for better visualation of map and balls
-		// make player transparent?
-
 	float m_currentWorldLocationZ;
 
 	float m_movementX;
 	float m_movementY;
-	float m_mobility;
+
+	float m_currentMobility;
+	float m_previousMobility;
 
 	float m_currentSize;
 	float m_previousSize;
 
-	bool m_grounded; // TODO update all variables each frame (in beginning of frameUpdate)
+//////
 
-	// TODO make read only
-	FRotator m_controlRotation; // this->m_basics.m_controlRotation = Controller->GetControlRotation()
-	
-	FVector m_velocity; // characterMovement->Velocity = this->m_basics.m_velocity
-	// TODO add other update variables
+	bool m_grounded; // TODO should be read only
+
+	FRotator m_controlRotation;
+	FVector m_velocity; // TODO remove?
 
 	float m_jumpZVelocity;
-	float m_airControl;
 
 	bool m_shouldJump;
 
 	PlayerBasics();
 
-	//FRotator controlRotation();
-
-	//void setVelocity();
-
-	//void jump();
+	float getJumpVelocity(float height);
 
 	float getAnimationPoint(float x);
 
 	void updateAttributes();
 
-	
 };

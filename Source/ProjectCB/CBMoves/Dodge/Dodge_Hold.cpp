@@ -1,104 +1,93 @@
-
+#include "Dodge.h"
 #include "Dodge_Hold.h"
 
+const float Dodge_Hold::mobility = 0.0f;
 const float Dodge_Hold::colliderSize = 25.0f;
-
-const float Dodge_Hold::startupMobility = 0.0f;
-const float Dodge_Hold::actionMobility = 0.0f;
 
 const short Dodge_Hold::startupFrames = 6;
 const short Dodge_Hold::actionFrames = 24;
 
-Dodge_Hold::Dodge_Hold()
+void Dodge::startDuck()
 {
-	this->m_frame = false;
+	// Start Duck
+
+	this->m_state = START;
+	this->m_frame = true;
+
+	this->m_playerBasics->updateAttributes();
 }
 
-bool Dodge_Hold::isRunning()
+void Dodge::startDodge()
 {
-	return this->m_startUpdater.shouldUpdate() || this->m_actionUpdater.shouldUpdate();
+	const FRotator YawRotation(0, this->m_playerBasics->m_controlRotation.Yaw, 0);
+
+	FVector direction = (this->m_playerBasics->m_movementX * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X))
+		+ (this->m_playerBasics->m_movementY * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y));
+
+	direction = direction.Size() > 1 ? direction.GetUnsafeNormal() : direction;
+
+	this->m_diveProportion = direction.Size();
+
+	this->m_playerBasics->m_velocity = (this->m_diveProportion * Dodge_Release::diveHorizontalVelocity)
+		* direction;
+
+	this->m_playerBasics->m_jumpZVelocity = this->dodgeProportion(
+		this->m_playerBasics->getJumpVelocity(Dodge_Release::dodgeHeight),
+		this->m_playerBasics->getJumpVelocity(Dodge_Release::diveHeight));
+
+	this->m_playerBasics->m_shouldJump = true;
+
+	// Start Jump
+
+	this->m_state = JUMP;
+	this->m_frame = true;
+
+	this->m_playerBasics->updateAttributes();
 }
 
-void Dodge_Hold::start()
+void Dodge::startUpdate(float deltaTime)
 {
-	this->m_startUpdater.start();
-}
-
-void Dodge_Hold::end()
-{
-	if (this->m_startUpdater.shouldUpdate())
-		this->m_startUpdater.end();
-
-	else if (this->m_actionUpdater.shouldUpdate())
-		this->m_actionUpdater.end();
-}
-
-void Dodge_Hold::update(float deltaTime)
-{
-	//if (this->m_startUpdater.shouldUpdate())
-	//	this->m_startUpdater.update(deltaTime);
-
-	//else if (this->m_actionUpdater.shouldUpdate())
-	//	this->m_actionUpdater.update(deltaTime);
-
-	if (this->m_frame == 1)
-		this->m_playerBasics->updateAttributes();
-
 	if (this->m_frame >= Dodge_Hold::startupFrames)
 	{
-		if (this->m_frame >= (Dodge_Hold::startupFrames + Dodge_Hold::actionFrames))
-		{
-			this->m_playerBasics->m_mobility = Dodge_Hold::actionMobility;
+		// Start Duck
 
-			this->m_playerBasics->m_currentSize = Dodge_Hold::colliderSize;
-		}
-		else
-		{
-			float proportion = (this->m_frame - Dodge_Hold::startupFrames) / (Dodge_Hold::actionFrames * 1.0f);
+		this->m_state = DUCK;
+		this->m_frame = true;
 
-			proportion = this->m_playerBasics->getAnimationPoint(proportion);
-
-			this->m_playerBasics->m_currentSize = (1 - proportion) * this->m_playerBasics->m_previousSize
-				+ proportion * Dodge_Hold::colliderSize;
-		}
+		this->m_playerBasics->updateAttributes();
 	}
-
-	this->m_frame++;
+	else
+		this->m_frame++;
 }
 
-// Start Updater
-
-Dodge_Hold::StartUpdater::StartUpdater(Dodge_Hold* const dodgeHold, unsigned short totalFrames)
-	: BoundedUpdater(totalFrames), m_dodgeHold(dodgeHold) {}
-
-void Dodge_Hold::StartUpdater::onStart()
+void Dodge::duckUpdate(float deltaTime)
 {
-	this->m_dodgeHold->m_playerBasics->updateAttributes();
+	if (this->m_frame >= Dodge_Hold::actionFrames)
+	{
+		this->m_playerBasics->m_currentMobility = Dodge_Hold::mobility;
+		this->m_playerBasics->m_currentSize = Dodge_Hold::colliderSize;
+
+		// Start Idle
+
+		this->m_state = IDLE;
+		this->m_frame = true;
+
+		this->m_playerBasics->updateAttributes();
+	}
+	else
+	{
+		float proportion = this->m_frame / (Dodge_Hold::actionFrames * 1.0f);
+
+		proportion = this->m_playerBasics->getAnimationPoint(proportion);
+
+		this->m_playerBasics->m_currentMobility = (1 - proportion) * this->m_playerBasics->m_previousMobility
+			+ proportion * Dodge_Hold::mobility;
+
+		this->m_playerBasics->m_currentSize = (1 - proportion) * this->m_playerBasics->m_previousSize
+			+ proportion * Dodge_Hold::colliderSize;
+
+		this->m_frame++;
+	}
 }
 
-void Dodge_Hold::StartUpdater::onEnd()
-{
-	this->m_dodgeHold->m_actionUpdater.start();
-}
-
-void Dodge_Hold::StartUpdater::action(float deltaTime, float amount) {}
-
-// Action Updater
-
-Dodge_Hold::ActionUpdater::ActionUpdater(Dodge_Hold* const dodgeHold, unsigned short totalFrames)
-	: BoundedUpdater(totalFrames), m_dodgeHold(dodgeHold) {}
-
-void Dodge_Hold::ActionUpdater::onEnd()
-{
-	this->m_dodgeHold->m_playerBasics->m_mobility = Dodge_Hold::actionMobility;
-
-	this->m_dodgeHold->m_playerBasics->m_currentSize = Dodge_Hold::colliderSize;
-}
-
-void Dodge_Hold::ActionUpdater::action(float deltaTime, float amount)
-{
-	amount = this->m_dodgeHold->m_playerBasics->getAnimationPoint(amount);
-
-	this->m_dodgeHold->m_playerBasics->m_currentSize = (1 - amount) * this->m_dodgeHold->m_playerBasics->m_previousSize
-		+ amount * Dodge_Hold::colliderSize;
-}
+void Dodge::idleUpdate(float deltaTime) {}

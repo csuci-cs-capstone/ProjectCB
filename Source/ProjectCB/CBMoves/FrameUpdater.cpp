@@ -27,16 +27,19 @@ void FrameUpdater::start()
 
 void FrameUpdater::end()
 {
-	this->m_frame = false;
+	this->m_frame = 0;
 
 	onEnd();
 }
 
 void FrameUpdater::update(float deltaTime)
 {
-	run(deltaTime);
+	if (this->shouldUpdate())
+	{
+		run(deltaTime);
 
-	this->m_frame++;
+		this->m_frame++;
+	}
 }
 
 
