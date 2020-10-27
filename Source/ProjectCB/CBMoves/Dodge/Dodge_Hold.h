@@ -6,9 +6,6 @@
 
 class PROJECTCB_API Dodge_Hold
 {
-	// TODO The additional height required by jump to be equal is equal to...
-		// (StartSize - CurrentSize) / 2
-
 public:
 
 	static const float mobility;
