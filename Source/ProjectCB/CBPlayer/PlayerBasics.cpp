@@ -12,8 +12,8 @@ const float PlayerBasics::worldLocationProportionZ = 0.75f;
 
 PlayerBasics::PlayerBasics()
 {
-	this->m_playerState = ALIVE;
-	this->m_dodgeState = OFF;
+	this->m_playerState = PLAYER_ALIVE;
+	this->m_dodgeState = DODGE_OFF;
 
 	this->m_currentWorldLocationZ = PlayerBasics::playerStartWorldLocationZ;
 
