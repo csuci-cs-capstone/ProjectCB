@@ -5,7 +5,7 @@ const float Dodge_Hold::mobility = 0.0f;
 const float Dodge_Hold::colliderSize = 25.0f;
 
 const short Dodge_Hold::startupFrames = 6;
-const short Dodge_Hold::actionFrames = 24;
+const short Dodge_Hold::actionFrames = 9;
 
 void Dodge::startDuck()
 {
@@ -26,12 +26,12 @@ void Dodge::startDodge()
 
 	direction = direction.Size() > 1 ? direction.GetUnsafeNormal() : direction;
 
-	this->m_diveProportion = direction.Size();
+	this->m_dodgeProportion.m_proportion = 1 - direction.Size();
 
-	this->m_playerBasics->m_velocity = (this->m_diveProportion * Dodge_Release::diveHorizontalVelocity)
+	this->m_playerBasics->m_velocity = (this->m_dodgeProportion.invProp() * Dodge_Release::diveHorizontalVelocity)
 		* direction;
 
-	this->m_playerBasics->m_jumpZVelocity = this->dodgeProportion(
+	this->m_playerBasics->m_jumpZVelocity = this->m_dodgeProportion.getProportion(
 		this->m_playerBasics->getJumpVelocity(Dodge_Release::dodgeHeight),
 		this->m_playerBasics->getJumpVelocity(Dodge_Release::diveHeight));
 
@@ -76,15 +76,15 @@ void Dodge::duckUpdate(float deltaTime)
 	}
 	else
 	{
-		float proportion = this->m_frame / (Dodge_Hold::actionFrames * 1.0f);
+		float prop = this->m_frame / (Dodge_Hold::actionFrames * 1.0f);
+		prop = this->m_playerBasics->getAnimationPoint(prop);
+		Proportion proportion(prop);
 
-		proportion = this->m_playerBasics->getAnimationPoint(proportion);
+		this->m_playerBasics->m_currentMobility = proportion.getProportion(Dodge_Hold::mobility,
+			this->m_playerBasics->m_previousMobility);
 
-		this->m_playerBasics->m_currentMobility = (1 - proportion) * this->m_playerBasics->m_previousMobility
-			+ proportion * Dodge_Hold::mobility;
-
-		this->m_playerBasics->m_currentSize = (1 - proportion) * this->m_playerBasics->m_previousSize
-			+ proportion * Dodge_Hold::colliderSize;
+		this->m_playerBasics->m_currentSize = proportion.getProportion(Dodge_Hold::colliderSize,
+			this->m_playerBasics->m_previousSize);
 
 		this->m_frame++;
 	}
