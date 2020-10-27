@@ -1,5 +1,6 @@
 #include "Dodge.h"
 #include "Dodge_Release.h"
+#include "../../CBMath/Proportion.h"
 
 // Dodge (Release)
 
@@ -24,54 +25,51 @@ const float Dodge_Release::diveCooldownMobility = 0.0f;
 const short Dodge_Release::diveCooldownFrames = 60;
 const short Dodge_Release::diveFramesToApex = 5;
 
-float Dodge::dodgeProportion(float dodgeValue, float diveValue)
-{
-	return (1 - this->m_diveProportion) * dodgeValue + this->m_diveProportion * diveValue;
-}
-
 void Dodge::jumpUpdate(float deltaTime)
 {
-	this->m_playerBasics->m_currentMobility = this->dodgeProportion(Dodge_Release::dodgeMobility,
+	this->m_playerBasics->m_currentMobility = this->m_dodgeProportion.getProportion(Dodge_Release::dodgeMobility,
 		Dodge_Release::diveMobility);
 
-	float proportion = this->m_frame / this->dodgeProportion(Dodge_Release::dodgeFramesToApex,
+	float prop = this->m_frame / this->m_dodgeProportion.getProportion(Dodge_Release::dodgeFramesToApex,
 		Dodge_Release::diveFramesToApex);
 
 	// TODO make rotate for dive
 
-	if (proportion >= 1)
+	if (prop >= 1)
 	{
-		if (proportion >= 2)
+		if (prop >= 2)
 		{
-			this->m_playerBasics->m_currentSize = this->dodgeProportion(Dodge_Release::dodgeEndColliderSize,
+			this->m_playerBasics->m_currentSize = this->m_dodgeProportion.getProportion(Dodge_Release::dodgeEndColliderSize,
 				Dodge_Release::diveEndColliderSize);
 		}
 		else
 		{
 			// Update Jump Fall
 
-			proportion = this->m_playerBasics->getAnimationPoint(proportion - 1);
+			prop = this->m_playerBasics->getAnimationPoint(prop - 1);
+			Proportion proportion(prop);
 
-			float apexColliderSize = this->dodgeProportion(Dodge_Release::dodgeApexColliderSize,
+			float apexColliderSize = this->m_dodgeProportion.getProportion(Dodge_Release::dodgeApexColliderSize,
 				Dodge_Release::diveApexColliderSize);
 
-			float endColliderSize = this->dodgeProportion(Dodge_Release::dodgeEndColliderSize,
+			float endColliderSize = this->m_dodgeProportion.getProportion(Dodge_Release::dodgeEndColliderSize,
 				Dodge_Release::diveEndColliderSize);
 
-			this->m_playerBasics->m_currentSize = ((1 - proportion) * apexColliderSize) + (proportion * endColliderSize);
+			this->m_playerBasics->m_currentSize = proportion.getProportion(endColliderSize, apexColliderSize);
 		}
 	}
 	else
 	{
 		// Update Jump Rise
 
-		proportion = this->m_playerBasics->getAnimationPoint(proportion);
+		prop = this->m_playerBasics->getAnimationPoint(prop);
+		Proportion proportion(prop);
 
-		float apexColliderSize = this->dodgeProportion(Dodge_Release::dodgeApexColliderSize,
+		float apexColliderSize = this->m_dodgeProportion.getProportion(Dodge_Release::dodgeApexColliderSize,
 			Dodge_Release::diveApexColliderSize);
 
-		this->m_playerBasics->m_currentSize = (1 - proportion) * this->m_playerBasics->m_previousSize
-			+ proportion * apexColliderSize;
+		this->m_playerBasics->m_currentSize = proportion.getProportion(apexColliderSize,
+			this->m_playerBasics->m_previousSize);
 	}
 
 	if (this->m_playerBasics->m_grounded)
@@ -89,10 +87,11 @@ void Dodge::jumpUpdate(float deltaTime)
 
 void Dodge::cooldownUpdate(float deltaTime)
 {
-	this->m_playerBasics->m_currentMobility = this->dodgeProportion(Dodge_Release::dodgeCooldownMobility,
+	this->m_playerBasics->m_currentMobility = this->m_dodgeProportion.getProportion(Dodge_Release::dodgeCooldownMobility,
 		Dodge_Release::diveCooldownMobility);
 
-	short maxCooldownFrames = this->dodgeProportion(Dodge_Release::dodgeCooldownFrames, Dodge_Release::diveCooldownFrames);
+	short maxCooldownFrames = this->m_dodgeProportion.getProportion(Dodge_Release::dodgeCooldownFrames,
+		Dodge_Release::diveCooldownFrames);
 
 	if (this->m_frame >= maxCooldownFrames)
 	{
@@ -110,10 +109,12 @@ void Dodge::cooldownUpdate(float deltaTime)
 	{
 		// Cooldown Update
 
-		float proportion = this->m_playerBasics->getAnimationPoint(this->m_frame / (maxCooldownFrames * 1.0f));
+		float prop = this->m_frame / (maxCooldownFrames * 1.0f);
+		prop = this->m_playerBasics->getAnimationPoint(prop);
+		Proportion proportion(prop);
 
-		this->m_playerBasics->m_currentSize = ((1 - proportion) * this->m_playerBasics->m_previousSize)
-			+ (proportion * PlayerBasics::playerSize);
+		this->m_playerBasics->m_currentSize = proportion.getProportion(PlayerBasics::playerSize,
+			this->m_playerBasics->m_previousSize);
 
 		this->m_frame++;
 	}

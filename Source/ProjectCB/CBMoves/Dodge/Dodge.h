@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "../../CBPlayer/PlayerBasics.h"
+#include "../../CBMath/Proportion.h"
 #include "Dodge_Hold.h"
 #include "Dodge_Release.h"
 
@@ -15,11 +16,9 @@ private:
 
 	unsigned short m_frame;
 
-	float m_diveProportion;
+	Proportion m_dodgeProportion;
 
 	bool m_buffer;
-
-	float dodgeProportion(float dodgeValue, float diveValue);
 
 	void startDuck();
 	void startDodge();
