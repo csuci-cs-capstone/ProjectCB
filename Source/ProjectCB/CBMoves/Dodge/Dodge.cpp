@@ -15,7 +15,7 @@ void Dodge::onPress()
 
 void Dodge::onRelease()
 {
-	if (this->m_playerBasics->m_dodgeState != PlayerBasics::DodgeState::COOLDOWN && this->m_playerBasics->m_grounded)
+	if (this->m_playerBasics->m_dodgeState != PlayerBasics::DODGE_COOLDOWN && this->m_playerBasics->m_grounded)
 		this->startDodge();
 
 	this->m_buffer = false;
@@ -25,19 +25,19 @@ void Dodge::update(float deltaTime)
 {
 	switch (this->m_playerBasics->m_dodgeState)
 	{
-		case PlayerBasics::DodgeState::START:
+		case PlayerBasics::DODGE_STARTUP:
 			this->startUpdate(deltaTime);
 			break;
-		case PlayerBasics::DodgeState::DUCK:
+		case PlayerBasics::DODGE_DUCK:
 			this->duckUpdate(deltaTime);
 			break;
-		case PlayerBasics::DodgeState::IDLE:
+		case PlayerBasics::DODGE_IDLE:
 			this->idleUpdate(deltaTime);
 			break;
-		case PlayerBasics::DodgeState::JUMP:
+		case PlayerBasics::DODGE_JUMP:
 			this->jumpUpdate(deltaTime);
 			break;
-		case PlayerBasics::DodgeState::COOLDOWN:
+		case PlayerBasics::DODGE_COOLDOWN:
 			this->cooldownUpdate(deltaTime);
 			break;
 		default:

@@ -1,7 +1,7 @@
 #include "Dodge.h"
 #include "Dodge_Hold.h"
 
-const float Dodge_Hold::mobility = 0.0f;
+const float Dodge_Hold::mobility = 0.5f;
 const float Dodge_Hold::colliderSize = 25.0f;
 
 const short Dodge_Hold::startupFrames = 6;
@@ -11,7 +11,7 @@ void Dodge::startDuck()
 {
 	// Start Duck
 
-	this->m_playerBasics->m_dodgeState = PlayerBasics::DodgeState::START;
+	this->m_playerBasics->m_dodgeState = PlayerBasics::DODGE_STARTUP;
 	this->m_frame = true;
 
 	this->m_playerBasics->updateAttributes();
@@ -39,7 +39,7 @@ void Dodge::startDodge()
 
 	// Start Jump
 
-	this->m_playerBasics->m_dodgeState = PlayerBasics::DodgeState::JUMP;
+	this->m_playerBasics->m_dodgeState = PlayerBasics::DODGE_JUMP;
 	this->m_frame = true;
 
 	this->m_playerBasics->updateAttributes();
@@ -51,7 +51,7 @@ void Dodge::startUpdate(float deltaTime)
 	{
 		// Start Duck
 
-		this->m_playerBasics->m_dodgeState = PlayerBasics::DodgeState::DUCK;
+		this->m_playerBasics->m_dodgeState = PlayerBasics::DODGE_DUCK;
 		this->m_frame = true;
 
 		this->m_playerBasics->updateAttributes();
@@ -69,7 +69,7 @@ void Dodge::duckUpdate(float deltaTime)
 
 		// Start Idle
 
-		this->m_playerBasics->m_dodgeState = PlayerBasics::DodgeState::IDLE;
+		this->m_playerBasics->m_dodgeState = PlayerBasics::DODGE_IDLE;
 		this->m_frame = true;
 
 		this->m_playerBasics->updateAttributes();

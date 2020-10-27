@@ -76,7 +76,7 @@ void Dodge::jumpUpdate(float deltaTime)
 	{
 		// Start Cooldown
 
-		this->m_playerBasics->m_dodgeState = PlayerBasics::DodgeState::COOLDOWN;
+		this->m_playerBasics->m_dodgeState = PlayerBasics::DODGE_COOLDOWN;
 		this->m_frame = true;
 
 		this->m_playerBasics->updateAttributes();
@@ -97,7 +97,7 @@ void Dodge::cooldownUpdate(float deltaTime)
 	{
 		// End Dodge
 
-		this->m_playerBasics->m_dodgeState = PlayerBasics::DodgeState::OFF;
+		this->m_playerBasics->m_dodgeState = PlayerBasics::DODGE_OFF;
 		this->m_frame = false;
 
 		this->m_playerBasics->m_currentMobility = 1;
