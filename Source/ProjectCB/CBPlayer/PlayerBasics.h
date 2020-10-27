@@ -19,6 +19,9 @@ struct PROJECTCB_API PlayerBasics
 
 	// Immutable
 
+	enum PlayerState { ALIVE = 0, GHOST } m_playerState;
+	enum DodgeState { OFF = 0, START, DUCK, IDLE, JUMP, COOLDOWN } m_dodgeState;
+
 	float m_currentWorldLocationZ;
 
 	float m_movementX;

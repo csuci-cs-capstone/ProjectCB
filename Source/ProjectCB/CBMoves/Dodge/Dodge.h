@@ -10,8 +10,6 @@ class PROJECTCB_API Dodge // Dodge Dip Duck Dive Dodge
 {
 private:
 
-	enum State { OFF = 0, START, DUCK, IDLE, JUMP, COOLDOWN } m_state;
-
 	PlayerBasics* m_playerBasics;
 
 	unsigned short m_frame;

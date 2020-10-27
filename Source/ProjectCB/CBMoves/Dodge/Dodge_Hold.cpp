@@ -11,7 +11,7 @@ void Dodge::startDuck()
 {
 	// Start Duck
 
-	this->m_state = START;
+	this->m_playerBasics->m_dodgeState = PlayerBasics::DodgeState::START;
 	this->m_frame = true;
 
 	this->m_playerBasics->updateAttributes();
@@ -39,7 +39,7 @@ void Dodge::startDodge()
 
 	// Start Jump
 
-	this->m_state = JUMP;
+	this->m_playerBasics->m_dodgeState = PlayerBasics::DodgeState::JUMP;
 	this->m_frame = true;
 
 	this->m_playerBasics->updateAttributes();
@@ -51,7 +51,7 @@ void Dodge::startUpdate(float deltaTime)
 	{
 		// Start Duck
 
-		this->m_state = DUCK;
+		this->m_playerBasics->m_dodgeState = PlayerBasics::DodgeState::DUCK;
 		this->m_frame = true;
 
 		this->m_playerBasics->updateAttributes();
@@ -69,7 +69,7 @@ void Dodge::duckUpdate(float deltaTime)
 
 		// Start Idle
 
-		this->m_state = IDLE;
+		this->m_playerBasics->m_dodgeState = PlayerBasics::DodgeState::IDLE;
 		this->m_frame = true;
 
 		this->m_playerBasics->updateAttributes();
