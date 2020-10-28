@@ -20,13 +20,13 @@ public:
 
 private:
 
-	FVector m_throwDirection = FVector(1, 0, 0.05).GetUnsafeNormal();
+	FVector m_throwDirection = FVector(1, 0, 0.05).GetUnsafeNormal(); // TODO make players rotation
 
 	// General
 	
 	PlayerBasics m_basics;
 
-	void playerUpdate();
+	void playerUpdate(float deltaTime);
 
 	void cameraUpdate();
 

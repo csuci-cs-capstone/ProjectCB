@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include <math.h>
+#include "../CBMoves/Movement/Movement.h"
 
 struct PROJECTCB_API PlayerBasics
 {
@@ -35,6 +36,10 @@ struct PROJECTCB_API PlayerBasics
 	float m_previousSize;
 
 //////
+
+	Movement m_movement;
+
+/////
 
 	bool m_grounded; // TODO should be read only
 
