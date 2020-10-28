@@ -77,7 +77,7 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	playerUpdate();
+	playerUpdate(DeltaTime);
 
 	UCharacterMovementComponent* characterMovement = GetCharacterMovement();
 
@@ -94,7 +94,7 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 		this->m_frameCounter++;
 }
 
-void ACB_PlayerCharacter::playerUpdate()
+void ACB_PlayerCharacter::playerUpdate(float deltaTime)
 {
 	this->m_basics.m_controlRotation = Controller->GetControlRotation();
 
@@ -102,15 +102,18 @@ void ACB_PlayerCharacter::playerUpdate()
 
 	this->m_basics.m_grounded = characterMovement->IsMovingOnGround();
 
-	if (this->m_basics.m_shouldJump)
+	if (this->m_basics.m_shouldJump) // TODO set jump movement to 1 to jump
 	{
-		characterMovement->Velocity = this->m_basics.m_velocity;
+		characterMovement->Velocity = this->m_basics.m_velocity; // TODO remove
 		characterMovement->JumpZVelocity = this->m_basics.m_jumpZVelocity;
 
 		Jump();
 
 		this->m_basics.m_shouldJump = false;
 	}
+
+	this->m_basics.m_movement.updateVelocity();
+	this->AddMovementInput(FVector(this->m_basics.m_movement.m_currentVelocity, 0.0f), deltaTime); // TODO make jump velocity
 }
 
 void ACB_PlayerCharacter::cameraUpdate()
@@ -153,6 +156,7 @@ void ACB_PlayerCharacter::MoveVertical(float amount)
 
 		const FVector movementDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		AddMovementInput(movementDirection, amount);
+		//this->m_basics.m_movement.m_inputVelocity.X = amount * movementDirection.X;
 	}
 }
 
@@ -169,12 +173,13 @@ void ACB_PlayerCharacter::MoveHorizontal(float amount)
 
 		const FVector movementDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		AddMovementInput(movementDirection, amount);
+		//this->m_basics.m_movement.m_inputVelocity.Y = amount * movementDirection.Y;
 	}
 }
 
 void ACB_PlayerCharacter::LookVertical(float amount)
 {
-	AddControllerPitchInput(amount * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+	//AddControllerPitchInput(amount * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 	//AddControllerYawInput(amount * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
@@ -193,13 +198,13 @@ void ACB_PlayerCharacter::StopJumpAction()
 	this->m_dodge.onRelease();
 }
 
-void ACB_PlayerCharacter::RunAction()
+void ACB_PlayerCharacter::RunAction() // TODO rename to FrameDebug
 {
 	// Frame counter (counts the number of frames held down for)
 	this->m_frameCounterActive = true;
 }
 
-void ACB_PlayerCharacter::StopRunAction()
+void ACB_PlayerCharacter::StopRunAction() // TODO rename to StopFrameDebug
 {
 	this->m_frameCounterActive = false;
 	if (GEngine)
