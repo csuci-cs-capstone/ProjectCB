@@ -5,6 +5,9 @@ const float Movement::deceleration = Movement::acceleration * 2;
 
 Movement::Movement()
 {
+	this->m_inputVelocity.X = 0.0f;
+	this->m_inputVelocity.Y = 0.0f;
+
 	this->m_currentVelocity.X = 0;
 	this->m_currentVelocity.Y = 0;
 }
@@ -21,5 +24,4 @@ void Movement::updateVelocity()
 		this->m_currentVelocity = this->m_inputVelocity;
 	else
 		this->m_currentVelocity += diff * (accAmount / diffMag);
-
 }
