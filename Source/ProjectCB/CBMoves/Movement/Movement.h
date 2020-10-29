@@ -5,6 +5,8 @@
 
 struct PROJECTCB_API Movement
 {
+	// TODO add other movement variables here
+
 	static const float acceleration; // between 0 and 1
 	static const float deceleration; // between 0 and 1
 

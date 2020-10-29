@@ -51,7 +51,7 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 
 	this->cameraArm = CreateDefaultSubobject<USpringArmComponent>("CameraSpringArm");
 	this->cameraArm->SetupAttachment(staticMesh);
-	this->cameraArm->TargetArmLength = 285.0f;
+	this->cameraArm->TargetArmLength = 500.0f;// 285.0f;
 	
 	 
 	this->camera = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
@@ -127,6 +127,16 @@ void ACB_PlayerCharacter::cameraUpdate()
 	FVector currentLocation = this->cameraArm->GetComponentLocation();
 
 	FVector actorLocation = this->GetActorLocation();
+
+	//FRotator newRotation = this->GetActorRotation();
+	//newRotation.Yaw = 45;
+	//this->SetActorRotation(newRotation);
+
+	//this->cameraArm->SetRelativeRotation(FRotator(-20.0f, 45.0f, 0.0f));
+
+		// TODO update cameraArm relative rotation for the camera and update the actor rotation for player rotation
+
+	this->camera->SetRelativeLocation(FVector(0.0f, 100.0f, 0.0f));
 
 	this->m_basics.m_currentWorldLocationZ = ((1 - PlayerBasics::worldLocationProportionZ) * actorLocation.Z)
 		+ (PlayerBasics::worldLocationProportionZ * PlayerBasics::playerStartWorldLocationZ);

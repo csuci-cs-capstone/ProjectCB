@@ -1,5 +1,5 @@
-#include "Dodge.h"
 #include "Dodge_Hold.h"
+#include "Dodge.h"
 
 const float Dodge_Hold::mobility = 0.5f;
 const float Dodge_Hold::colliderSize = 25.0f;
