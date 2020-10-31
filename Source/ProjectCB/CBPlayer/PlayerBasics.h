@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include <math.h>
 #include "../CBMoves/Movement/Movement.h"
+#include "../CBMoves/Movement/CameraMovement.h"
 
 struct PROJECTCB_API PlayerBasics
 {
@@ -38,6 +39,7 @@ struct PROJECTCB_API PlayerBasics
 //////
 
 	Movement m_movement;
+	CameraMovement m_cameraMovement;
 
 /////
 

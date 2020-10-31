@@ -1,12 +1,12 @@
-#include "Dodge.h"
 #include "Dodge_Release.h"
+#include "Dodge.h"
 #include "../../CBMath/Proportion.h"
 
 // Dodge (Release)
 
 const float Dodge_Release::dodgeHeight = 75.0f;
-const float Dodge_Release::dodgeMobility = 0.0f;
-const float Dodge_Release::dodgeApexColliderSize = 25.0f; // 25
+const float Dodge_Release::dodgeMobility = 0.5f; // TODO fix, allow for mobility mid air
+const float Dodge_Release::dodgeApexColliderSize = 25.0f;
 const float Dodge_Release::dodgeEndColliderSize = 50.0f;
 const float Dodge_Release::dodgeCooldownMobility = 0.0f;
 
@@ -17,13 +17,13 @@ const short Dodge_Release::dodgeFramesToApex = 7; // TODO change
 
 const float Dodge_Release::diveHeight = Dodge_Release::dodgeHeight / 1.5f;
 const float Dodge_Release::diveHorizontalVelocity = 1.75f * PlayerBasics::playerWalkSpeed;
-const float Dodge_Release::diveMobility = 0.0f;
+const float Dodge_Release::diveMobility = 0.5f;
 const float Dodge_Release::diveApexColliderSize = 25.0f;
 const float Dodge_Release::diveEndColliderSize = 50.0f;
 const float Dodge_Release::diveCooldownMobility = 0.0f;
 
 const short Dodge_Release::diveCooldownFrames = 60;
-const short Dodge_Release::diveFramesToApex = 5;
+const short Dodge_Release::diveFramesToApex = 5; // TODO change
 
 void Dodge::jumpUpdate(float deltaTime)
 {
