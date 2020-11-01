@@ -31,6 +31,8 @@ public:
 	void LookVertical(float amount);
 	void LookHorizontal(float amount);
 
+	void RotateCamera(float amount);
+
 	void JumpAction();
 	void StopJumpAction();
 

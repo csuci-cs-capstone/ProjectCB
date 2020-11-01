@@ -31,11 +31,11 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 
 	//TODO Make run and walk speed, hook up functions from input and add them to movement
 	//TODO Make some fields UPROPERTIES so we can edit them
-	BaseTurnRate = 45.f;
+	BaseTurnRate = 45.f; // TODO remove
 	BaseLookUpRate = 45.f;
 
 	//Customize the character movement component here!
-	GetCharacterMovement()->MaxWalkSpeed = PlayerBasics::playerWalkSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = Movement::playerWalkSpeed;
 	GetCharacterMovement()->GravityScale = PlayerBasics::playerBaseGravity;
 	//GetCharacterMovement()->JumpZVelocity = this->m_jumpVelocity;
 	//GetCharacterMovement()->AirControl = this->m_jumpControl;
@@ -125,24 +125,15 @@ void ACB_PlayerCharacter::playerUpdate(float deltaTime)
 void ACB_PlayerCharacter::cameraUpdate()
 {
 	FVector currentLocation = this->cameraArm->GetComponentLocation();
+	const FRotator& playerRotation = this->m_basics.m_movement.getPlayerRotation();
 
-	FVector actorLocation = this->GetActorLocation();
+	this->GetCapsuleComponent()->SetRelativeRotation(playerRotation);
+	this->cameraArm->SetRelativeRotation(this->m_basics.m_cameraMovement.getCameraRotation() - playerRotation);
 
-	//FRotator newRotation = this->GetActorRotation();
-	//newRotation.Yaw = 45;
-	//this->SetActorRotation(newRotation);
-
-	//this->cameraArm->SetRelativeRotation(FRotator(-20.0f, 45.0f, 0.0f));
-
-		// TODO update cameraArm relative rotation for the camera and update the actor rotation for player rotation
-
-	this->camera->SetRelativeLocation(FVector(0.0f, 100.0f, 0.0f));
-
-	this->m_basics.m_currentWorldLocationZ = ((1 - PlayerBasics::worldLocationProportionZ) * actorLocation.Z)
+	this->m_basics.m_currentWorldLocationZ = ((1 - PlayerBasics::worldLocationProportionZ) * this->GetActorLocation().Z)
 		+ (PlayerBasics::worldLocationProportionZ * PlayerBasics::playerStartWorldLocationZ);
 
-	this->cameraArm->SetWorldLocation(FVector(currentLocation.X, actorLocation.Y /* + 100*/,
-		this->m_basics.m_currentWorldLocationZ));
+	this->cameraArm->SetWorldLocation(FVector(currentLocation.X, currentLocation.Y, this->m_basics.m_currentWorldLocationZ));
 }
 
 void ACB_PlayerCharacter::adjustGravity(UCharacterMovementComponent* characterMovement)
@@ -168,7 +159,7 @@ void ACB_PlayerCharacter::MoveVertical(float amount)
 	if ((Controller != NULL) && (amount != 0.0f))
 	{
 		const FRotator controlRotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, controlRotation.Yaw, 0);
+		const FRotator YawRotation(0, controlRotation.Yaw + this->m_basics.m_cameraMovement.getCameraRotation().Yaw, 0);
 
 		const FVector movementDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		this->m_basics.m_movement.m_inputVelocity.X += amount * movementDirection.X;
@@ -185,7 +176,7 @@ void ACB_PlayerCharacter::MoveHorizontal(float amount)
 	if ((Controller != NULL) && (amount != 0.0f))
 	{
 		const FRotator controlRotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, controlRotation.Yaw, 0);
+		const FRotator YawRotation(0, controlRotation.Yaw + this->m_basics.m_cameraMovement.getCameraRotation().Yaw, 0);
 
 		const FVector movementDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		this->m_basics.m_movement.m_inputVelocity.X += amount * movementDirection.X;
@@ -199,9 +190,14 @@ void ACB_PlayerCharacter::LookVertical(float amount)
 	//AddControllerYawInput(amount * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
-void ACB_PlayerCharacter::LookHorizontal(float amount)
+void ACB_PlayerCharacter::LookHorizontal(float amount) // TODO remove?
 {	
 	AddControllerYawInput(amount * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+}
+
+void ACB_PlayerCharacter::RotateCamera(float amount)
+{
+	this->m_basics.m_cameraMovement.updateCamera(amount);
 }
 
 void ACB_PlayerCharacter::JumpAction()
@@ -245,16 +241,22 @@ void ACB_PlayerCharacter::ShootAction()
 		FTransform spawnTransform;
 
 		//Scale forward vector by 20.0f so it won't clip into the capsule collider
-		FVector spawnLocation = GetActorForwardVector() * 125.0f + FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 35.0f);
+		FVector spawnLocation = GetActorForwardVector() * 125.0f
+			+ FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z);
 
-		FRotator spawnRotation(Controller->GetControlRotation().Pitch, GetActorRotation().Yaw, 0);
+		const FRotator& cameraRotation = this->m_basics.m_cameraMovement.getCameraRotation();
+		const FRotator& playerRotation = this->m_basics.m_cameraMovement.getCameraRotation();
+
+		FRotator spawnRotation(Controller->GetControlRotation().Pitch,
+			GetActorRotation().Yaw + cameraRotation.Yaw - playerRotation.Yaw, 0);
 
 		spawnTransform.SetLocation(spawnLocation);
 		spawnTransform.SetScale3D(FVector(0.5f));
 
-		auto dodgeball = GetWorld()->SpawnActor<ACB_DodgeballProjectile>(this->DodgeballProjectileClass, spawnTransform, spawnParameters);
+		auto dodgeball = GetWorld()->SpawnActor<ACB_DodgeballProjectile>(this->DodgeballProjectileClass,
+			spawnTransform, spawnParameters);
 
-		dodgeball->launch(Controller->GetControlRotation().RotateVector(this->m_throwDirection));
+		dodgeball->launch(spawnRotation.RotateVector(this->m_throwDirection));
 	}
 }
 

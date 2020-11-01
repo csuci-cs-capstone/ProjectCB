@@ -20,7 +20,7 @@ public:
 
 private:
 
-	FVector m_throwDirection = FVector(1, 0, 0.05).GetUnsafeNormal(); // TODO make players rotation
+	FVector m_throwDirection = FVector(1, 0, 0.025).GetUnsafeNormal(); // TODO make players rotation
 
 	// General
 	
@@ -64,7 +64,7 @@ protected:
 
 public:
 
-	float BaseTurnRate;
+	float BaseTurnRate; // TODO remove
 	float BaseLookUpRate;
 
 	// Called every frame
@@ -77,6 +77,8 @@ public:
 	void MoveHorizontal(float amount);
 	void LookVertical(float amount);
 	void LookHorizontal(float amount);
+
+	void RotateCamera(float amount);
 
 	void JumpAction();
 	void StopJumpAction();

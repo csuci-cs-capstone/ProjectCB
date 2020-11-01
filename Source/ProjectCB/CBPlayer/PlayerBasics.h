@@ -9,8 +9,6 @@ struct PROJECTCB_API PlayerBasics
 {
 	// Mutable
 
-	static const float playerWalkSpeed;
-
 	static const float playerSize;
 
 	static const float playerBaseGravity;

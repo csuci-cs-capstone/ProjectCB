@@ -1,5 +1,8 @@
 #include "Movement.h"
+#include <math.h>
+#include "../../CBMath/MathConstants.h"
 
+const float Movement::playerWalkSpeed = 500.0f;
 const float Movement::acceleration = 1.0f / 8;
 const float Movement::deceleration = Movement::acceleration * 2;
 
@@ -8,8 +11,10 @@ Movement::Movement()
 	this->m_inputVelocity.X = 0.0f;
 	this->m_inputVelocity.Y = 0.0f;
 
-	this->m_currentVelocity.X = 0;
-	this->m_currentVelocity.Y = 0;
+	this->m_currentVelocity.X = 0.0f;
+	this->m_currentVelocity.Y = 0.0f;
+
+	this->m_playerRotation = FRotator(0.0f, 0.0f, 0.0f);
 }
 
 void Movement::updateVelocity()
@@ -24,4 +29,13 @@ void Movement::updateVelocity()
 		this->m_currentVelocity = this->m_inputVelocity;
 	else
 		this->m_currentVelocity += diff * (accAmount / diffMag);
+
+	if (!this->m_currentVelocity.IsNearlyZero())
+		this->m_playerRotation.Yaw = MathConstants::RAD_TO_DEG
+			* atan2f(this->m_currentVelocity.Y, this->m_currentVelocity.X);
+}
+
+const FRotator& Movement::getPlayerRotation()
+{
+	return this->m_playerRotation;
 }

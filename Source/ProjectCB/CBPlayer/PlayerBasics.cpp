@@ -1,7 +1,5 @@
 #include "PlayerBasics.h"
 
-const float PlayerBasics::playerWalkSpeed = 500.0f;
-
 const float PlayerBasics::playerSize = 50.0f;
 
 const float PlayerBasics::playerBaseGravity = 4.0f;
