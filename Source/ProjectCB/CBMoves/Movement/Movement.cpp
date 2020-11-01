@@ -3,8 +3,8 @@
 #include "../../CBMath/MathConstants.h"
 
 const float Movement::playerWalkSpeed = 500.0f;
-const float Movement::acceleration = 1.0f / 8;
-const float Movement::deceleration = Movement::acceleration * 2;
+const float Movement::acceleration = 1.0f / 16.0f;
+const float Movement::deceleration = Movement::acceleration * 1.5f;
 
 Movement::Movement()
 {

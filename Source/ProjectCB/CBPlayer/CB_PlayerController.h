@@ -1,22 +1,13 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "CB_PlayerController.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class PROJECTCB_API ACB_PlayerController : public APlayerController
 {
 	GENERATED_BODY()
-
-private:
-
-	float m_playerSpeed;
 
 public:
 
@@ -28,16 +19,11 @@ public:
 
 	void MoveVertical(float amount);
 	void MoveHorizontal(float amount);
-	void LookVertical(float amount);
-	void LookHorizontal(float amount);
 
 	void RotateCamera(float amount);
 
 	void JumpAction();
 	void StopJumpAction();
-
-	void RunAction();
-	void StopRunAction();
 
 	void ShootAction();
 	void StopShootAction();

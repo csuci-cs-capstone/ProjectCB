@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "PlayerBasics.h"
 #include "../CBMoves/Dodge/Dodge.h"
+#include "../CBMoves/Throw/Throw.h"
 #include "GameFramework/Character.h"
 #include "CB_PlayerCharacter.generated.h"
 
@@ -19,8 +20,6 @@ public:
 	ACB_PlayerCharacter();
 
 private:
-
-	FVector m_throwDirection = FVector(1, 0, 0.025).GetUnsafeNormal(); // TODO make players rotation
 
 	// General
 	
@@ -37,13 +36,6 @@ private:
 	// Grab/Catch/Pickup/Throw/Drop
 
 		// TODO implement
-
-// FOR DEBUGGING ONLY (TODO remove)
-
-	short m_frameCounter;
-	bool m_frameCounterActive;
-
-	///////////////////////////////////
 
 protected:
 	// Called when the game starts or when spawned
@@ -64,9 +56,6 @@ protected:
 
 public:
 
-	float BaseTurnRate; // TODO remove
-	float BaseLookUpRate;
-
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -75,16 +64,11 @@ public:
 
 	void MoveVertical(float amount);
 	void MoveHorizontal(float amount);
-	void LookVertical(float amount);
-	void LookHorizontal(float amount);
 
 	void RotateCamera(float amount);
 
 	void JumpAction();
 	void StopJumpAction();
-
-	void RunAction();
-	void StopRunAction();
 
 	void ShootAction();
 	void StopShootAction();

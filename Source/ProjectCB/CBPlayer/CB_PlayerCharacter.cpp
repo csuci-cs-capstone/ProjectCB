@@ -14,11 +14,6 @@
 // Sets default values
 ACB_PlayerCharacter::ACB_PlayerCharacter()
 {
-	this->m_frameCounterActive = false; // FOR DEBUGGING ONLY (TODO remove)
-	this->m_frameCounter = 0; // FOR DEBUGGING ONLY (TODO remove)
-
-	// Other
-
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -28,11 +23,6 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 
 	staticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMeshComponent");
 	staticMesh->SetupAttachment(RootComponent);
-
-	//TODO Make run and walk speed, hook up functions from input and add them to movement
-	//TODO Make some fields UPROPERTIES so we can edit them
-	BaseTurnRate = 45.f; // TODO remove
-	BaseLookUpRate = 45.f;
 
 	//Customize the character movement component here!
 	GetCharacterMovement()->MaxWalkSpeed = Movement::playerWalkSpeed;
@@ -51,9 +41,8 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 
 	this->cameraArm = CreateDefaultSubobject<USpringArmComponent>("CameraSpringArm");
 	this->cameraArm->SetupAttachment(staticMesh);
-	this->cameraArm->TargetArmLength = 500.0f;// 285.0f;
+	this->cameraArm->TargetArmLength = 500.0f; // TODO add to CameraMovement class
 	
-	 
 	this->camera = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
 	this->camera->SetupAttachment(cameraArm);
 	
@@ -62,7 +51,7 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 
 	//Set Locations and Rotations after attachments have been set
 	this->cameraArm->SetRelativeLocation(FVector(0.0f, 0.0f, 110.0f));
-	this->cameraArm->SetRelativeRotation(FRotator(-20.0f, 0.0f, 0.0f));
+	//this->cameraArm->SetRelativeRotation(FRotator(-20.0f, 0.0f, 0.0f));
 	this->camera->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 }
 
@@ -90,9 +79,6 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 
 	cameraUpdate();
 
-	if (this->m_frameCounterActive)
-		this->m_frameCounter++;
-
 	// resets velocity
 	this->m_basics.m_movement.m_inputVelocity.X = 0.0f;
 	this->m_basics.m_movement.m_inputVelocity.Y = 0.0f;
@@ -108,8 +94,10 @@ void ACB_PlayerCharacter::playerUpdate(float deltaTime)
 
 	if (this->m_basics.m_shouldJump) // TODO set jump movement to 1 to jump
 	{
-		characterMovement->Velocity = this->m_basics.m_velocity; // TODO remove
+		//characterMovement->Velocity = this->m_basics.m_velocity; // TODO remove
 		characterMovement->JumpZVelocity = this->m_basics.m_jumpZVelocity;
+
+		// TODO make use leap velocity and make it so that mobility is accounted for in deceleration
 
 		Jump();
 
@@ -184,17 +172,6 @@ void ACB_PlayerCharacter::MoveHorizontal(float amount)
 	}
 }
 
-void ACB_PlayerCharacter::LookVertical(float amount)
-{
-	//AddControllerPitchInput(amount * BaseTurnRate * GetWorld()->GetDeltaSeconds());
-	//AddControllerYawInput(amount * BaseTurnRate * GetWorld()->GetDeltaSeconds());
-}
-
-void ACB_PlayerCharacter::LookHorizontal(float amount) // TODO remove?
-{	
-	AddControllerYawInput(amount * BaseTurnRate * GetWorld()->GetDeltaSeconds());
-}
-
 void ACB_PlayerCharacter::RotateCamera(float amount)
 {
 	this->m_basics.m_cameraMovement.updateCamera(amount);
@@ -210,26 +187,11 @@ void ACB_PlayerCharacter::StopJumpAction()
 	this->m_dodge.onRelease();
 }
 
-void ACB_PlayerCharacter::RunAction() // TODO rename to FrameDebug
-{
-	// Frame counter (counts the number of frames held down for)
-	this->m_frameCounterActive = true;
-}
-
-void ACB_PlayerCharacter::StopRunAction() // TODO rename to StopFrameDebug
-{
-	this->m_frameCounterActive = false;
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Frames: %d"), this->m_frameCounter));
-	this->m_frameCounter = 0;
-}
-
 void ACB_PlayerCharacter::ShootAction()
 {
-	// TODO make into separate class
-		// TODO make based of player movement direction?
+	// TODO add to Throw::onPress()
 
-	if (this->DodgeballProjectileClass != nullptr)
+	if (this->DodgeballProjectileClass)
 	{
 		FActorSpawnParameters spawnParameters;
 
@@ -256,7 +218,7 @@ void ACB_PlayerCharacter::ShootAction()
 		auto dodgeball = GetWorld()->SpawnActor<ACB_DodgeballProjectile>(this->DodgeballProjectileClass,
 			spawnTransform, spawnParameters);
 
-		dodgeball->launch(spawnRotation.RotateVector(this->m_throwDirection));
+		dodgeball->launch(spawnRotation.RotateVector(Throw::THROW_DIRECTION));
 	}
 }
 

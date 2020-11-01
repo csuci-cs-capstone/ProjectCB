@@ -6,26 +6,26 @@ struct PROJECTCB_API Dodge_Release
 {
 	// Dodge (Release)
 
-	static const float dodgeHeight;
-	static const float dodgeMobility;
-	static const float dodgeApexColliderSize;
-	static const float dodgeEndColliderSize;
-	static const float dodgeCooldownMobility;
-	static const float dodgeCooldownColliderSize;
+	static const float DODGE_HEIGHT;
+	static const float DODGE_MOBILITY;
+	static const float DODGE_APEX_COLLIDER_SIZE;
+	static const float DODGE_END_COLLIDER_SIZE;
+	static const float DODGE_COOLDOWN_MOBILITY;
+	static const float DODGE_COOLDOWN_COLLIDER_SIZE;
 
-	static const short dodgeCooldownFrames;
-	static const short dodgeFramesToApex;
+	static const short DODGE_COOLDOWN_FRAMES;
+	static const short DODGE_FRAMES_TO_APEX;
 
 	// Dive (Release + Direction)
 
-	static const float diveHeight;
-	static const float diveHorizontalVelocity;
-	static const float diveMobility;
-	static const float diveApexColliderSize;
-	static const float diveEndColliderSize;
-	static const float diveCooldownMobility;
-	static const float diveCooldownColliderSize;
+	static const float DIVE_HEIGHT;
+	static const float DIVE_HORIZONTAL_VELOCITY;
+	static const float DIVE_MOBILITY;
+	static const float DIVE_APEX_COLLIDER_SIZE;
+	static const float DIVE_END_COLLIDER_SIZE;
+	static const float DIVE_COOLDOWN_MOBILITY;
+	static const float DIVE_COOLDOWN_COLLIDER_SIZE;
 
-	static const short diveCooldownFrames;
-	static const short diveFramesToApex;
+	static const short DIVE_COOLDOWN_FRAMES;
+	static const short DIVE_FRAMES_TO_APEX;
 };
