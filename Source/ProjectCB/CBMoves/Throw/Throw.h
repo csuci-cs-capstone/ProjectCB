@@ -1,15 +1,15 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 
-/**
- * 
- */
-class PROJECTCB_API Throw
+class PROJECTCB_API Throw // Catch Aim Throw
 {
 public:
-	Throw();
-	~Throw();
+
+	static const FVector THROW_DIRECTION;
+
+	void onPress();
+
+	void onRelease();
+
 };

@@ -1,12 +1,13 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Throw.h"
 
-Throw::Throw()
+const FVector Throw::THROW_DIRECTION = FVector(1, 0, 0.025).GetUnsafeNormal();
+
+void Throw::onPress()
 {
+
 }
 
-Throw::~Throw()
+void Throw::onRelease()
 {
+
 }
