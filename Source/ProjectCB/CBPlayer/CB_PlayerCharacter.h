@@ -64,7 +64,7 @@ protected:
 
 public:
 
-	float BaseTurnRate;
+	float BaseTurnRate; // TODO remove
 	float BaseLookUpRate;
 
 	// Called every frame
@@ -77,6 +77,8 @@ public:
 	void MoveHorizontal(float amount);
 	void LookVertical(float amount);
 	void LookHorizontal(float amount);
+
+	void RotateCamera(float amount);
 
 	void JumpAction();
 	void StopJumpAction();

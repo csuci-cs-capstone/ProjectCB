@@ -23,6 +23,8 @@ void ACB_PlayerController::SetupInputComponent()
 	InputComponent->BindAxis("LookVertical", this, &ACB_PlayerController::LookVertical);
 	InputComponent->BindAxis("LookHorizontal", this, &ACB_PlayerController::LookHorizontal);
 
+	InputComponent->BindAxis("RotateCamera", this, &ACB_PlayerController::RotateCamera);
+
 	InputComponent->BindAction("JumpAction", IE_Pressed, this, &ACB_PlayerController::JumpAction);
 	InputComponent->BindAction("JumpAction", IE_Released, this, &ACB_PlayerController::StopJumpAction);
 
@@ -70,6 +72,16 @@ void ACB_PlayerController::LookHorizontal(float amount)
 	if (playerBody != NULL)
 	{
 		playerBody->LookHorizontal(amount);
+	}
+}
+
+void ACB_PlayerController::RotateCamera(float amount)
+{
+	auto playerBody = Cast<ACB_PlayerCharacter>(this->GetCharacter());
+
+	if (playerBody != NULL)
+	{
+		playerBody->RotateCamera(amount);
 	}
 }
 

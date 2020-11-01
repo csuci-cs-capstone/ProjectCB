@@ -2,17 +2,22 @@
 
 #include "CoreMinimal.h"
 
-class PROJECTCB_API CameraMovement
+struct PROJECTCB_API CameraMovement
 {
+	static const FRotator startRotation;
+	static const float maxTurnSpeed;
+	static const float acceleration; // between 0 and 1
+
 private:
 
-	static const float acceleration; // between 0 and 1
-	static const float deceleration; // between 0 and 1
+	FRotator m_cameraRotation;
+	float m_velocity;
 
 public:
 
 	CameraMovement();
 
-	~CameraMovement();
+	void updateCamera(const float amount);
 
+	const FRotator& getCameraRotation();
 };

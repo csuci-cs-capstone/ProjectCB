@@ -16,7 +16,7 @@ const short Dodge_Release::dodgeFramesToApex = 7; // TODO change
 // Dive (Release + Direction)
 
 const float Dodge_Release::diveHeight = Dodge_Release::dodgeHeight / 1.5f;
-const float Dodge_Release::diveHorizontalVelocity = 1.75f * PlayerBasics::playerWalkSpeed;
+const float Dodge_Release::diveHorizontalVelocity = 1.75f * Movement::playerWalkSpeed;
 const float Dodge_Release::diveMobility = 0.5f;
 const float Dodge_Release::diveApexColliderSize = 25.0f;
 const float Dodge_Release::diveEndColliderSize = 50.0f;
