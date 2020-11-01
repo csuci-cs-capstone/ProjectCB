@@ -31,15 +31,11 @@ void Movement::updateVelocity()
 		this->m_currentVelocity += diff * (accAmount / diffMag);
 
 	if (!this->m_currentVelocity.IsNearlyZero())
-	{
 		this->m_playerRotation.Yaw = MathConstants::RAD_TO_DEG
 			* atan2f(this->m_currentVelocity.Y, this->m_currentVelocity.X);
-
-		// TODO make take into account positive/negative values
-	}
 }
 
-FRotator& Movement::getPlayerRotation()
+const FRotator& Movement::getPlayerRotation()
 {
 	return this->m_playerRotation;
 }

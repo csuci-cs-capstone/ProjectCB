@@ -22,7 +22,7 @@ public:
 
 	Movement();
 
-	FRotator& getPlayerRotation();
+	const FRotator& getPlayerRotation();
 
 	void updateVelocity();
 };

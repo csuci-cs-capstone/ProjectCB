@@ -20,7 +20,7 @@ public:
 
 private:
 
-	FVector m_throwDirection = FVector(1, 0, 0.05).GetUnsafeNormal(); // TODO make players rotation
+	FVector m_throwDirection = FVector(1, 0, 0.025).GetUnsafeNormal(); // TODO make players rotation
 
 	// General
 	
