@@ -19,7 +19,6 @@ struct PROJECTCB_API Dodge_Release
 	// Dive (Release + Direction)
 
 	static const float DIVE_HEIGHT;
-	static const float DIVE_HORIZONTAL_VELOCITY;
 	static const float DIVE_MOBILITY;
 	static const float DIVE_APEX_COLLIDER_SIZE;
 	static const float DIVE_END_COLLIDER_SIZE;

@@ -31,6 +31,7 @@ void Dodge::startDodge()
 
 	//this->m_playerBasics->m_velocity = (this->m_dodgeProportion.invProp() * Dodge_Release::DIVE_HORIZONTAL_VELOCITY)
 	//	* direction;
+	// TODO make sure velocity is appropriate
 
 	this->m_playerBasics->m_movement.m_currentVelocity.X = direction.X;
 	this->m_playerBasics->m_movement.m_currentVelocity.Y = direction.Y;

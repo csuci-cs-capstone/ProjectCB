@@ -15,7 +15,7 @@ void Dodge::onPress()
 
 void Dodge::onRelease()
 {
-	if (this->m_playerBasics->m_dodgeState != PlayerBasics::DODGE_COOLDOWN && this->m_playerBasics->m_grounded)
+	if (this->m_playerBasics->m_dodgeState != PlayerBasics::DODGE_COOLDOWN && this->m_playerBasics->isGrounded())
 		this->startDodge();
 
 	this->m_buffer = false;

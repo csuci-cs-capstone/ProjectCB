@@ -1,12 +1,12 @@
 #include "CameraMovement.h"
 
-const FRotator CameraMovement::startRotation(-20.0f, 0.0f, 0.0f);
-const float CameraMovement::maxTurnSpeed = 1.0f * 2;
-const float CameraMovement::acceleration = 1.0f / 8;
+const FRotator CameraMovement::CAMERA_START_ROTATION(-20.0f, 0.0f, 0.0f);
+const float CameraMovement::CAMERA_TURN_SPEED = 1.0f * 2;
+const float CameraMovement::CAMERA_TURN_ACCELERATION = 1.0f / 8;
 
 CameraMovement::CameraMovement()
 {
-	this->m_cameraRotation = CameraMovement::startRotation;
+	this->m_cameraRotation = CameraMovement::CAMERA_START_ROTATION;
 	this->m_velocity = 0;
 }
 
@@ -21,7 +21,7 @@ void CameraMovement::updateCamera(const float amount)
 		if (this->m_velocity > 0)
 			this->m_velocity = 0;
 
-		this->m_velocity += CameraMovement::acceleration * amount;
+		this->m_velocity += CameraMovement::CAMERA_TURN_ACCELERATION * amount;
 
 		if (this->m_velocity < -1)
 			this->m_velocity = -1;
@@ -31,13 +31,13 @@ void CameraMovement::updateCamera(const float amount)
 		if (this->m_velocity < 0)
 			this->m_velocity = 0;
 
-		this->m_velocity += CameraMovement::acceleration * amount;
+		this->m_velocity += CameraMovement::CAMERA_TURN_ACCELERATION * amount;
 
 		if (this->m_velocity > 1)
 			this->m_velocity = 1;
 	}
 
-	this->m_cameraRotation.Yaw += CameraMovement::maxTurnSpeed * this->m_velocity;
+	this->m_cameraRotation.Yaw += CameraMovement::CAMERA_TURN_SPEED * this->m_velocity;
 
 	if (this->m_cameraRotation.Yaw >= 360)
 		this->m_cameraRotation.Yaw -= 360;

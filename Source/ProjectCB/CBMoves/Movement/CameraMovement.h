@@ -4,9 +4,9 @@
 
 struct PROJECTCB_API CameraMovement
 {
-	static const FRotator startRotation;
-	static const float maxTurnSpeed;
-	static const float acceleration; // between 0 and 1
+	static const FRotator CAMERA_START_ROTATION;
+	static const float CAMERA_TURN_SPEED;
+	static const float CAMERA_TURN_ACCELERATION; // between 0 and 1
 
 private:
 

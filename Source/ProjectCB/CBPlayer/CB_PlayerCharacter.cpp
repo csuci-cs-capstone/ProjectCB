@@ -25,8 +25,8 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	staticMesh->SetupAttachment(RootComponent);
 
 	//Customize the character movement component here!
-	GetCharacterMovement()->MaxWalkSpeed = Movement::playerWalkSpeed;
-	GetCharacterMovement()->GravityScale = PlayerBasics::playerBaseGravity;
+	GetCharacterMovement()->MaxWalkSpeed = Movement::PLAYER_GROUND_SPEED;
+	GetCharacterMovement()->GravityScale = PlayerBasics::PLAYER_BASE_GRAVITY;
 	//GetCharacterMovement()->JumpZVelocity = this->m_jumpVelocity;
 	//GetCharacterMovement()->AirControl = this->m_jumpControl;
 
@@ -90,7 +90,7 @@ void ACB_PlayerCharacter::playerUpdate(float deltaTime)
 
 	UCharacterMovementComponent* characterMovement = GetCharacterMovement();
 
-	this->m_basics.m_grounded = characterMovement->IsMovingOnGround();
+	this->m_basics.updateGroundState(characterMovement->IsMovingOnGround());
 
 	if (this->m_basics.m_shouldJump) // TODO set jump movement to 1 to jump
 	{
@@ -106,7 +106,11 @@ void ACB_PlayerCharacter::playerUpdate(float deltaTime)
 
 	if(this->m_basics.m_movement.m_inputVelocity.Size() > 1)
 		this->m_basics.m_movement.m_inputVelocity.Normalize();
-	this->m_basics.m_movement.updateVelocity();
+
+	this->m_basics.m_movement.updateVelocity(this->m_basics.m_currentMobility);
+
+	GetCharacterMovement()->MaxWalkSpeed = this->m_basics.m_movement.getSpeed();
+
 	this->AddMovementInput(FVector(this->m_basics.m_movement.m_currentVelocity, 0.0f)); // TODO make jump velocity
 }
 
@@ -118,8 +122,8 @@ void ACB_PlayerCharacter::cameraUpdate()
 	this->GetCapsuleComponent()->SetRelativeRotation(playerRotation);
 	this->cameraArm->SetRelativeRotation(this->m_basics.m_cameraMovement.getCameraRotation() - playerRotation);
 
-	this->m_basics.m_currentWorldLocationZ = ((1 - PlayerBasics::worldLocationProportionZ) * this->GetActorLocation().Z)
-		+ (PlayerBasics::worldLocationProportionZ * PlayerBasics::playerStartWorldLocationZ);
+	this->m_basics.m_currentWorldLocationZ = ((1 - PlayerBasics::WORLD_LOCATION_PROPORTION_Z) * this->GetActorLocation().Z)
+		+ (PlayerBasics::WORLD_LOCATION_PROPORTION_Z * PlayerBasics::PLAYER_START_WORLD_LOCATION_Z);
 
 	this->cameraArm->SetWorldLocation(FVector(currentLocation.X, currentLocation.Y, this->m_basics.m_currentWorldLocationZ));
 }
@@ -127,9 +131,9 @@ void ACB_PlayerCharacter::cameraUpdate()
 void ACB_PlayerCharacter::adjustGravity(UCharacterMovementComponent* characterMovement)
 {
 	if (characterMovement->Velocity.Z <= 0)
-		characterMovement->GravityScale = PlayerBasics::playerFastGravity;
+		characterMovement->GravityScale = PlayerBasics::PLAYER_FAST_GRAVITY;
 	else
-		characterMovement->GravityScale = PlayerBasics::playerBaseGravity;
+		characterMovement->GravityScale = PlayerBasics::PLAYER_BASE_GRAVITY;
 }
 
 // Called to bind functionality to input
@@ -159,7 +163,7 @@ void ACB_PlayerCharacter::MoveHorizontal(float amount)
 {
 	this->m_basics.m_movementY = amount;
 
-	amount *= this->m_basics.m_currentMobility;
+	amount *= this->m_basics.m_currentMobility; // TODO do all mobility checks in movement
 
 	if ((Controller != NULL) && (amount != 0.0f))
 	{
@@ -187,7 +191,7 @@ void ACB_PlayerCharacter::StopJumpAction()
 	this->m_dodge.onRelease();
 }
 
-void ACB_PlayerCharacter::ShootAction()
+void ACB_PlayerCharacter::ShootAction() // TODO create a Dodgeball Generator
 {
 	// TODO add to Throw::onPress()
 
