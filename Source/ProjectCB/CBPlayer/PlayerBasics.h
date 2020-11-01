@@ -7,17 +7,21 @@
 
 struct PROJECTCB_API PlayerBasics
 {
-	// Mutable
+public:
 
-	static const float playerSize;
+	static const float PLAYER_SIZE;
 
-	static const float playerBaseGravity;
-	static const float playerFastGravity;
+	static const float PLAYER_BASE_GRAVITY;
+	static const float PLAYER_FAST_GRAVITY;
 
-	static const float playerStartWorldLocationZ;
-	static const float worldLocationProportionZ;
+	static const float PLAYER_START_WORLD_LOCATION_Z;
+	static const float WORLD_LOCATION_PROPORTION_Z; // TODO add to camera
 
-	// Immutable
+private:
+
+	bool m_grounded;
+
+public:
 
 	enum PlayerState { PLAYER_ALIVE = 0, PLAYER_GHOST } m_playerState;
 	enum DodgeState { DODGE_OFF = 0, DODGE_STARTUP, DODGE_DUCK, DODGE_IDLE, DODGE_JUMP, DODGE_COOLDOWN } m_dodgeState;
@@ -40,8 +44,7 @@ struct PROJECTCB_API PlayerBasics
 	CameraMovement m_cameraMovement;
 
 /////
-
-	bool m_grounded; // TODO should be read only
+	 // TODO should be read only
 
 	FRotator m_controlRotation;
 	FVector m_velocity; // TODO remove?
@@ -57,5 +60,9 @@ struct PROJECTCB_API PlayerBasics
 	float getAnimationPoint(float x);
 
 	void updateAttributes();
+
+	void updateGroundState(bool grounded);
+
+	bool isGrounded();
 
 };

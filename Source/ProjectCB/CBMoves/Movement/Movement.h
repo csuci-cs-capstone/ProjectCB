@@ -7,13 +7,16 @@ struct PROJECTCB_API Movement
 {
 	// TODO add other movement variables here
 
-	static const float playerWalkSpeed;
-	static const float acceleration; // between 0 and 1
-	static const float deceleration; // between 0 and 1
+	static const float PLAYER_GROUND_SPEED;
+	static const float PLAYER_AIR_SPEED;
+	static const float PLAYER_ACCELERATION; // between 0 and 1
+	static const float PLAYER_DECELERATION; // between 0 and 1
 
 private:
 
 	FRotator m_playerRotation;
+
+	float m_playerSpeed;
 
 public:
 
@@ -24,5 +27,10 @@ public:
 
 	const FRotator& getPlayerRotation();
 
-	void updateVelocity();
+	void updateVelocity(float mobility);
+
+	const float getSpeed();
+
+	void isGrounded(bool grounded);
+
 };
