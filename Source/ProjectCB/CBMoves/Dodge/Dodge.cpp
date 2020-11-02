@@ -7,18 +7,24 @@ Dodge::Dodge(PlayerBasics& playerBasics)
 
 void Dodge::onPress()
 {
-	if (!this->m_playerBasics->m_dodgeState)
-		this->startDuck();
+	if (this->m_playerBasics->getPlayerState() == PlayerBasics::PLAYER_ALIVE)
+	{
+		if (!this->m_playerBasics->m_dodgeState)
+			this->startDuck();
 
-	this->m_buffer = true;
+		this->m_buffer = true;
+	}
 }
 
 void Dodge::onRelease()
 {
-	if (this->m_playerBasics->m_dodgeState != PlayerBasics::DODGE_COOLDOWN && this->m_playerBasics->isGrounded())
-		this->startDodge();
+	if (this->m_playerBasics->getPlayerState() == PlayerBasics::PLAYER_ALIVE)
+	{
+		if (this->m_playerBasics->m_dodgeState != PlayerBasics::DODGE_COOLDOWN && this->m_playerBasics->isGrounded())
+			this->startDodge();
 
-	this->m_buffer = false;
+		this->m_buffer = false;
+	}
 }
 
 void Dodge::update(float deltaTime)

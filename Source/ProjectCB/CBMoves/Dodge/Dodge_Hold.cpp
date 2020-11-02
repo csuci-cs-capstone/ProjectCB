@@ -2,7 +2,7 @@
 #include "Dodge.h"
 
 const float Dodge_Hold::MOBILITY = 0.5f;
-const float Dodge_Hold::COLLIDER_SIZE = 25.0f;
+const float Dodge_Hold::COLLIDER_HEIGHT = 25.0f;
 
 const short Dodge_Hold::STARTUP_FRAMES = 6;
 const short Dodge_Hold::ACTION_FRAMES = 9;
@@ -22,8 +22,9 @@ void Dodge::startDodge()
 	const FRotator YawRotation(0, this->m_playerBasics->m_controlRotation.Yaw
 		+ this->m_playerBasics->m_cameraMovement.getCameraRotation().Yaw, 0);
 
-	FVector direction = (this->m_playerBasics->m_movementX * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X))
-		+ (this->m_playerBasics->m_movementY * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y));
+	FVector direction = 
+		(this->m_playerBasics->m_movement.m_inputVelocity.X * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X)) +
+		(this->m_playerBasics->m_movement.m_inputVelocity.Y * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y));
 
 	direction = direction.Size() > 1 ? direction.GetUnsafeNormal() : direction;
 
@@ -70,7 +71,7 @@ void Dodge::duckUpdate(float deltaTime)
 	if (this->m_frame >= Dodge_Hold::ACTION_FRAMES)
 	{
 		this->m_playerBasics->m_currentMobility = Dodge_Hold::MOBILITY;
-		this->m_playerBasics->m_currentSize = Dodge_Hold::COLLIDER_SIZE;
+		this->m_playerBasics->m_currentHeight = Dodge_Hold::COLLIDER_HEIGHT;
 
 		// Start Idle
 
@@ -88,8 +89,8 @@ void Dodge::duckUpdate(float deltaTime)
 		this->m_playerBasics->m_currentMobility = proportion.getProportion(Dodge_Hold::MOBILITY,
 			this->m_playerBasics->m_previousMobility);
 
-		this->m_playerBasics->m_currentSize = proportion.getProportion(Dodge_Hold::COLLIDER_SIZE,
-			this->m_playerBasics->m_previousSize);
+		this->m_playerBasics->m_currentHeight = proportion.getProportion(Dodge_Hold::COLLIDER_HEIGHT,
+			this->m_playerBasics->m_previousHeight);
 
 		this->m_frame++;
 	}
