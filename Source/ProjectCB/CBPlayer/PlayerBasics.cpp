@@ -1,5 +1,10 @@
 #include "PlayerBasics.h"
 
+const FVector2D PlayerBasics::MAX_MAP_POSITION(2150.0f, 700.0f);
+const float PlayerBasics::MIN_MAP_POSITION_Z = -200.0f;
+
+const float PlayerBasics::PLAYER_SPAWN_POSITION_Z = 100.0f;
+
 const float PlayerBasics::PLAYER_SIZE = 50.0f;
 
 const float PlayerBasics::PLAYER_BASE_GRAVITY = 4.0f;
