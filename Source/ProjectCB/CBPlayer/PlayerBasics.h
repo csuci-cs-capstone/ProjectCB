@@ -10,11 +10,13 @@ struct PROJECTCB_API PlayerBasics
 public:
 
 	static const FVector2D MAX_MAP_POSITION;
+	static const float MAP_RESPAWN_POSITION_OFFSET;
 	static const float MIN_MAP_POSITION_Z;
 
-	static const float PLAYER_SPAWN_POSITION_Z;
+	static const float PLAYER_RADIUS;
+	static const float PLAYER_HEIGHT;
 
-	static const float PLAYER_SIZE;
+	static const float PLAYER_SPAWN_POSITION_Z;
 
 	static const float PLAYER_BASE_GRAVITY;
 	static const float PLAYER_FAST_GRAVITY;
@@ -22,26 +24,32 @@ public:
 	static const float PLAYER_START_WORLD_LOCATION_Z;
 	static const float WORLD_LOCATION_PROPORTION_Z; // TODO add to camera
 
+	enum PlayerState { PLAYER_ALIVE = 0, PLAYER_GHOST };
+	enum DodgeState { DODGE_OFF = 0, DODGE_STARTUP, DODGE_DUCK, DODGE_IDLE, DODGE_JUMP, DODGE_COOLDOWN };
+	enum ThrowState { THROW_OFF = 0, THROW_STARTUP, THROW_CATCH, THROW_CATCH_IDLE, THROW_THROW, THROW_COOLDOWN };
+
 private:
 
 	bool m_grounded;
+	PlayerState m_playerState;
 
+	FVector checkAliveBounds(FVector playerPosition);
+	FVector checkGhostBounds(FVector playerPosition);
+
+	void makeGhost();
+	
 public:
 
-	enum PlayerState { PLAYER_ALIVE = 0, PLAYER_GHOST } m_playerState;
-	enum DodgeState { DODGE_OFF = 0, DODGE_STARTUP, DODGE_DUCK, DODGE_IDLE, DODGE_JUMP, DODGE_COOLDOWN } m_dodgeState;
-	enum ThrowState { THROW_OFF = 0, THROW_STARTUP, THROW_CATCH, THROW_CATCH_IDLE, THROW_THROW, THROW_COOLDOWN } m_throwState;
+	DodgeState m_dodgeState; // TODO make private
+	ThrowState m_throwState; // TODO make private
 
 	float m_currentWorldLocationZ;
-
-	float m_movementX;
-	float m_movementY;
 
 	float m_currentMobility;
 	float m_previousMobility;
 
-	float m_currentSize;
-	float m_previousSize;
+	float m_currentHeight;
+	float m_previousHeight;
 
 //////
 
@@ -70,4 +78,7 @@ public:
 
 	bool isGrounded();
 
+	PlayerState getPlayerState();
+
+	FVector checkPlayerBounds(FVector playerPosition);
 };

@@ -75,7 +75,7 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 	this->m_dodge.update(DeltaTime);
 
 	UCapsuleComponent* capsuleComponent = GetCapsuleComponent();
-	capsuleComponent->SetCapsuleSize(25.0f, this->m_basics.m_currentSize);
+	capsuleComponent->SetCapsuleSize(PlayerBasics::PLAYER_RADIUS, this->m_basics.m_currentHeight);
 
 	cameraUpdate();
 
@@ -86,26 +86,7 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 
 void ACB_PlayerCharacter::playerUpdate(float deltaTime)
 {
-	FVector playerPosition = this->GetActorLocation();
-
-	if (playerPosition.Z < PlayerBasics::MIN_MAP_POSITION_Z)
-	{
-		if (playerPosition.X > PlayerBasics::MAX_MAP_POSITION.X)
-			playerPosition.X = PlayerBasics::MAX_MAP_POSITION.X;
-		else if(playerPosition.X < -PlayerBasics::MAX_MAP_POSITION.X)
-			playerPosition.X = -PlayerBasics::MAX_MAP_POSITION.X;
-
-		if (playerPosition.Y > PlayerBasics::MAX_MAP_POSITION.Y)
-			playerPosition.Y = PlayerBasics::MAX_MAP_POSITION.Y;
-		else if (playerPosition.Y < -PlayerBasics::MAX_MAP_POSITION.Y)
-			playerPosition.Y = -PlayerBasics::MAX_MAP_POSITION.Y;
-
-		playerPosition.Z = PlayerBasics::PLAYER_SPAWN_POSITION_Z;
-
-		this->SetActorLocation(playerPosition);
-
-		// TODO make player ghost
-	}
+	this->SetActorLocation(this->m_basics.checkPlayerBounds(this->GetActorLocation()));
 
 	this->m_basics.m_controlRotation = Controller->GetControlRotation();
 
@@ -165,10 +146,6 @@ void ACB_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 void ACB_PlayerCharacter::MoveVertical(float amount)
 {
-	this->m_basics.m_movementX = amount;
-
-	amount *= this->m_basics.m_currentMobility;
-
 	if ((Controller != NULL) && (amount != 0.0f))
 	{
 		const FRotator controlRotation = Controller->GetControlRotation();
@@ -182,10 +159,6 @@ void ACB_PlayerCharacter::MoveVertical(float amount)
 
 void ACB_PlayerCharacter::MoveHorizontal(float amount)
 {
-	this->m_basics.m_movementY = amount;
-
-	amount *= this->m_basics.m_currentMobility; // TODO do all mobility checks in movement
-
 	if ((Controller != NULL) && (amount != 0.0f))
 	{
 		const FRotator controlRotation = Controller->GetControlRotation();

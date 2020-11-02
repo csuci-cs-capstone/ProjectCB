@@ -38,7 +38,7 @@ void Dodge::jumpUpdate(float deltaTime)
 	{
 		if (prop >= 2)
 		{
-			this->m_playerBasics->m_currentSize = this->m_dodgeProportion.getProportion(
+			this->m_playerBasics->m_currentHeight = this->m_dodgeProportion.getProportion(
 				Dodge_Release::DODGE_END_COLLIDER_SIZE, Dodge_Release::DIVE_END_COLLIDER_SIZE);
 		}
 		else
@@ -54,7 +54,7 @@ void Dodge::jumpUpdate(float deltaTime)
 			float endColliderSize = this->m_dodgeProportion.getProportion(Dodge_Release::DODGE_END_COLLIDER_SIZE,
 				Dodge_Release::DIVE_END_COLLIDER_SIZE);
 
-			this->m_playerBasics->m_currentSize = proportion.getProportion(endColliderSize, apexColliderSize);
+			this->m_playerBasics->m_currentHeight = proportion.getProportion(endColliderSize, apexColliderSize);
 		}
 	}
 	else
@@ -67,8 +67,8 @@ void Dodge::jumpUpdate(float deltaTime)
 		float apexColliderSize = this->m_dodgeProportion.getProportion(Dodge_Release::DODGE_APEX_COLLIDER_SIZE,
 			Dodge_Release::DIVE_APEX_COLLIDER_SIZE);
 
-		this->m_playerBasics->m_currentSize = proportion.getProportion(apexColliderSize,
-			this->m_playerBasics->m_previousSize);
+		this->m_playerBasics->m_currentHeight = proportion.getProportion(apexColliderSize,
+			this->m_playerBasics->m_previousHeight);
 	}
 
 	if (this->m_playerBasics->isGrounded())
@@ -100,7 +100,7 @@ void Dodge::cooldownUpdate(float deltaTime)
 		this->m_frame = false;
 
 		this->m_playerBasics->m_currentMobility = 1;
-		this->m_playerBasics->m_currentSize = PlayerBasics::PLAYER_SIZE;
+		this->m_playerBasics->m_currentHeight = PlayerBasics::PLAYER_HEIGHT;
 
 		this->m_playerBasics->updateAttributes();
 	}
@@ -112,8 +112,8 @@ void Dodge::cooldownUpdate(float deltaTime)
 		prop = this->m_playerBasics->getAnimationPoint(prop);
 		Proportion proportion(prop);
 
-		this->m_playerBasics->m_currentSize = proportion.getProportion(PlayerBasics::PLAYER_SIZE,
-			this->m_playerBasics->m_previousSize);
+		this->m_playerBasics->m_currentHeight = proportion.getProportion(PlayerBasics::PLAYER_HEIGHT,
+			this->m_playerBasics->m_previousHeight);
 
 		this->m_frame++;
 	}
