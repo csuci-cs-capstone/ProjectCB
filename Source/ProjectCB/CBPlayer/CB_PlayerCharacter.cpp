@@ -86,6 +86,27 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 
 void ACB_PlayerCharacter::playerUpdate(float deltaTime)
 {
+	FVector playerPosition = this->GetActorLocation();
+
+	if (playerPosition.Z < PlayerBasics::MIN_MAP_POSITION_Z)
+	{
+		if (playerPosition.X > PlayerBasics::MAX_MAP_POSITION.X)
+			playerPosition.X = PlayerBasics::MAX_MAP_POSITION.X;
+		else if(playerPosition.X < -PlayerBasics::MAX_MAP_POSITION.X)
+			playerPosition.X = -PlayerBasics::MAX_MAP_POSITION.X;
+
+		if (playerPosition.Y > PlayerBasics::MAX_MAP_POSITION.Y)
+			playerPosition.Y = PlayerBasics::MAX_MAP_POSITION.Y;
+		else if (playerPosition.Y < -PlayerBasics::MAX_MAP_POSITION.Y)
+			playerPosition.Y = -PlayerBasics::MAX_MAP_POSITION.Y;
+
+		playerPosition.Z = PlayerBasics::PLAYER_SPAWN_POSITION_Z;
+
+		this->SetActorLocation(playerPosition);
+
+		// TODO make player ghost
+	}
+
 	this->m_basics.m_controlRotation = Controller->GetControlRotation();
 
 	UCharacterMovementComponent* characterMovement = GetCharacterMovement();

@@ -9,6 +9,11 @@ struct PROJECTCB_API PlayerBasics
 {
 public:
 
+	static const FVector2D MAX_MAP_POSITION;
+	static const float MIN_MAP_POSITION_Z;
+
+	static const float PLAYER_SPAWN_POSITION_Z;
+
 	static const float PLAYER_SIZE;
 
 	static const float PLAYER_BASE_GRAVITY;
