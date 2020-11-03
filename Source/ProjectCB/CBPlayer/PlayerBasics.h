@@ -59,7 +59,7 @@ public:
 /////
 	 // TODO should be read only
 
-	FRotator m_controlRotation;
+	FRotator m_inputRotation;
 	FVector m_velocity; // TODO remove?
 
 	float m_jumpZVelocity;
@@ -81,4 +81,6 @@ public:
 	PlayerState getPlayerState();
 
 	FVector checkPlayerBounds(FVector playerPosition);
+
+	FVector getInputDirection();
 };

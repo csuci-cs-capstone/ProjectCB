@@ -78,6 +78,8 @@ void Dodge::jumpUpdate(float deltaTime)
 		this->m_playerBasics->m_dodgeState = PlayerBasics::DODGE_COOLDOWN;
 		this->m_frame = true;
 
+		this->m_playerBasics->m_movement.setMovementVelocity(FVector(0.0f, 0.0f, 0.0f));
+
 		this->m_playerBasics->updateAttributes();
 	}
 	else

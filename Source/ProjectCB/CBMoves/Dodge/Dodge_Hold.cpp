@@ -71,12 +71,7 @@ void Dodge::idleUpdate(float deltaTime) {}
 
 void Dodge::startDodge() // Release
 {
-	const FRotator YawRotation(0, this->m_playerBasics->m_controlRotation.Yaw
-		+ this->m_playerBasics->m_cameraMovement.getCameraRotation().Yaw, 0);
-
-	FVector direction =
-		(this->m_playerBasics->m_movement.m_inputVelocity.X * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X)) +
-		(this->m_playerBasics->m_movement.m_inputVelocity.Y * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y));
+	FVector direction = this->m_playerBasics->getInputDirection();
 
 	direction = direction.Size() > 1 ? direction.GetUnsafeNormal() : direction;
 
@@ -86,8 +81,10 @@ void Dodge::startDodge() // Release
 	//	* direction;
 	// TODO make sure velocity is appropriate
 
-	this->m_playerBasics->m_movement.m_currentVelocity.X = direction.X;
-	this->m_playerBasics->m_movement.m_currentVelocity.Y = direction.Y;
+	//direction *= this->m_dodgeProportion.invProp();
+
+	//this->m_playerBasics->m_movement.m_currentVelocity.X = direction.X; // TODO fix invisible wall
+	//this->m_playerBasics->m_movement.m_currentVelocity.Y = direction.Y;
 
 	this->m_playerBasics->m_jumpZVelocity = this->m_dodgeProportion.getProportion(
 		this->m_playerBasics->getJumpVelocity(Dodge_Release::DODGE_HEIGHT),

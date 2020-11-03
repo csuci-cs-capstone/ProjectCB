@@ -14,23 +14,32 @@ struct PROJECTCB_API Movement
 
 private:
 
+	float m_inputRotationYaw;
 	FRotator m_playerRotation;
+
+	FVector2D m_inputVelocity; // TODO make private
+	FVector2D m_currentMovementVelocity;
+	FVector2D m_currentRotationVelocity;
 
 	float m_playerSpeed;
 
-public:
+	void updateVelocity(FVector2D& currentVelocity, float mobility);
 
-	FVector2D m_inputVelocity;
-	FVector2D m_currentVelocity;
+public:
 
 	Movement();
 
-	const FRotator& getPlayerRotation();
+	const FRotator& getPlayerRotation(); // TODO remove?
 
 	void updateVelocity(float mobility);
 
-	const float getSpeed();
-
 	void isGrounded(bool grounded);
 
+	void setMovementVelocity(FVector movementVelocity);
+	FVector getMovementVelocity(float velocityZ);
+
+	void resetInputVelocity();
+	void addInputVector(FVector inputVector);
+	void setInputRotation(float inputRotationYaw);
+	FVector getInputVector(float cameraRotationYaw);
 };
