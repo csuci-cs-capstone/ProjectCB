@@ -134,3 +134,8 @@ FVector PlayerBasics::checkGhostBounds(FVector playerPosition)
 
 	return playerPosition;
 }
+
+FVector PlayerBasics::getInputDirection()
+{
+	return this->m_movement.getInputVector(this->m_cameraMovement.getCameraRotation().Yaw);
+}

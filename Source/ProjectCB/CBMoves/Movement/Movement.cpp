@@ -2,18 +2,41 @@
 #include <math.h>
 #include "../../CBMath/MathConstants.h"
 
-const float Movement::PLAYER_GROUND_SPEED = 500.0f;
+const float Movement::PLAYER_GROUND_SPEED = 1000.0f;
 const float Movement::PLAYER_AIR_SPEED = Movement::PLAYER_GROUND_SPEED * 1.75f;
 const float Movement::PLAYER_ACCELERATION = 1.0f / 16.0f;
 const float Movement::PLAYER_DECELERATION = Movement::PLAYER_ACCELERATION * 1.5f;
+
+void Movement::updateVelocity(FVector2D& currentVelocity, float mobility)
+{
+	FVector2D diff = this->m_inputVelocity - currentVelocity;
+	float diffMag = diff.Size();
+
+	float accProp = FVector2D::DotProduct(diff.GetSafeNormal(), currentVelocity.GetSafeNormal());
+	accProp = (accProp + 1) / 2;
+	Proportion accProportion(accProp);
+
+	float accAmount = mobility * accProportion.getProportion(Movement::PLAYER_ACCELERATION, Movement::PLAYER_DECELERATION);
+
+	if (accAmount != 0)
+	{
+		if (accAmount >= diffMag)
+			currentVelocity = this->m_inputVelocity;
+		else
+			currentVelocity += diff * (accAmount / diffMag);
+	}
+}
 
 Movement::Movement()
 {
 	this->m_inputVelocity.X = 0.0f;
 	this->m_inputVelocity.Y = 0.0f;
 
-	this->m_currentVelocity.X = 0.0f;
-	this->m_currentVelocity.Y = 0.0f;
+	this->m_currentMovementVelocity.X = 0.0f;
+	this->m_currentMovementVelocity.Y = 0.0f;
+
+	this->m_currentRotationVelocity.X = 0.0f;
+	this->m_currentRotationVelocity.Y = 0.0f;
 
 	this->m_playerRotation = FRotator(0.0f, 0.0f, 0.0f);
 
@@ -22,34 +45,20 @@ Movement::Movement()
 
 void Movement::updateVelocity(float mobility)
 {
-	FVector2D diff = this->m_inputVelocity - this->m_currentVelocity;
-	//diff *= mobility; // TODO make accurate
-	float diffMag = diff.Size();
+	if (this->m_inputVelocity.Size() > 1)
+		this->m_inputVelocity.Normalize();
 
-	float accProp = FVector2D::DotProduct(diff.GetSafeNormal(), this->m_currentVelocity.GetSafeNormal());
-	accProp = (accProp + 1) / 2;
-	Proportion accProportion(accProp);
+	updateVelocity(this->m_currentMovementVelocity, mobility);
+	updateVelocity(this->m_currentRotationVelocity, 1);
 
-	float accAmount = accProportion.getProportion(Movement::PLAYER_ACCELERATION, Movement::PLAYER_DECELERATION);
-
-	if (accAmount >= diffMag)
-		this->m_currentVelocity = this->m_inputVelocity;
-	else
-		this->m_currentVelocity += diff * (accAmount / diffMag);
-
-	if (!this->m_currentVelocity.IsNearlyZero())
+	if (!this->m_currentRotationVelocity.IsNearlyZero())
 		this->m_playerRotation.Yaw = MathConstants::RAD_TO_DEG
-			* atan2f(this->m_currentVelocity.Y, this->m_currentVelocity.X);
+		* atan2f(this->m_currentRotationVelocity.Y, this->m_currentRotationVelocity.X);
 }
 
 const FRotator& Movement::getPlayerRotation()
 {
 	return this->m_playerRotation;
-}
-
-const float Movement::getSpeed()
-{
-	return this->m_playerSpeed;
 }
 
 void Movement::isGrounded(bool grounded)
@@ -58,4 +67,40 @@ void Movement::isGrounded(bool grounded)
 		this->m_playerSpeed = Movement::PLAYER_GROUND_SPEED;
 	else
 		this->m_playerSpeed = Movement::PLAYER_AIR_SPEED;
+}
+
+void Movement::setInputRotation(float inputRotationYaw)
+{
+	this->m_inputRotationYaw = inputRotationYaw;
+}
+
+FVector Movement::getInputVector(float cameraRotationYaw)
+{
+	const FRotator YawRotation(0, this->m_inputRotationYaw + cameraRotationYaw, 0);
+
+	return (this->m_inputVelocity.X * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X)) +
+		(this->m_inputVelocity.Y * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y));
+}
+
+void Movement::setMovementVelocity(FVector movementVelocity)
+{
+	this->m_currentMovementVelocity.X = movementVelocity.X;
+	this->m_currentMovementVelocity.Y = movementVelocity.Y;
+}
+
+FVector Movement::getMovementVelocity(float velocityZ)
+{
+	return FVector(this->m_playerSpeed * this->m_currentMovementVelocity, velocityZ);
+}
+
+void Movement::resetInputVelocity()
+{
+	this->m_inputVelocity.X = 0.0f;
+	this->m_inputVelocity.Y = 0.0f;
+}
+
+void Movement::addInputVector(FVector inputVector)
+{
+	this->m_inputVelocity.X += inputVector.X;
+	this->m_inputVelocity.Y += inputVector.Y;
 }

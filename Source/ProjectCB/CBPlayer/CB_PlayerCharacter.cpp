@@ -79,16 +79,13 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 
 	cameraUpdate();
 
-	// resets velocity
-	this->m_basics.m_movement.m_inputVelocity.X = 0.0f;
-	this->m_basics.m_movement.m_inputVelocity.Y = 0.0f;
+	this->m_basics.m_movement.resetInputVelocity();
 }
 
 void ACB_PlayerCharacter::playerUpdate(float deltaTime)
 {
 	this->SetActorLocation(this->m_basics.checkPlayerBounds(this->GetActorLocation()));
-
-	this->m_basics.m_controlRotation = Controller->GetControlRotation();
+	this->m_basics.m_movement.setInputRotation(Controller->GetControlRotation().Yaw);
 
 	UCharacterMovementComponent* characterMovement = GetCharacterMovement();
 
@@ -106,14 +103,13 @@ void ACB_PlayerCharacter::playerUpdate(float deltaTime)
 		this->m_basics.m_shouldJump = false;
 	}
 
-	if(this->m_basics.m_movement.m_inputVelocity.Size() > 1)
-		this->m_basics.m_movement.m_inputVelocity.Normalize();
-
 	this->m_basics.m_movement.updateVelocity(this->m_basics.m_currentMobility);
 
-	GetCharacterMovement()->MaxWalkSpeed = this->m_basics.m_movement.getSpeed();
+	GetCharacterMovement()->Velocity = this->m_basics.m_movement.getMovementVelocity(GetCharacterMovement()->Velocity.Z);
 
-	this->AddMovementInput(FVector(this->m_basics.m_movement.m_currentVelocity, 0.0f)); // TODO make jump velocity
+	//GetCharacterMovement()->Velocity =
+	//	FVector(this->m_basics.m_movement.m_inputVelocity * this->m_basics.m_movement.getSpeed(),
+	//		GetCharacterMovement()->Velocity.Z);
 }
 
 void ACB_PlayerCharacter::cameraUpdate()
@@ -152,8 +148,7 @@ void ACB_PlayerCharacter::MoveVertical(float amount)
 		const FRotator YawRotation(0, controlRotation.Yaw + this->m_basics.m_cameraMovement.getCameraRotation().Yaw, 0);
 
 		const FVector movementDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		this->m_basics.m_movement.m_inputVelocity.X += amount * movementDirection.X;
-		this->m_basics.m_movement.m_inputVelocity.Y += amount * movementDirection.Y;
+		this->m_basics.m_movement.addInputVector(amount * movementDirection);
 	}
 }
 
@@ -165,8 +160,7 @@ void ACB_PlayerCharacter::MoveHorizontal(float amount)
 		const FRotator YawRotation(0, controlRotation.Yaw + this->m_basics.m_cameraMovement.getCameraRotation().Yaw, 0);
 
 		const FVector movementDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		this->m_basics.m_movement.m_inputVelocity.X += amount * movementDirection.X;
-		this->m_basics.m_movement.m_inputVelocity.Y += amount * movementDirection.Y;
+		this->m_basics.m_movement.addInputVector(amount * movementDirection);
 	}
 }
 
