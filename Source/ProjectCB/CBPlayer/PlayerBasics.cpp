@@ -72,6 +72,15 @@ PlayerBasics::PlayerState PlayerBasics::getPlayerState()
 void PlayerBasics::makeGhost()
 {
 	this->m_playerState = PlayerBasics::PLAYER_GHOST;
+	this->m_dodgeState = PlayerBasics::DODGE_OFF;
+	this->m_throwState = PlayerBasics::THROW_OFF;
+
+	this->m_currentMobility = 1.0f;
+	this->m_currentHeight = PlayerBasics::PLAYER_HEIGHT;
+
+	updateAttributes();
+
+	// TODO update other attributes for ghost such as GHOST_SPEED
 }
 
 FVector PlayerBasics::checkPlayerBounds(FVector playerPosition)
