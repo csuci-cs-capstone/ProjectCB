@@ -93,17 +93,7 @@ void Dodge::cooldownUpdate(float deltaTime)
 		Dodge_Release::DIVE_COOLDOWN_FRAMES);
 
 	if (this->m_frame >= maxCooldownFrames)
-	{
-		// End Dodge
-
-		this->m_playerBasics->m_dodgeState = PlayerBasics::DODGE_OFF;
-		this->m_frame = false;
-
-		this->m_playerBasics->m_currentMobility = 1;
-		this->m_playerBasics->m_currentHeight = PlayerBasics::PLAYER_HEIGHT;
-
-		this->m_playerBasics->updateAttributes();
-	}
+		this->endDodge();
 	else
 	{
 		// Cooldown Update
@@ -117,4 +107,15 @@ void Dodge::cooldownUpdate(float deltaTime)
 
 		this->m_frame++;
 	}
+}
+
+void Dodge::endDodge()
+{
+	this->m_playerBasics->m_dodgeState = PlayerBasics::DODGE_OFF;
+	this->m_frame = false;
+
+	this->m_playerBasics->m_currentMobility = 1;
+	this->m_playerBasics->m_currentHeight = PlayerBasics::PLAYER_HEIGHT;
+
+	this->m_playerBasics->updateAttributes();
 }

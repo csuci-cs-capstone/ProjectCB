@@ -26,6 +26,7 @@ private:
 	void idleUpdate(float deltaTime);
 	void jumpUpdate(float deltaTime);
 	void cooldownUpdate(float deltaTime);
+	void endDodge();
 
 public:
 
