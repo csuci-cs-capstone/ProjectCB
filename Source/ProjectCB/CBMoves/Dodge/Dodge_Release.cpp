@@ -8,10 +8,11 @@ const float Dodge_Release::DODGE_HEIGHT = 75.0f;
 const float Dodge_Release::DODGE_MOBILITY = 0.0f; // TODO fix, allow for mobility mid air
 const float Dodge_Release::DODGE_APEX_COLLIDER_SIZE = 25.0f;
 const float Dodge_Release::DODGE_END_COLLIDER_SIZE = 50.0f;
-const float Dodge_Release::DODGE_COOLDOWN_MOBILITY = 0.0f;
+const float Dodge_Release::DODGE_LAND_VELOCITY_RESET_PROPORTION = 0.25f;
+const float Dodge_Release::DODGE_COOLDOWN_MOBILITY = 0.5f;
 
-const short Dodge_Release::DODGE_COOLDOWN_FRAMES = 60;
 const short Dodge_Release::DODGE_FRAMES_TO_APEX = 7; // TODO change
+const short Dodge_Release::DODGE_COOLDOWN_FRAMES = 60;
 
 // Dive (Release + Direction)
 
@@ -19,10 +20,11 @@ const float Dodge_Release::DIVE_HEIGHT = Dodge_Release::DODGE_HEIGHT / 1.5f;
 const float Dodge_Release::DIVE_MOBILITY = 0.0f;
 const float Dodge_Release::DIVE_APEX_COLLIDER_SIZE = 25.0f;
 const float Dodge_Release::DIVE_END_COLLIDER_SIZE = 50.0f;
-const float Dodge_Release::DIVE_COOLDOWN_MOBILITY = 0.0f;
+const float Dodge_Release::DIVE_LAND_VELOCITY_RESET_PROPORTION = 0.25f;
+const float Dodge_Release::DIVE_COOLDOWN_MOBILITY = 0.5f;
 
-const short Dodge_Release::DIVE_COOLDOWN_FRAMES = 60;
 const short Dodge_Release::DIVE_FRAMES_TO_APEX = 5; // TODO change
+const short Dodge_Release::DIVE_COOLDOWN_FRAMES = 60;
 
 void Dodge::jumpUpdate(float deltaTime)
 {
@@ -78,7 +80,13 @@ void Dodge::jumpUpdate(float deltaTime)
 		this->m_playerBasics->m_dodgeState = PlayerBasics::DODGE_COOLDOWN;
 		this->m_frame = true;
 
-		this->m_playerBasics->m_movement.setMovementVelocity(FVector(0.0f, 0.0f, 0.0f));
+		this->m_playerBasics->m_movement.resetMovement(this->m_dodgeProportion.getProportion(
+			Dodge_Release::DODGE_LAND_VELOCITY_RESET_PROPORTION,
+			Dodge_Release::DIVE_LAND_VELOCITY_RESET_PROPORTION));
+
+		//this->m_playerBasics->m_currentMobility = this->m_dodgeProportion.getProportion(
+		//	Dodge_Release::DODGE_COOLDOWN_MOBILITY,
+		//	Dodge_Release::DIVE_COOLDOWN_MOBILITY); // TODO make it so that it only does it for cooldown
 
 		this->m_playerBasics->updateAttributes();
 	}
@@ -88,9 +96,6 @@ void Dodge::jumpUpdate(float deltaTime)
 
 void Dodge::cooldownUpdate(float deltaTime)
 {
-	this->m_playerBasics->m_currentMobility = this->m_dodgeProportion.getProportion(Dodge_Release::DODGE_COOLDOWN_MOBILITY,
-		Dodge_Release::DIVE_COOLDOWN_MOBILITY);
-
 	short maxCooldownFrames = this->m_dodgeProportion.getProportion(Dodge_Release::DODGE_COOLDOWN_FRAMES,
 		Dodge_Release::DIVE_COOLDOWN_FRAMES);
 
@@ -116,7 +121,7 @@ void Dodge::endDodge()
 	this->m_playerBasics->m_dodgeState = PlayerBasics::DODGE_OFF;
 	this->m_frame = false;
 
-	this->m_playerBasics->m_currentMobility = 1;
+	this->m_playerBasics->m_currentMobility = 1.0f;
 	this->m_playerBasics->m_currentHeight = PlayerBasics::PLAYER_HEIGHT;
 
 	this->m_playerBasics->updateAttributes();
