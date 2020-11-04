@@ -25,6 +25,8 @@ private:
 
 	void updateVelocity(FVector2D& currentVelocity, float mobility);
 
+	bool m_movementPaused;
+
 public:
 
 	Movement();
@@ -35,11 +37,12 @@ public:
 
 	void isGrounded(bool grounded);
 
-	void setMovementVelocity(FVector movementVelocity);
 	FVector getMovementVelocity(float velocityZ);
 
 	void resetInputVelocity();
 	void addInputVector(FVector inputVector);
 	void setInputRotation(float inputRotationYaw);
 	FVector getInputVector(float cameraRotationYaw);
+
+	void resetMovement(float amount);
 };

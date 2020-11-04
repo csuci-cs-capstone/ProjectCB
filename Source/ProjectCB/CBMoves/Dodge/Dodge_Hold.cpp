@@ -72,19 +72,15 @@ void Dodge::idleUpdate(float deltaTime) {}
 void Dodge::startDodge() // Release
 {
 	FVector direction = this->m_playerBasics->getInputDirection();
-
 	direction = direction.Size() > 1 ? direction.GetUnsafeNormal() : direction;
-
 	this->m_dodgeProportion.m_proportion = 1 - direction.Size();
 
 	//this->m_playerBasics->m_velocity = (this->m_dodgeProportion.invProp() * Dodge_Release::DIVE_HORIZONTAL_VELOCITY)
 	//	* direction;
 	// TODO make sure velocity is appropriate
 
-	//direction *= this->m_dodgeProportion.invProp();
-
-	//this->m_playerBasics->m_movement.m_currentVelocity.X = direction.X; // TODO fix invisible wall
-	//this->m_playerBasics->m_movement.m_currentVelocity.Y = direction.Y;
+	this->m_playerBasics->m_currentMobility = this->m_dodgeProportion.getProportion(Dodge_Release::DODGE_MOBILITY,
+		Dodge_Release::DIVE_MOBILITY);
 
 	this->m_playerBasics->m_jumpZVelocity = this->m_dodgeProportion.getProportion(
 		this->m_playerBasics->getJumpVelocity(Dodge_Release::DODGE_HEIGHT),

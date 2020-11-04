@@ -82,12 +82,6 @@ FVector Movement::getInputVector(float cameraRotationYaw)
 		(this->m_inputVelocity.Y * FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y));
 }
 
-void Movement::setMovementVelocity(FVector movementVelocity)
-{
-	this->m_currentMovementVelocity.X = movementVelocity.X;
-	this->m_currentMovementVelocity.Y = movementVelocity.Y;
-}
-
 FVector Movement::getMovementVelocity(float velocityZ)
 {
 	return FVector(this->m_playerSpeed * this->m_currentMovementVelocity, velocityZ);
@@ -103,4 +97,9 @@ void Movement::addInputVector(FVector inputVector)
 {
 	this->m_inputVelocity.X += inputVector.X;
 	this->m_inputVelocity.Y += inputVector.Y;
+}
+
+void Movement::resetMovement(float amount)
+{
+	this->m_currentMovementVelocity *= 1.0f - amount;
 }
