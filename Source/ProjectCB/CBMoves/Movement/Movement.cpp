@@ -48,6 +48,9 @@ void Movement::updateVelocity(float mobility)
 	if (this->m_inputVelocity.Size() > 1)
 		this->m_inputVelocity.Normalize();
 
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Blue, FString::Printf(TEXT("mobility: %f"), mobility));
+
 	updateVelocity(this->m_currentMovementVelocity, mobility);
 	updateVelocity(this->m_currentRotationVelocity, 1);
 
