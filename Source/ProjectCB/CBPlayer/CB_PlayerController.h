@@ -28,4 +28,6 @@ public:
 	void ShootAction();
 	void StopShootAction();
 	
+	void AliveAction();
+
 };

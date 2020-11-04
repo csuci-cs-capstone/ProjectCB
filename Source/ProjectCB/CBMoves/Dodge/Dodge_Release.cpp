@@ -9,7 +9,7 @@ const float Dodge_Release::DODGE_MOBILITY = 0.0f; // TODO fix, allow for mobilit
 const float Dodge_Release::DODGE_APEX_COLLIDER_SIZE = 25.0f;
 const float Dodge_Release::DODGE_END_COLLIDER_SIZE = 50.0f;
 const float Dodge_Release::DODGE_LAND_VELOCITY_RESET_PROPORTION = 0.25f;
-const float Dodge_Release::DODGE_COOLDOWN_MOBILITY = 0.0f;
+const float Dodge_Release::DODGE_COOLDOWN_MOBILITY = 0.25f;
 
 const short Dodge_Release::DODGE_FRAMES_TO_APEX = 7; // TODO change
 const short Dodge_Release::DODGE_COOLDOWN_FRAMES = 30;
@@ -21,7 +21,7 @@ const float Dodge_Release::DIVE_MOBILITY = 0.0f;
 const float Dodge_Release::DIVE_APEX_COLLIDER_SIZE = 25.0f;
 const float Dodge_Release::DIVE_END_COLLIDER_SIZE = 50.0f;
 const float Dodge_Release::DIVE_LAND_VELOCITY_RESET_PROPORTION = 0.25f;
-const float Dodge_Release::DIVE_COOLDOWN_MOBILITY = 0.0f;
+const float Dodge_Release::DIVE_COOLDOWN_MOBILITY = 0.25f;
 
 const short Dodge_Release::DIVE_FRAMES_TO_APEX = 5; // TODO change
 const short Dodge_Release::DIVE_COOLDOWN_FRAMES = 30;

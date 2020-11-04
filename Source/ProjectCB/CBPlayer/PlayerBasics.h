@@ -57,7 +57,6 @@ public:
 	CameraMovement m_cameraMovement;
 
 /////
-	 // TODO should be read only
 
 	FRotator m_inputRotation;
 	FVector m_velocity; // TODO remove?
@@ -83,4 +82,6 @@ public:
 	FVector checkPlayerBounds(FVector playerPosition);
 
 	FVector getInputDirection();
+
+	void makeAlive(); // TODO for demo only
 };

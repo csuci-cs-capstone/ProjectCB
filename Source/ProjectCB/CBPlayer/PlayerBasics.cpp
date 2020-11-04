@@ -139,3 +139,8 @@ FVector PlayerBasics::getInputDirection()
 {
 	return this->m_movement.getInputVector(this->m_cameraMovement.getCameraRotation().Yaw);
 }
+
+void PlayerBasics::makeAlive()
+{
+	this->m_playerState = PlayerBasics::PLAYER_ALIVE;
+}

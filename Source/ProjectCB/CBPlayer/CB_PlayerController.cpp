@@ -25,6 +25,8 @@ void ACB_PlayerController::SetupInputComponent()
 
 	InputComponent->BindAction("ShootAction", IE_Pressed, this, &ACB_PlayerController::ShootAction);
 	InputComponent->BindAction("ShootAction", IE_Released, this, &ACB_PlayerController::StopShootAction);
+
+	InputComponent->BindAction("AliveAction", IE_Pressed, this, &ACB_PlayerController::AliveAction);
 }
 
 void ACB_PlayerController::MoveVertical(float amount)
@@ -94,5 +96,15 @@ void ACB_PlayerController::StopShootAction()
 	if (playerBody != NULL)
 	{
 		playerBody->StopShootAction();
+	}
+}
+
+void ACB_PlayerController::AliveAction()
+{
+	auto playerBody = Cast<ACB_PlayerCharacter>(this->GetCharacter());
+
+	if (playerBody != NULL)
+	{
+		playerBody->AliveAction();
 	}
 }
