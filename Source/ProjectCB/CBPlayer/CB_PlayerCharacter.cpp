@@ -107,9 +107,6 @@ void ACB_PlayerCharacter::playerUpdate(float deltaTime)
 
 	GetCharacterMovement()->Velocity = this->m_basics.m_movement.getMovementVelocity(GetCharacterMovement()->Velocity.Z);
 
-	//GetCharacterMovement()->Velocity =
-	//	FVector(this->m_basics.m_movement.m_inputVelocity * this->m_basics.m_movement.getSpeed(),
-	//		GetCharacterMovement()->Velocity.Z);
 }
 
 void ACB_PlayerCharacter::cameraUpdate()
@@ -216,4 +213,9 @@ void ACB_PlayerCharacter::ShootAction() // TODO create a Dodgeball Generator
 
 void ACB_PlayerCharacter::StopShootAction()
 {
+}
+
+void ACB_PlayerCharacter::AliveAction()
+{
+	this->m_basics.makeAlive();
 }
