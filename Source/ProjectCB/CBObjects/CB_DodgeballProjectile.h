@@ -48,8 +48,9 @@ public:
 
 	// Grabbable
 
-	bool isGrabbable();
-	void makeGrabbed();
-	void makeUngrabbed();
+	bool isGrabbable() override;
+	void makeGrabbed() override;
+	void makeUngrabbed() override;
+	void setGrabbedPosition(FVector position) override;
 
 };

@@ -12,7 +12,7 @@
 #include "CB_PlayerCharacter.generated.h"
 
 UCLASS()
-class PROJECTCB_API ACB_PlayerCharacter : public ACharacter//, public Grabbable
+class PROJECTCB_API ACB_PlayerCharacter : public ACharacter, public IGrabbable
 {
 	GENERATED_BODY()
 
@@ -88,7 +88,8 @@ public:
 
 	void AliveAction();
 
-	bool isGrabbable();
-	void makeGrabbed();
-	void makeUngrabbed();
+	bool isGrabbable() override;
+	void makeGrabbed() override;
+	void makeUngrabbed() override;
+	void setGrabbedPosition(FVector position) override;
 };
