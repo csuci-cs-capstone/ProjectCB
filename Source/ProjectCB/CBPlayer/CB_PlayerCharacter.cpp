@@ -44,7 +44,7 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	this->cameraArm->TargetArmLength = 500.0f; // TODO add to CameraMovement class
 	
 	this->camera = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
-	this->camera->SetupAttachment(cameraArm);
+	this->camera->SetupAttachment(this->cameraArm);
 	
 	this->cameraArm->bUsePawnControlRotation = false;
 	this->camera->bUsePawnControlRotation = false;
@@ -53,6 +53,21 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	this->cameraArm->SetRelativeLocation(FVector(0.0f, 0.0f, 110.0f));
 	//this->cameraArm->SetRelativeRotation(FRotator(-20.0f, 0.0f, 0.0f));
 	this->camera->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+
+	/*      *\
+	   Grab
+	\*      */
+
+	this->grabRoot = CreateDefaultSubobject<USceneComponent>(TEXT("GrabRoot"));
+	this->grabRoot->SetRelativeLocation(FVector(2 * PlayerBasics::PLAYER_RADIUS, 0.0f, PlayerBasics::PLAYER_HEIGHT));
+	this->grabRoot->SetupAttachment(staticMesh);
+
+	this->grabBox = CreateDefaultSubobject<UBoxComponent>(TEXT("GrabBox"));
+	this->grabBox->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
+	this->grabBox->SetGenerateOverlapEvents(true);
+	this->grabBox->OnComponentBeginOverlap.AddDynamic(this, &ACB_PlayerCharacter::OnEnterGrabBox);
+	this->grabBox->OnComponentEndOverlap.AddDynamic(this, &ACB_PlayerCharacter::OnLeaveGrabBox);
+	this->grabBox->SetupAttachment(this->grabRoot);
 }
 
 // Called when the game starts or when spawned
@@ -73,6 +88,7 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 	adjustGravity(characterMovement);
 
 	this->m_dodge.update(DeltaTime);
+	this->m_throw.update(DeltaTime);
 
 	UCapsuleComponent* capsuleComponent = GetCapsuleComponent();
 	capsuleComponent->SetCapsuleSize(PlayerBasics::PLAYER_RADIUS, this->m_basics.m_currentHeight);
@@ -106,7 +122,6 @@ void ACB_PlayerCharacter::playerUpdate(float deltaTime)
 	this->m_basics.m_movement.updateVelocity(this->m_basics.m_currentMobility);
 
 	GetCharacterMovement()->Velocity = this->m_basics.m_movement.getMovementVelocity(GetCharacterMovement()->Velocity.Z);
-
 }
 
 void ACB_PlayerCharacter::cameraUpdate()
@@ -121,6 +136,8 @@ void ACB_PlayerCharacter::cameraUpdate()
 		+ (PlayerBasics::WORLD_LOCATION_PROPORTION_Z * PlayerBasics::PLAYER_START_WORLD_LOCATION_Z);
 
 	this->cameraArm->SetWorldLocation(FVector(currentLocation.X, currentLocation.Y, this->m_basics.m_currentWorldLocationZ));
+
+	this->grabBox->SetRelativeRotation(playerRotation);
 }
 
 void ACB_PlayerCharacter::adjustGravity(UCharacterMovementComponent* characterMovement)
@@ -178,44 +195,74 @@ void ACB_PlayerCharacter::StopJumpAction()
 
 void ACB_PlayerCharacter::ShootAction() // TODO create a Dodgeball Generator
 {
-	// TODO add to Throw::onPress()
+	//this->m_basics.thr
+	//Throw::onPress()
 
-	if (this->DodgeballProjectileClass)
-	{
-		FActorSpawnParameters spawnParameters;
+	this->m_throw.onPress();
 
-		spawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		spawnParameters.bNoFail = true;
-		spawnParameters.Owner = this;
-		spawnParameters.Instigator = this;
+	//if (this->DodgeballProjectileClass)
+	//{
+	//	FActorSpawnParameters spawnParameters;
 
-		FTransform spawnTransform;
+	//	spawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	//	spawnParameters.bNoFail = true;
+	//	spawnParameters.Owner = this;
+	//	spawnParameters.Instigator = this;
 
-		//Scale forward vector by 20.0f so it won't clip into the capsule collider
-		FVector spawnLocation = GetActorForwardVector() * 125.0f
-			+ FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z);
+	//	FTransform spawnTransform;
 
-		const FRotator& cameraRotation = this->m_basics.m_cameraMovement.getCameraRotation();
-		const FRotator& playerRotation = this->m_basics.m_cameraMovement.getCameraRotation();
+	//	//Scale forward vector by 20.0f so it won't clip into the capsule collider
+	//	FVector spawnLocation = GetActorForwardVector() * 125.0f
+	//		+ FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z);
 
-		FRotator spawnRotation(Controller->GetControlRotation().Pitch,
-			GetActorRotation().Yaw + cameraRotation.Yaw - playerRotation.Yaw, 0);
+	//	const FRotator& cameraRotation = this->m_basics.m_cameraMovement.getCameraRotation();
+	//	const FRotator& playerRotation = this->m_basics.m_cameraMovement.getCameraRotation();
 
-		spawnTransform.SetLocation(spawnLocation);
-		spawnTransform.SetScale3D(FVector(0.5f));
+	//	FRotator spawnRotation(Controller->GetControlRotation().Pitch,
+	//		GetActorRotation().Yaw + cameraRotation.Yaw - playerRotation.Yaw, 0);
 
-		auto dodgeball = GetWorld()->SpawnActor<ACB_DodgeballProjectile>(this->DodgeballProjectileClass,
-			spawnTransform, spawnParameters);
+	//	spawnTransform.SetLocation(spawnLocation);
+	//	spawnTransform.SetScale3D(FVector(0.5f));
 
-		dodgeball->launch(spawnRotation.RotateVector(Throw::THROW_DIRECTION));
-	}
+	//	auto dodgeball = GetWorld()->SpawnActor<ACB_DodgeballProjectile>(this->DodgeballProjectileClass,
+	//		spawnTransform, spawnParameters);
+
+	//	dodgeball->launch(spawnRotation.RotateVector(Throw::THROW_DIRECTION));
+	//}
 }
 
 void ACB_PlayerCharacter::StopShootAction()
 {
+	this->m_throw.onRelease();
 }
 
 void ACB_PlayerCharacter::AliveAction()
 {
 	this->m_basics.makeAlive();
+}
+
+void ACB_PlayerCharacter::OnEnterGrabBox(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
+	UPrimitiveComponent* otherComponent, int32 otherBodyIndex, bool fromSweep, const FHitResult& sweepResult)
+{
+	if (otherActor->IsA(ACB_DodgeballProjectile::StaticClass()))
+	{
+		ACB_DodgeballProjectile* dodgeball = (ACB_DodgeballProjectile*) otherActor;
+
+		if(dodgeball->getBallState() == ACB_DodgeballProjectile::BALL_PROJECTILE)
+			this->m_throw.m_grabbableObject = otherActor;
+	}
+	else if (otherActor->IsA(ACB_PlayerCharacter::StaticClass()))
+	{
+		ACB_PlayerCharacter* player = (ACB_PlayerCharacter*) otherActor;
+
+		if(player->m_basics.getPlayerState() == PlayerBasics::PLAYER_ALIVE)
+			this->m_throw.m_grabbableObject = otherActor;
+	}
+}
+
+void ACB_PlayerCharacter::OnLeaveGrabBox(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
+	UPrimitiveComponent* otherComponent, int32 otherBodyIndex)
+{
+	if(this->m_throw.m_grabbableObject == otherActor)
+		this->m_throw.m_grabbableObject = nullptr;
 }
