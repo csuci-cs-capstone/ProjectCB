@@ -64,8 +64,6 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	//this->cameraArm->SetRelativeRotation(FRotator(-20.0f, 0.0f, 0.0f));
 	this->camera->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 
-<<<<<<< HEAD
-=======
 	/*      *\
 	   Grab
 	\*      */
@@ -80,7 +78,6 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	this->grabBox->OnComponentBeginOverlap.AddDynamic(this, &ACB_PlayerCharacter::OnEnterGrabBox);
 	this->grabBox->OnComponentEndOverlap.AddDynamic(this, &ACB_PlayerCharacter::OnLeaveGrabBox);
 	this->grabBox->SetupAttachment(this->grabRoot);
->>>>>>> master
 }
 
 // Called when the game starts or when spawned
