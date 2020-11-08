@@ -24,6 +24,16 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	staticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMeshComponent");
 	staticMesh->SetupAttachment(RootComponent);
 
+	//LOAD in player/ghost models from uassets
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> playerMeshAsset(TEXT("StaticMesh'/Game/PlayerBP/PrototypeModel/CharacterPrototype.CharacterPrototype'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> ghostMeshAsset(TEXT("StaticMesh'/Game/PlayerBP/PrototypeGhostModel/GhostPrototypeModel.GhostPrototypeModel'"));
+	
+	this->m_basics.m_playerModel = playerMeshAsset.Object;
+	this->m_basics.m_ghostModel = ghostMeshAsset.Object;
+	this->m_basics.m_playerMeshComponent = staticMesh;
+
+	staticMesh->SetStaticMesh(playerMeshAsset.Object);
+
 	//Customize the character movement component here!
 	GetCharacterMovement()->MaxWalkSpeed = Movement::PLAYER_GROUND_SPEED;
 	GetCharacterMovement()->GravityScale = PlayerBasics::PLAYER_BASE_GRAVITY;
@@ -54,6 +64,8 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	//this->cameraArm->SetRelativeRotation(FRotator(-20.0f, 0.0f, 0.0f));
 	this->camera->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 
+<<<<<<< HEAD
+=======
 	/*      *\
 	   Grab
 	\*      */
@@ -68,6 +80,7 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	this->grabBox->OnComponentBeginOverlap.AddDynamic(this, &ACB_PlayerCharacter::OnEnterGrabBox);
 	this->grabBox->OnComponentEndOverlap.AddDynamic(this, &ACB_PlayerCharacter::OnLeaveGrabBox);
 	this->grabBox->SetupAttachment(this->grabRoot);
+>>>>>>> master
 }
 
 // Called when the game starts or when spawned

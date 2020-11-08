@@ -78,6 +78,9 @@ void PlayerBasics::makeGhost()
 	this->m_currentMobility = 1.0f;
 	this->m_currentHeight = PlayerBasics::PLAYER_HEIGHT;
 
+	//Model/Anims
+	m_playerMeshComponent->SetStaticMesh(m_ghostModel);
+
 	updateAttributes();
 
 	// TODO update other attributes for ghost such as GHOST_SPEED
@@ -143,4 +146,7 @@ FVector PlayerBasics::getInputDirection()
 void PlayerBasics::makeAlive()
 {
 	this->m_playerState = PlayerBasics::PLAYER_ALIVE;
+
+	//Model/Anims
+	m_playerMeshComponent->SetStaticMesh(m_playerModel);
 }
