@@ -1,3 +1,4 @@
+#include "Throw_Hold.h"
 #include "Throw.h"
 
 void Throw::catchStartUpdate(float deltaTime)

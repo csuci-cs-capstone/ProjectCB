@@ -1,13 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "../CBGeneral/Grabbable.h"
 #include "CB_DodgeballProjectile.generated.h"
 
 UCLASS()
-class PROJECTCB_API ACB_DodgeballProjectile : public AActor
+class PROJECTCB_API ACB_DodgeballProjectile : public AActor, public IGrabbable
 {
 	GENERATED_BODY()
 
@@ -46,5 +45,11 @@ public:
 	void launch(const FVector& direction);
 
 	BallState getBallState();
+
+	// Grabbable
+
+	void makeGrabbed();
+
+	void makeUngrabbed();
 
 };
