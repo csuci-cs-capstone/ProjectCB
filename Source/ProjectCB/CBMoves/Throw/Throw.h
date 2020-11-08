@@ -14,6 +14,8 @@ public:
 
 	static const FVector THROW_DIRECTION;
 
+	static bool isGrabbable(AActor* actor);
+
 	AActor* m_grabbableObject;
 
 	Throw(PlayerBasics& playerBasics);

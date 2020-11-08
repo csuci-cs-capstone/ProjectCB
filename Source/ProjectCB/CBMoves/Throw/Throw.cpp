@@ -67,3 +67,23 @@ void Throw::update(float deltaTime)
 		break;
 	}
 }
+
+bool Throw::isGrabbable(AActor* actor)
+{
+	if (actor->IsA(ACB_DodgeballProjectile::StaticClass()))
+	{
+		ACB_DodgeballProjectile* dodgeball = (ACB_DodgeballProjectile*) actor;
+
+		if (dodgeball->getBallState() == ACB_DodgeballProjectile::BALL_PROJECTILE)
+			return true;
+	}
+	else if (actor->IsA(ACB_PlayerCharacter::StaticClass()))
+	{
+		ACB_PlayerCharacter* player = (ACB_PlayerCharacter*) actor;
+
+		if (player->m_basics.getPlayerState() == PlayerBasics::PLAYER_ALIVE)
+			return true;
+	}
+	
+	return false;
+}
