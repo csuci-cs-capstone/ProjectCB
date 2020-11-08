@@ -19,5 +19,6 @@ public:
 	virtual bool isGrabbable() = 0;
 	virtual void makeGrabbed() = 0;
 	virtual void makeUngrabbed() = 0;
+	virtual void setGrabbedPosition(FVector position) = 0;
 
 };

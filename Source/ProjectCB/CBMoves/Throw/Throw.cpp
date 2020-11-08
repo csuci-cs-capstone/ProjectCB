@@ -28,7 +28,7 @@ void Throw::onRelease()
 		this->m_playerBasics->m_throwState = PlayerBasics::CATCH_COOLDOWN;
 }
 
-void Throw::update(float deltaTime)
+void Throw::update(FVector playerPosition, FRotator playerRotation, float deltaTime)
 {
 	switch (this->m_playerBasics->m_throwState)
 	{
@@ -58,29 +58,7 @@ void Throw::update(float deltaTime)
 		//}
 		break;
 	}
-}
 
-//bool Throw::isGrabbable(AActor* actor)
-//{
-//	if (actor)
-//	{
-//		if
-//
-//		if (actor->IsA(ACB_DodgeballProjectile::StaticClass()))
-//		{
-//			ACB_DodgeballProjectile* dodgeball = (ACB_DodgeballProjectile*) actor;
-//
-//			if (dodgeball->getBallState() == ACB_DodgeballProjectile::BALL_PROJECTILE)
-//				return true;
-//		}
-//		else if (actor->IsA(ACB_PlayerCharacter::StaticClass()))
-//		{
-//			ACB_PlayerCharacter* player = (ACB_PlayerCharacter*) actor;
-//
-//			if ()
-//				return true;
-//		}
-//	}
-//	
-//	return false;
-//}
+	if (this->m_grabbedObject)
+		this->m_grabbedObject->setGrabbedPosition(playerPosition + playerRotation.RotateVector(FVector(75.0f, 0.0f, 0.0f)));
+}

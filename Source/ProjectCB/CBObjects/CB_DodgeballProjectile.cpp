@@ -55,3 +55,8 @@ void ACB_DodgeballProjectile::makeUngrabbed()
 {
 	this->m_ballState = ACB_DodgeballProjectile::BALL_PROJECTILE;
 }
+
+void ACB_DodgeballProjectile::setGrabbedPosition(FVector position)
+{
+	this->SetActorLocation(position);
+}

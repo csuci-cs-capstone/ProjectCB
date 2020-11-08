@@ -3,37 +3,39 @@
 
 void Throw::catchStartUpdate(float deltaTime)
 {
-
+	this->m_playerBasics->m_throwState = PlayerBasics::CATCH_AIM; // TODO implement startup
 }
 
 void Throw::throwStartUpdate(float deltaTime)
 {
-
+	this->m_playerBasics->m_throwState = PlayerBasics::THROW_AIM; // TODO implement startup
 }
+
+// TODO add to release
 
 void Throw::catchAimUpdate(float deltaTime)
 {
-	//if (Grabbable::isGrabbable(this->m_grabbableObject))
-	//{
-	//	this->m_grabbedObject = this->m_grabbableObject;
-	//	//this->m_grabbableObject.makeGrabbed(); // TODO
-	//	this->m_grabbableObject = nullptr;
+	if (this->m_grabbableObject && this->m_grabbableObject->isGrabbable())
+	{
+		this->m_grabbableObject->makeGrabbed();
+		this->m_grabbedObject = this->m_grabbableObject;
+		this->m_grabbableObject = nullptr;
 
-	//	this->m_playerBasics->m_throwState = PlayerBasics::CATCH_COOLDOWN;
-	//}
+		this->m_playerBasics->m_throwState = PlayerBasics::CATCH_COOLDOWN;
+	}
 }
 
 void Throw::throwAimUpdate(float deltaTime)
 {
-
+	this->m_playerBasics->m_throwState = PlayerBasics::THROW_COOLDOWN; // TODO implement aim
 }
 
 void Throw::catchCooldownUpdate(float deltaTime)
 {
-
+	this->m_playerBasics->m_throwState = PlayerBasics::THROW_OFF; // TODO implement cooldown
 }
 
 void Throw::throwCooldownUpdate(float deltaTime)
 {
-
+	this->m_playerBasics->m_throwState = PlayerBasics::THROW_OFF; // TODO implement cooldown
 }

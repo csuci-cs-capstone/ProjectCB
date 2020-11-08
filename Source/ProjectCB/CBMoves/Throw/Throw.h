@@ -32,5 +32,5 @@ public:
 
 	void onPress();
 	void onRelease();
-	void update(float deltaTime);
+	void update(FVector playerPosition, FRotator playerRotation, float deltaTime);
 };

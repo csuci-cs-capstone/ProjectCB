@@ -101,7 +101,7 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 	adjustGravity(characterMovement);
 
 	this->m_dodge.update(DeltaTime);
-	this->m_throw.update(DeltaTime);
+	this->m_throw.update(this->GetActorLocation(), this->GetActorRotation(), DeltaTime);
 
 	UCapsuleComponent* capsuleComponent = GetCapsuleComponent();
 	capsuleComponent->SetCapsuleSize(PlayerBasics::PLAYER_RADIUS, this->m_basics.m_currentHeight);
@@ -259,6 +259,9 @@ void ACB_PlayerCharacter::AliveAction()
 void ACB_PlayerCharacter::OnEnterGrabBox(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
 	UPrimitiveComponent* otherComponent, int32 otherBodyIndex, bool fromSweep, const FHitResult& sweepResult)
 {
+	if (this == otherActor)
+		return;
+
 	IGrabbable* grabbable = Cast<IGrabbable>(otherActor);
 
 	if(grabbable && grabbable->isGrabbable())
@@ -268,6 +271,9 @@ void ACB_PlayerCharacter::OnEnterGrabBox(UPrimitiveComponent* overlappedComponen
 void ACB_PlayerCharacter::OnLeaveGrabBox(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
 	UPrimitiveComponent* otherComponent, int32 otherBodyIndex)
 {
+	if (this == otherActor)
+		return;
+
 	IGrabbable* grabbable = Cast<IGrabbable>(otherActor);
 
 	if(grabbable && this->m_throw.m_grabbableObject == grabbable)
@@ -287,4 +293,9 @@ void ACB_PlayerCharacter::makeGrabbed()
 void ACB_PlayerCharacter::makeUngrabbed()
 {
 	this->m_basics.makeAlive();
+}
+
+void ACB_PlayerCharacter::setGrabbedPosition(FVector position)
+{
+	this->SetActorLocation(position);
 }
