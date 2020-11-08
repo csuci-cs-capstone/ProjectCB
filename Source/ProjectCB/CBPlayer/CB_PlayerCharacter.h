@@ -18,14 +18,15 @@ class PROJECTCB_API ACB_PlayerCharacter : public ACharacter
 
 public:
 	// Sets default values for this character's properties
+
+	PlayerBasics m_basics;
+
 	ACB_PlayerCharacter();
 
 private:
 
 	// General
 	
-	PlayerBasics m_basics;
-
 	void playerUpdate(float deltaTime);
 
 	void cameraUpdate();

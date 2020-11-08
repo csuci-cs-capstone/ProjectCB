@@ -244,20 +244,8 @@ void ACB_PlayerCharacter::AliveAction()
 void ACB_PlayerCharacter::OnEnterGrabBox(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
 	UPrimitiveComponent* otherComponent, int32 otherBodyIndex, bool fromSweep, const FHitResult& sweepResult)
 {
-	if (otherActor->IsA(ACB_DodgeballProjectile::StaticClass()))
-	{
-		ACB_DodgeballProjectile* dodgeball = (ACB_DodgeballProjectile*) otherActor;
-
-		if(dodgeball->getBallState() == ACB_DodgeballProjectile::BALL_PROJECTILE)
-			this->m_throw.m_grabbableObject = otherActor;
-	}
-	else if (otherActor->IsA(ACB_PlayerCharacter::StaticClass()))
-	{
-		ACB_PlayerCharacter* player = (ACB_PlayerCharacter*) otherActor;
-
-		if(player->m_basics.getPlayerState() == PlayerBasics::PLAYER_ALIVE)
-			this->m_throw.m_grabbableObject = otherActor;
-	}
+	if(Throw::isGrabbable(otherActor))
+		this->m_throw.m_grabbableObject = otherActor;
 }
 
 void ACB_PlayerCharacter::OnLeaveGrabBox(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
