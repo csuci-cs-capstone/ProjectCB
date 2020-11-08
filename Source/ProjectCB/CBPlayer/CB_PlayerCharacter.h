@@ -7,24 +7,27 @@
 #include "PlayerBasics.h"
 #include "../CBMoves/Dodge/Dodge.h"
 #include "../CBMoves/Throw/Throw.h"
+#include "../CBGeneral/Grabbable.h"
 #include "GameFramework/Character.h"
+#include "Components/BoxComponent.h"
 #include "CB_PlayerCharacter.generated.h"
 
 UCLASS()
-class PROJECTCB_API ACB_PlayerCharacter : public ACharacter
+class PROJECTCB_API ACB_PlayerCharacter : public ACharacter//, public Grabbable
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
+
+	PlayerBasics m_basics;
+
 	ACB_PlayerCharacter();
 
 private:
 
 	// General
 	
-	PlayerBasics m_basics;
-
 	void playerUpdate(float deltaTime);
 
 	void cameraUpdate();
@@ -32,14 +35,25 @@ private:
 	void adjustGravity(UCharacterMovementComponent* characterMovement);
 
 	Dodge m_dodge = Dodge(this->m_basics);
-
-	// Grab/Catch/Pickup/Throw/Drop
-
-		// TODO implement
+	Throw m_throw = Throw(this->m_basics);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere)
+		USceneComponent* grabRoot;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Components")
+		UBoxComponent* grabBox;
+
+	UFUNCTION()
+		void OnEnterGrabBox(UPrimitiveComponent* overlappedComponent, AActor* otherActor, UPrimitiveComponent* otherComponent,
+			int32 otherBodyIndex, bool fromSweep, const FHitResult& sweepResult);
+
+	UFUNCTION()
+		void OnLeaveGrabBox(UPrimitiveComponent* overlappedComponent, AActor* otherActor, UPrimitiveComponent* otherComponent,
+			int32 otherBodyIndex);
 
 	//For prototyping, TODO add character model and start ik system
 	UPROPERTY(EditAnywhere, Category = "Components")

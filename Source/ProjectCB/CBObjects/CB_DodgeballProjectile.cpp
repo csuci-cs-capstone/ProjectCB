@@ -40,3 +40,7 @@ void ACB_DodgeballProjectile::launch(const FVector& direction)
 	this->DodgeballMovement->AddForce(this->m_speed * 1000 * direction);
 }
 
+ACB_DodgeballProjectile::BallState ACB_DodgeballProjectile::getBallState()
+{
+	return this->m_ballState;
+}

@@ -11,14 +11,21 @@ class PROJECTCB_API ACB_DodgeballProjectile : public AActor
 {
 	GENERATED_BODY()
 
+public:
+
+	enum BallState { BALL_PROJECTILE = 0, BALL_GRABBED };
+
 private:
 
+	BallState m_ballState; // TODO make private?
+	
 	FVector m_velocity;
 	const float m_speed = 2500.0f;
 	const float m_gravity = 1.0f;
 	const float m_bounce = 5.0f;
 
 public:	
+
 	// Sets default values for this actor's properties
 	ACB_DodgeballProjectile();
 
@@ -37,5 +44,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void launch(const FVector& direction);
+
+	BallState getBallState();
 
 };
