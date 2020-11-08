@@ -56,6 +56,11 @@ public:
 	Movement m_movement;
 	CameraMovement m_cameraMovement;
 
+	//Prototype models read TODO read in skeletalMesh
+	UStaticMeshComponent* m_playerMeshComponent;
+	UStaticMesh* m_playerModel;
+	UStaticMesh* m_ghostModel;
+
 /////
 
 	FRotator m_inputRotation;
