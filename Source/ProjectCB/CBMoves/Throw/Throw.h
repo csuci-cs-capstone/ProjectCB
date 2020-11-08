@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "../../CBPlayer/PlayerBasics.h"
+#include "../../CBGeneral/Grabbable.h"
 #include "Throw_Hold.h"
 #include "Throw_Release.h"
 
@@ -10,7 +11,7 @@ class PROJECTCB_API Throw // Catch Aim Throw
 private:
 
 	PlayerBasics* m_playerBasics;
-	AActor* m_grabbedObject;
+	IGrabbable* m_grabbedObject;
 
 	void catchStartUpdate(float deltaTime);
 	void throwStartUpdate(float deltaTime);
@@ -25,9 +26,7 @@ public:
 
 	static const FVector THROW_DIRECTION;
 
-	static bool isGrabbable(AActor* actor);
-
-	AActor* m_grabbableObject;
+	IGrabbable* m_grabbableObject;
 
 	Throw(PlayerBasics& playerBasics);
 

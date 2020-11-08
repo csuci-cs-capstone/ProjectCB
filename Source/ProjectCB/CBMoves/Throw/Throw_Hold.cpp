@@ -13,14 +13,14 @@ void Throw::throwStartUpdate(float deltaTime)
 
 void Throw::catchAimUpdate(float deltaTime)
 {
-	if (Throw::isGrabbable(this->m_grabbableObject))
-	{
-		this->m_grabbedObject = this->m_grabbableObject;
-		//this->m_grabbableObject.makeGrabbed(); // TODO
-		this->m_grabbableObject = nullptr;
+	//if (Grabbable::isGrabbable(this->m_grabbableObject))
+	//{
+	//	this->m_grabbedObject = this->m_grabbableObject;
+	//	//this->m_grabbableObject.makeGrabbed(); // TODO
+	//	this->m_grabbableObject = nullptr;
 
-		this->m_playerBasics->m_throwState = PlayerBasics::CATCH_COOLDOWN;
-	}
+	//	this->m_playerBasics->m_throwState = PlayerBasics::CATCH_COOLDOWN;
+	//}
 }
 
 void Throw::throwAimUpdate(float deltaTime)

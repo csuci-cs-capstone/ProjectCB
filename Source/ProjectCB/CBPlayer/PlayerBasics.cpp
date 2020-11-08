@@ -144,3 +144,8 @@ void PlayerBasics::makeAlive()
 {
 	this->m_playerState = PlayerBasics::PLAYER_ALIVE;
 }
+
+void PlayerBasics::makeGrabbed()
+{
+	this->m_playerState = PlayerBasics::PLAYER_GRABBED;
+}

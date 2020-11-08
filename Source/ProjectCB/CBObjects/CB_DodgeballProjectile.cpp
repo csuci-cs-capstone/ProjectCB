@@ -41,12 +41,17 @@ ACB_DodgeballProjectile::BallState ACB_DodgeballProjectile::getBallState()
 	return this->m_ballState;
 }
 
+bool ACB_DodgeballProjectile::isGrabbable()
+{
+	return this->getBallState() == ACB_DodgeballProjectile::BALL_PROJECTILE;
+}
+
 void ACB_DodgeballProjectile::makeGrabbed()
 {
-
+	this->m_ballState = ACB_DodgeballProjectile::BALL_GRABBED;
 }
 
 void ACB_DodgeballProjectile::makeUngrabbed()
 {
-
+	this->m_ballState = ACB_DodgeballProjectile::BALL_PROJECTILE;
 }

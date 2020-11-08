@@ -87,4 +87,8 @@ public:
 	void StopShootAction();
 
 	void AliveAction();
+
+	bool isGrabbable();
+	void makeGrabbed();
+	void makeUngrabbed();
 };

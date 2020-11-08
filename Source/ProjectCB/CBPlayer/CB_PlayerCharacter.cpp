@@ -241,16 +241,37 @@ void ACB_PlayerCharacter::AliveAction()
 	this->m_basics.makeAlive();
 }
 
+// Grab
+
 void ACB_PlayerCharacter::OnEnterGrabBox(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
 	UPrimitiveComponent* otherComponent, int32 otherBodyIndex, bool fromSweep, const FHitResult& sweepResult)
 {
-	if(Throw::isGrabbable(otherActor))
-		this->m_throw.m_grabbableObject = otherActor;
+	IGrabbable* grabbable = Cast<IGrabbable>(otherActor);
+
+	if(grabbable && grabbable->isGrabbable())
+		this->m_throw.m_grabbableObject = grabbable;
 }
 
 void ACB_PlayerCharacter::OnLeaveGrabBox(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
 	UPrimitiveComponent* otherComponent, int32 otherBodyIndex)
 {
-	if(this->m_throw.m_grabbableObject == otherActor)
+	IGrabbable* grabbable = Cast<IGrabbable>(otherActor);
+
+	if(grabbable && this->m_throw.m_grabbableObject == grabbable)
 		this->m_throw.m_grabbableObject = nullptr;
+}
+
+bool ACB_PlayerCharacter::isGrabbable()
+{
+	return this->m_basics.getPlayerState() == PlayerBasics::PLAYER_ALIVE;
+}
+
+void ACB_PlayerCharacter::makeGrabbed()
+{
+	this->m_basics.makeGrabbed();
+}
+
+void ACB_PlayerCharacter::makeUngrabbed()
+{
+	this->m_basics.makeAlive();
 }

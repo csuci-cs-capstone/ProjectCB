@@ -83,5 +83,7 @@ public:
 
 	FVector getInputDirection();
 
-	void makeAlive(); // TODO for demo only
+	void makeAlive();
+
+	void makeGrabbed();
 };

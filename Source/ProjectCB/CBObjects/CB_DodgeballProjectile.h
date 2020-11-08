@@ -48,8 +48,8 @@ public:
 
 	// Grabbable
 
+	bool isGrabbable();
 	void makeGrabbed();
-
 	void makeUngrabbed();
 
 };
