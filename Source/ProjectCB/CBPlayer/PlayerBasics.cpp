@@ -43,7 +43,7 @@ float PlayerBasics::getJumpVelocity(float height)
 
 float PlayerBasics::getAnimationPoint(float x)
 {
-	return x;// TODO adjust to sync with procedural animations (add additional parameters where needed)
+	return x; // TODO adjust to sync with procedural animations (add additional parameters where needed)
 }
 
 void PlayerBasics::updateAttributes()
