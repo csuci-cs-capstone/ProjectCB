@@ -16,6 +16,8 @@ public:
 	enum BallState { BALL_PROJECTILE = 0, BALL_GRABBED };
 
 private:
+
+	BallState m_ballState; // TODO make private?
 	
 	FVector m_velocity;
 	const float m_speed = 2500.0f;
@@ -23,8 +25,6 @@ private:
 	const float m_bounce = 5.0f;
 
 public:	
-
-	BallState m_ballState; // TODO make private?
 
 	// Sets default values for this actor's properties
 	ACB_DodgeballProjectile();

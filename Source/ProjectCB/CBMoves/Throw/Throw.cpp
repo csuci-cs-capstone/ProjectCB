@@ -11,21 +11,14 @@ Throw::Throw(PlayerBasics& playerBasics)
 
 void Throw::onPress()
 {
-	// TODO start grab/aim
+	if (!this->m_playerBasics->m_throwState)
+	{
+		if (this->m_grabbedObject)
+			this->m_playerBasics->m_throwState = PlayerBasics::THROW_STARTUP;
 
-	//if (actor->IsA(ACB_DodgeballProjectile::StaticClass()))
-	//{
-	//	// pickup dodgeball
-	//}
-	//else if (actor->IsA(ACB_PlayerCharacter::StaticClass()))
-	//{
-	//	// pickup player
-	//}
-
-	if (this->m_grabbedObject)
-		this->m_playerBasics->m_throwState = PlayerBasics::THROW_STARTUP; // THROW
-	else
-		this->m_playerBasics->m_throwState = PlayerBasics::CATCH_STARTUP; // GRAB
+		else
+			this->m_playerBasics->m_throwState = PlayerBasics::CATCH_STARTUP;
+	}
 }
 
 void Throw::onRelease()
@@ -42,24 +35,25 @@ void Throw::update(float deltaTime)
 	switch (this->m_playerBasics->m_throwState)
 	{
 	case PlayerBasics::CATCH_STARTUP:
-		//this->startUpdate(deltaTime);
+		this->catchStartUpdate(deltaTime);
 		break;
 	case PlayerBasics::THROW_STARTUP:
-		//this->duckUpdate(deltaTime);
+		this->throwStartUpdate(deltaTime);
 		break;
 	case PlayerBasics::CATCH_AIM:
-		//this->idleUpdate(deltaTime);
+		this->catchAimUpdate(deltaTime);
 		break;
 	case PlayerBasics::THROW_AIM:
-		//this->jumpUpdate(deltaTime);
+		this->throwAimUpdate(deltaTime);
 		break;
 	case PlayerBasics::CATCH_COOLDOWN:
-		//this->cooldownUpdate(deltaTime);
+		this->catchCooldownUpdate(deltaTime);
 		break;
 	case PlayerBasics::THROW_COOLDOWN:
+		this->throwCooldownUpdate(deltaTime);
 		break;
 	default:
-		//if (this->m_buffer)
+		//if (this->m_buffer) // TODO create buffer?
 		//{
 		//	this->startDuck();
 		//	this->m_buffer = false;
@@ -70,19 +64,22 @@ void Throw::update(float deltaTime)
 
 bool Throw::isGrabbable(AActor* actor)
 {
-	if (actor->IsA(ACB_DodgeballProjectile::StaticClass()))
+	if (actor)
 	{
-		ACB_DodgeballProjectile* dodgeball = (ACB_DodgeballProjectile*) actor;
+		if (actor->IsA(ACB_DodgeballProjectile::StaticClass()))
+		{
+			ACB_DodgeballProjectile* dodgeball = (ACB_DodgeballProjectile*)actor;
 
-		if (dodgeball->getBallState() == ACB_DodgeballProjectile::BALL_PROJECTILE)
-			return true;
-	}
-	else if (actor->IsA(ACB_PlayerCharacter::StaticClass()))
-	{
-		ACB_PlayerCharacter* player = (ACB_PlayerCharacter*) actor;
+			if (dodgeball->getBallState() == ACB_DodgeballProjectile::BALL_PROJECTILE)
+				return true;
+		}
+		else if (actor->IsA(ACB_PlayerCharacter::StaticClass()))
+		{
+			ACB_PlayerCharacter* player = (ACB_PlayerCharacter*)actor;
 
-		if (player->m_basics.getPlayerState() == PlayerBasics::PLAYER_ALIVE)
-			return true;
+			if (player->m_basics.getPlayerState() == PlayerBasics::PLAYER_ALIVE)
+				return true;
+		}
 	}
 	
 	return false;
