@@ -150,3 +150,8 @@ void PlayerBasics::makeAlive()
 	//Model/Anims
 	m_playerMeshComponent->SetStaticMesh(m_playerModel);
 }
+
+void PlayerBasics::makeGrabbed()
+{
+	this->m_playerState = PlayerBasics::PLAYER_GRABBED;
+}

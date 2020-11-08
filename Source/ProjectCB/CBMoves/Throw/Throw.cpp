@@ -1,6 +1,4 @@
 #include "Throw.h"
-#include "../../CBPlayer/CB_PlayerCharacter.h"
-#include "../../CBObjects/CB_DodgeballProjectile.h"
 
 const FVector Throw::THROW_DIRECTION = FVector(1, 0, 0.025).GetUnsafeNormal();
 
@@ -62,25 +60,27 @@ void Throw::update(float deltaTime)
 	}
 }
 
-bool Throw::isGrabbable(AActor* actor)
-{
-	if (actor)
-	{
-		if (actor->IsA(ACB_DodgeballProjectile::StaticClass()))
-		{
-			ACB_DodgeballProjectile* dodgeball = (ACB_DodgeballProjectile*)actor;
-
-			if (dodgeball->getBallState() == ACB_DodgeballProjectile::BALL_PROJECTILE)
-				return true;
-		}
-		else if (actor->IsA(ACB_PlayerCharacter::StaticClass()))
-		{
-			ACB_PlayerCharacter* player = (ACB_PlayerCharacter*)actor;
-
-			if (player->m_basics.getPlayerState() == PlayerBasics::PLAYER_ALIVE)
-				return true;
-		}
-	}
-	
-	return false;
-}
+//bool Throw::isGrabbable(AActor* actor)
+//{
+//	if (actor)
+//	{
+//		if
+//
+//		if (actor->IsA(ACB_DodgeballProjectile::StaticClass()))
+//		{
+//			ACB_DodgeballProjectile* dodgeball = (ACB_DodgeballProjectile*) actor;
+//
+//			if (dodgeball->getBallState() == ACB_DodgeballProjectile::BALL_PROJECTILE)
+//				return true;
+//		}
+//		else if (actor->IsA(ACB_PlayerCharacter::StaticClass()))
+//		{
+//			ACB_PlayerCharacter* player = (ACB_PlayerCharacter*) actor;
+//
+//			if ()
+//				return true;
+//		}
+//	}
+//	
+//	return false;
+//}
