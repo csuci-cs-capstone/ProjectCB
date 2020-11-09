@@ -20,14 +20,12 @@ void Throw::catchAimUpdate(float deltaTime)
 		this->m_grabbableObject->makeGrabbed();
 		this->m_grabbedObject = this->m_grabbableObject;
 		this->m_grabbableObject = nullptr;
-
-		this->m_playerBasics->m_throwState = PlayerBasics::CATCH_COOLDOWN;
 	}
 }
 
 void Throw::throwAimUpdate(float deltaTime)
 {
-	this->m_playerBasics->m_throwState = PlayerBasics::THROW_COOLDOWN; // TODO implement aim
+	// TODO implement aim
 }
 
 void Throw::catchCooldownUpdate(float deltaTime)
