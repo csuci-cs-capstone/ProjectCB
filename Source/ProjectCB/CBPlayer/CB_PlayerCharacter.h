@@ -90,6 +90,6 @@ public:
 
 	bool isGrabbable() override;
 	void makeGrabbed() override;
-	void makeUngrabbed() override;
+	void launchRelease(FVector direction) override;
 	void setGrabbedPosition(FVector position) override;
 };

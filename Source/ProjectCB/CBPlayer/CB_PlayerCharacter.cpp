@@ -205,9 +205,6 @@ void ACB_PlayerCharacter::StopJumpAction()
 
 void ACB_PlayerCharacter::ShootAction() // TODO create a Dodgeball Generator
 {
-	//this->m_basics.thr
-	//Throw::onPress()
-
 	this->m_throw.onPress();
 
 	//if (this->DodgeballProjectileClass)
@@ -237,7 +234,7 @@ void ACB_PlayerCharacter::ShootAction() // TODO create a Dodgeball Generator
 	//	auto dodgeball = GetWorld()->SpawnActor<ACB_DodgeballProjectile>(this->DodgeballProjectileClass,
 	//		spawnTransform, spawnParameters);
 
-	//	dodgeball->launch(spawnRotation.RotateVector(Throw::THROW_DIRECTION));
+	//	dodgeball->launchRelease(spawnRotation.RotateVector(Throw::THROW_DIRECTION));
 	//}
 }
 
@@ -287,12 +284,14 @@ void ACB_PlayerCharacter::makeGrabbed()
 	this->m_basics.makeGrabbed();
 }
 
-void ACB_PlayerCharacter::makeUngrabbed()
+void ACB_PlayerCharacter::launchRelease(FVector direction)
 {
 	this->m_basics.makeAlive();
+	this->GetCharacterMovement()->Velocity = direction;// TODO set velocity in direction
 }
 
 void ACB_PlayerCharacter::setGrabbedPosition(FVector position)
 {
 	this->SetActorLocation(position);
+	this->GetCharacterMovement()->Velocity = FVector(0.0f, 0.0f, 0.0f);
 }

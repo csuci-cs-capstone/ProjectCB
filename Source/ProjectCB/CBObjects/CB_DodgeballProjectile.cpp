@@ -31,11 +31,6 @@ void ACB_DodgeballProjectile::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ACB_DodgeballProjectile::launch(const FVector& direction)
-{
-	this->DodgeballMovement->AddForce(this->m_speed * 1000 * direction);
-}
-
 ACB_DodgeballProjectile::BallState ACB_DodgeballProjectile::getBallState()
 {
 	return this->m_ballState;
@@ -51,9 +46,11 @@ void ACB_DodgeballProjectile::makeGrabbed()
 	this->m_ballState = ACB_DodgeballProjectile::BALL_GRABBED;
 }
 
-void ACB_DodgeballProjectile::makeUngrabbed()
+void ACB_DodgeballProjectile::launchRelease(FVector direction)
 {
 	this->m_ballState = ACB_DodgeballProjectile::BALL_PROJECTILE;
+
+	this->DodgeballMovement->AddForce(this->m_speed * 1000 * direction);
 }
 
 void ACB_DodgeballProjectile::setGrabbedPosition(FVector position)

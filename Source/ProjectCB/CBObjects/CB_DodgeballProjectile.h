@@ -18,7 +18,6 @@ private:
 
 	BallState m_ballState; // TODO make private?
 	
-	FVector m_velocity;
 	const float m_speed = 2500.0f;
 	const float m_gravity = 1.0f;
 	const float m_bounce = 5.0f;
@@ -42,15 +41,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void launch(const FVector& direction);
-
 	BallState getBallState();
 
 	// Grabbable
 
 	bool isGrabbable() override;
 	void makeGrabbed() override;
-	void makeUngrabbed() override;
+	void launchRelease(FVector direction) override;
 	void setGrabbedPosition(FVector position) override;
-
+	
 };

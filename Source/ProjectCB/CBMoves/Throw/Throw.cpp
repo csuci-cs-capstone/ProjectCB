@@ -21,10 +21,21 @@ void Throw::onPress()
 
 void Throw::onRelease()
 {
-	if (this->m_playerBasics->m_throwState == PlayerBasics::THROW_AIM)
+	if (this->m_playerBasics->m_throwState == PlayerBasics::THROW_AIM) // TODO should buffer for startup
+	{
 		this->m_playerBasics->m_throwState = PlayerBasics::THROW_COOLDOWN;
 
-	else if (this->m_playerBasics->m_throwState == PlayerBasics::CATCH_AIM)
+		// THROW BALL
+
+		this->m_grabbedObject->launchRelease( // TODO should probably ensure it exists first
+			this->m_playerBasics->m_movement.getPlayerRotation().RotateVector(FVector(1.0f,0.0f,0.0f)));
+		
+			// TODO launch ball in current player direction
+		this->m_grabbedObject = nullptr;
+		// TODO might want to ensure that there is no way grabbable can not be null when in throw state
+	}
+
+	else if (this->m_playerBasics->m_throwState == PlayerBasics::CATCH_AIM) // TODO should buffer for startup
 		this->m_playerBasics->m_throwState = PlayerBasics::CATCH_COOLDOWN;
 }
 
