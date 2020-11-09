@@ -15,7 +15,7 @@ void Throw::throwStartUpdate(float deltaTime)
 
 void Throw::catchAimUpdate(float deltaTime)
 {
-	if (this->m_grabbableObject && this->m_grabbableObject->isGrabbable())
+	if (this->m_grabbableObject && !this->m_grabbedObject && this->m_grabbableObject->isGrabbable())
 	{
 		this->m_grabbableObject->makeGrabbed();
 		this->m_grabbedObject = this->m_grabbableObject;
