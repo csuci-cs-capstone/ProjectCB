@@ -15,11 +15,16 @@ void Throw::throwStartUpdate(float deltaTime)
 
 void Throw::catchAimUpdate(float deltaTime)
 {
-	if (this->m_grabbableObject && !this->m_grabbedObject && this->m_grabbableObject->isGrabbable())
+	if (!this->m_grabbedObject) // TODO should make it so that this can be removed? (make cooldown after grab?)
 	{
-		this->m_grabbableObject->makeGrabbed();
-		this->m_grabbedObject = this->m_grabbableObject;
-		this->m_grabbableObject = nullptr;
+		IGrabbable* topGrabbable = this->m_grabbableList->getTopGrabbable();
+
+		if (topGrabbable)
+		{
+			topGrabbable->makeGrabbed();
+			this->m_grabbedObject = topGrabbable;
+			//this->m_grabbableList->remove(topGrabbable); // shouldn't remove?
+		}
 	}
 }
 

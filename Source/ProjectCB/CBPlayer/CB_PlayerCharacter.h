@@ -92,4 +92,6 @@ public:
 	void makeGrabbed() override;
 	void launchRelease(FVector direction) override;
 	void setGrabbedPosition(FVector position) override;
+	unsigned char getGrabPriority() override;
+
 };

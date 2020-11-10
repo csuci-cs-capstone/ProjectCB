@@ -15,12 +15,11 @@ public:
 	enum BallState { BALL_PROJECTILE = 0, BALL_GRABBED };
 
 private:
-
-	BallState m_ballState; // TODO make private?
 	
-	const float m_speed = 2500.0f;
-	const float m_gravity = 1.0f;
-	const float m_bounce = 5.0f;
+	static const float PROJECTILE_SPEED;
+	static const float PROJECTILE_GRAVITY;
+
+	BallState m_ballState;
 
 public:	
 
@@ -49,5 +48,6 @@ public:
 	void makeGrabbed() override;
 	void launchRelease(FVector direction) override;
 	void setGrabbedPosition(FVector position) override;
+	unsigned char getGrabPriority() override;
 	
 };

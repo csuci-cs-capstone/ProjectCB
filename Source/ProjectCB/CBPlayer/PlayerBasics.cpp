@@ -19,6 +19,7 @@ PlayerBasics::PlayerBasics()
 {
 	this->m_playerState = PLAYER_ALIVE;
 	this->m_dodgeState = DODGE_OFF;
+	this->m_throwState = THROW_OFF;
 
 	this->m_currentWorldLocationZ = PlayerBasics::PLAYER_START_WORLD_LOCATION_Z;
 

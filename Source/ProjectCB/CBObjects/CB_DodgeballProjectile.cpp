@@ -2,6 +2,9 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
+const float ACB_DodgeballProjectile::PROJECTILE_SPEED = 2500.0f;
+const float ACB_DodgeballProjectile::PROJECTILE_GRAVITY = 1.0f;
+
 // Sets default values
 ACB_DodgeballProjectile::ACB_DodgeballProjectile()
 {
@@ -14,8 +17,8 @@ ACB_DodgeballProjectile::ACB_DodgeballProjectile()
 
 	this->DodgeballMovement = CreateDefaultSubobject<UProjectileMovementComponent>("DodgeballMovement");
 	this->DodgeballMovement->InitialSpeed = 0;
-	this->DodgeballMovement->MaxSpeed = this->m_speed;
-	this->DodgeballMovement->ProjectileGravityScale = this->m_gravity;
+	this->DodgeballMovement->MaxSpeed = ACB_DodgeballProjectile::PROJECTILE_SPEED;
+	this->DodgeballMovement->ProjectileGravityScale = ACB_DodgeballProjectile::PROJECTILE_GRAVITY;
 	this->DodgeballMovement->bShouldBounce = true;
 }
 
@@ -50,10 +53,15 @@ void ACB_DodgeballProjectile::launchRelease(FVector direction)
 {
 	this->m_ballState = ACB_DodgeballProjectile::BALL_PROJECTILE;
 
-	this->DodgeballMovement->AddForce(this->m_speed * 1000 * direction);
+	this->DodgeballMovement->AddForce(ACB_DodgeballProjectile::PROJECTILE_SPEED * 1000 * direction);
 }
 
 void ACB_DodgeballProjectile::setGrabbedPosition(FVector position)
 {
 	this->SetActorLocation(position);
+}
+
+unsigned char ACB_DodgeballProjectile::getGrabPriority()
+{
+	return UGrabbable::BALL_PRIORITY;
 }
