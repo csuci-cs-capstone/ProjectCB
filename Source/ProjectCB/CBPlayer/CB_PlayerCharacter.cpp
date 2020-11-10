@@ -64,8 +64,6 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	//this->cameraArm->SetRelativeRotation(FRotator(-20.0f, 0.0f, 0.0f));
 	this->camera->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 
-<<<<<<< HEAD
-=======
 	/*      *\
 	   Grab
 	\*      */
@@ -80,7 +78,6 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	this->grabBox->OnComponentBeginOverlap.AddDynamic(this, &ACB_PlayerCharacter::OnEnterGrabBox);
 	this->grabBox->OnComponentEndOverlap.AddDynamic(this, &ACB_PlayerCharacter::OnLeaveGrabBox);
 	this->grabBox->SetupAttachment(this->grabRoot);
->>>>>>> master
 }
 
 // Called when the game starts or when spawned
@@ -101,7 +98,7 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 	adjustGravity(characterMovement);
 
 	this->m_dodge.update(DeltaTime);
-	this->m_throw.update(DeltaTime);
+	this->m_throw.update(this->GetActorLocation(), this->GetActorRotation(), DeltaTime);
 
 	UCapsuleComponent* capsuleComponent = GetCapsuleComponent();
 	capsuleComponent->SetCapsuleSize(PlayerBasics::PLAYER_RADIUS, this->m_basics.m_currentHeight);
@@ -208,9 +205,6 @@ void ACB_PlayerCharacter::StopJumpAction()
 
 void ACB_PlayerCharacter::ShootAction() // TODO create a Dodgeball Generator
 {
-	//this->m_basics.thr
-	//Throw::onPress()
-
 	this->m_throw.onPress();
 
 	//if (this->DodgeballProjectileClass)
@@ -240,7 +234,7 @@ void ACB_PlayerCharacter::ShootAction() // TODO create a Dodgeball Generator
 	//	auto dodgeball = GetWorld()->SpawnActor<ACB_DodgeballProjectile>(this->DodgeballProjectileClass,
 	//		spawnTransform, spawnParameters);
 
-	//	dodgeball->launch(spawnRotation.RotateVector(Throw::THROW_DIRECTION));
+	//	dodgeball->launchRelease(spawnRotation.RotateVector(Throw::THROW_DIRECTION));
 	//}
 }
 
@@ -254,16 +248,59 @@ void ACB_PlayerCharacter::AliveAction()
 	this->m_basics.makeAlive();
 }
 
+// Grab
+
 void ACB_PlayerCharacter::OnEnterGrabBox(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
 	UPrimitiveComponent* otherComponent, int32 otherBodyIndex, bool fromSweep, const FHitResult& sweepResult)
 {
-	if(Throw::isGrabbable(otherActor))
-		this->m_throw.m_grabbableObject = otherActor;
+	if (this == otherActor)
+		return;
+
+	this->m_throw.m_grabbableList.add(Cast<IGrabbable>(otherActor));
 }
 
 void ACB_PlayerCharacter::OnLeaveGrabBox(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
 	UPrimitiveComponent* otherComponent, int32 otherBodyIndex)
 {
-	if(this->m_throw.m_grabbableObject == otherActor)
-		this->m_throw.m_grabbableObject = nullptr;
+	if (this == otherActor)
+		return;
+
+	this->m_throw.m_grabbableList.remove(Cast<IGrabbable>(otherActor));
+}
+
+bool ACB_PlayerCharacter::isGrabbable()
+{
+	return this->m_basics.getPlayerState() == PlayerBasics::PLAYER_ALIVE;
+}
+
+void ACB_PlayerCharacter::makeGrabbed()
+{
+	this->m_basics.makeGrabbed();
+}
+
+void ACB_PlayerCharacter::launchRelease(FVector direction)
+{
+	this->m_basics.makeAlive();
+	this->GetCharacterMovement()->Velocity = direction;// TODO set velocity in direction
+}
+
+void ACB_PlayerCharacter::setGrabbedPosition(FVector position)
+{
+	this->SetActorLocation(position);
+	this->GetCharacterMovement()->Velocity = FVector(0.0f, 0.0f, 0.0f);
+}
+
+bool ACB_PlayerCharacter::hasGrabbableObject()
+{
+	return this->isGrabbable();
+}
+
+IGrabbableObject* ACB_PlayerCharacter::getGrabbableObject()
+{
+	return this;
+}
+
+unsigned char ACB_PlayerCharacter::getGrabPriority()
+{
+	return UGrabbable::PLAYER_PRIORITY;
 }

@@ -1,13 +1,13 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "../CBGeneral/Grabbable.h"
+#include "../CBGeneral/GrabbableObject.h"
 #include "CB_DodgeballProjectile.generated.h"
 
 UCLASS()
-class PROJECTCB_API ACB_DodgeballProjectile : public AActor
+class PROJECTCB_API ACB_DodgeballProjectile : public AActor, public IGrabbable, public IGrabbableObject
 {
 	GENERATED_BODY()
 
@@ -16,13 +16,11 @@ public:
 	enum BallState { BALL_PROJECTILE = 0, BALL_GRABBED };
 
 private:
-
-	BallState m_ballState; // TODO make private?
 	
-	FVector m_velocity;
-	const float m_speed = 2500.0f;
-	const float m_gravity = 1.0f;
-	const float m_bounce = 5.0f;
+	static const float PROJECTILE_SPEED;
+	static const float PROJECTILE_GRAVITY;
+
+	BallState m_ballState;
 
 public:	
 
@@ -43,8 +41,17 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void launch(const FVector& direction);
-
 	BallState getBallState();
 
+	// Grabbable
+
+	bool isGrabbable() override;
+	void makeGrabbed() override;
+	void launchRelease(FVector direction) override;
+	void setGrabbedPosition(FVector position) override;
+
+	bool hasGrabbableObject() override;
+	IGrabbableObject* getGrabbableObject() override;
+	unsigned char getGrabPriority() override;
+	
 };

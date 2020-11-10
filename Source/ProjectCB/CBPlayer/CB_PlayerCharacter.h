@@ -7,13 +7,12 @@
 #include "PlayerBasics.h"
 #include "../CBMoves/Dodge/Dodge.h"
 #include "../CBMoves/Throw/Throw.h"
-#include "../CBGeneral/Grabbable.h"
 #include "GameFramework/Character.h"
 #include "Components/BoxComponent.h"
 #include "CB_PlayerCharacter.generated.h"
 
 UCLASS()
-class PROJECTCB_API ACB_PlayerCharacter : public ACharacter//, public Grabbable
+class PROJECTCB_API ACB_PlayerCharacter : public ACharacter, public IGrabbable, public IGrabbableObject
 {
 	GENERATED_BODY()
 
@@ -88,4 +87,14 @@ public:
 	void StopShootAction();
 
 	void AliveAction();
+
+	bool isGrabbable() override;
+	void makeGrabbed() override;
+	void launchRelease(FVector direction) override;
+	void setGrabbedPosition(FVector position) override;
+
+	bool hasGrabbableObject() override;
+	IGrabbableObject* getGrabbableObject() override;
+	unsigned char getGrabPriority() override;
+
 };

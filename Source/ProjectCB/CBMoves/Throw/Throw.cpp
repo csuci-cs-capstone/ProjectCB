@@ -1,6 +1,4 @@
 #include "Throw.h"
-#include "../../CBPlayer/CB_PlayerCharacter.h"
-#include "../../CBObjects/CB_DodgeballProjectile.h"
 
 const FVector Throw::THROW_DIRECTION = FVector(1, 0, 0.025).GetUnsafeNormal();
 
@@ -23,14 +21,25 @@ void Throw::onPress()
 
 void Throw::onRelease()
 {
-	if (this->m_playerBasics->m_throwState == PlayerBasics::THROW_AIM)
-		this->m_playerBasics->m_throwState = PlayerBasics::THROW_COOLDOWN;
+	if (this->m_playerBasics->m_throwState == PlayerBasics::THROW_AIM) // TODO should buffer for startup
+	{
+		// THROW BALL
 
-	else if (this->m_playerBasics->m_throwState == PlayerBasics::CATCH_AIM)
+		this->m_grabbedObject->launchRelease( // TODO should probably ensure it exists first
+			this->m_playerBasics->m_movement.getPlayerRotation().RotateVector(FVector(1.0f,0.0f,0.0f)));
+		
+			// TODO launch ball in current player direction
+		this->m_grabbedObject = nullptr; // TODO should set the launched object to null not the grabbable
+		// TODO might want to ensure that there is no way grabbable can not be null when in throw state
+
+		this->m_playerBasics->m_throwState = PlayerBasics::THROW_COOLDOWN;
+	}
+
+	else if (this->m_playerBasics->m_throwState == PlayerBasics::CATCH_AIM) // TODO should buffer for startup
 		this->m_playerBasics->m_throwState = PlayerBasics::CATCH_COOLDOWN;
 }
 
-void Throw::update(float deltaTime)
+void Throw::update(FVector playerPosition, FRotator playerRotation, float deltaTime)
 {
 	switch (this->m_playerBasics->m_throwState)
 	{
@@ -60,27 +69,7 @@ void Throw::update(float deltaTime)
 		//}
 		break;
 	}
-}
 
-bool Throw::isGrabbable(AActor* actor)
-{
-	if (actor)
-	{
-		if (actor->IsA(ACB_DodgeballProjectile::StaticClass()))
-		{
-			ACB_DodgeballProjectile* dodgeball = (ACB_DodgeballProjectile*)actor;
-
-			if (dodgeball->getBallState() == ACB_DodgeballProjectile::BALL_PROJECTILE)
-				return true;
-		}
-		else if (actor->IsA(ACB_PlayerCharacter::StaticClass()))
-		{
-			ACB_PlayerCharacter* player = (ACB_PlayerCharacter*)actor;
-
-			if (player->m_basics.getPlayerState() == PlayerBasics::PLAYER_ALIVE)
-				return true;
-		}
-	}
-	
-	return false;
+	if (this->m_grabbedObject)
+		this->m_grabbedObject->setGrabbedPosition(playerPosition + playerRotation.RotateVector(FVector(75.0f, 0.0f, 0.0f)));
 }
