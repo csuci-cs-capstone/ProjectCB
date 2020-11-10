@@ -5,7 +5,6 @@ const FVector Throw::THROW_DIRECTION = FVector(1, 0, 0.025).GetUnsafeNormal();
 Throw::Throw(PlayerBasics& playerBasics)
 {
 	this->m_playerBasics = &playerBasics;
-	this->m_grabbableList = new GrabbableList();
 }
 
 void Throw::onPress()
@@ -30,7 +29,7 @@ void Throw::onRelease()
 			this->m_playerBasics->m_movement.getPlayerRotation().RotateVector(FVector(1.0f,0.0f,0.0f)));
 		
 			// TODO launch ball in current player direction
-		this->m_grabbedObject = nullptr;
+		this->m_grabbedObject = nullptr; // TODO should set the launched object to null not the grabbable
 		// TODO might want to ensure that there is no way grabbable can not be null when in throw state
 
 		this->m_playerBasics->m_throwState = PlayerBasics::THROW_COOLDOWN;

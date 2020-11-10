@@ -2,13 +2,18 @@
 
 #include "CoreMinimal.h"
 #include "Engine/TriggerBox.h"
-//#include "../CBGeneral/Grabbable.h"
+#include "../CBGeneral/Grabbable.h"
+#include "../CBGeneral/GrabbableList.h"
 #include "GoalTriggerBox.generated.h"
 
 UCLASS()
-class PROJECTCB_API AGoalTriggerBox : public ATriggerBox//, public IGrabbable
+class PROJECTCB_API AGoalTriggerBox : public ATriggerBox, public IGrabbable
 {
 	GENERATED_BODY()
+
+private:
+
+	GrabbableList m_grabbableList;
 
 protected:
 
@@ -24,9 +29,8 @@ public:
 	UFUNCTION()
 		void OnOverlapEnd(AActor* overlappedActor, AActor* otherActor);
 
-	//bool isGrabbable() override;
-	//void makeGrabbed() override;
-	//void launchRelease(FVector direction) override;
-	//void setGrabbedPosition(FVector position) override;
+	bool hasGrabbableObject() override;
+	IGrabbableObject* getGrabbableObject() override;
+	unsigned char getGrabPriority() override;
 	
 };

@@ -27,7 +27,7 @@ public:
 
 	IGrabbable* getTopGrabbable();
 
-	void add(IGrabbable* grabbableObject);
+	void add(IGrabbable* grabbable);
 
-	void remove(IGrabbable* grabbableObject);
+	void remove(IGrabbable* grabbable);
 };

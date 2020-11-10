@@ -256,14 +256,7 @@ void ACB_PlayerCharacter::OnEnterGrabBox(UPrimitiveComponent* overlappedComponen
 	if (this == otherActor)
 		return;
 
-	//IGrabbable* grabbable = ;
-
-	//// TODO create an arraylist for grabbables
-
-	//if(grabbable && grabbable->isGrabbable()// && (!this->m_throw.m_grabbableObject
-	//	//|| !this->m_throw.m_grabbableObject->isGrabbable() || grabbable.getGrabPriority() > )
-	//	)
-	this->m_throw.m_grabbableList->add(Cast<IGrabbable>(otherActor));
+	this->m_throw.m_grabbableList.add(Cast<IGrabbable>(otherActor));
 }
 
 void ACB_PlayerCharacter::OnLeaveGrabBox(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
@@ -272,12 +265,7 @@ void ACB_PlayerCharacter::OnLeaveGrabBox(UPrimitiveComponent* overlappedComponen
 	if (this == otherActor)
 		return;
 
-	//IGrabbable* grabbable = Cast<IGrabbable>(otherActor);
-
-	//if(grabbable && this->m_throw.m_grabbableObject == grabbable)
-	//	this->m_throw.m_grabbableObject = nullptr;
-
-	this->m_throw.m_grabbableList->remove(Cast<IGrabbable>(otherActor));
+	this->m_throw.m_grabbableList.remove(Cast<IGrabbable>(otherActor));
 }
 
 bool ACB_PlayerCharacter::isGrabbable()
@@ -300,6 +288,16 @@ void ACB_PlayerCharacter::setGrabbedPosition(FVector position)
 {
 	this->SetActorLocation(position);
 	this->GetCharacterMovement()->Velocity = FVector(0.0f, 0.0f, 0.0f);
+}
+
+bool ACB_PlayerCharacter::hasGrabbableObject()
+{
+	return this->isGrabbable();
+}
+
+IGrabbableObject* ACB_PlayerCharacter::getGrabbableObject()
+{
+	return this;
 }
 
 unsigned char ACB_PlayerCharacter::getGrabPriority()

@@ -20,18 +20,11 @@ void AGoalTriggerBox::OnOverlapBegin(AActor* overlappedActor, AActor* otherActor
 {
 	if (otherActor && otherActor != this)
 	{
-		if (GEngine) // TODO remove
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("ENTERED")));
-
 		if (otherActor->IsA(ACB_DodgeballProjectile::StaticClass()))
 		{
-			// add ball to ball arraylist
-			// make ball unable to move and roll towards center?
-		}
-		else if (otherActor->IsA(ACB_PlayerCharacter::StaticClass()))
-		{
-			// allow for ball to be picked up
-					// if grab is pressed, ball is picked up and removed from top of ball list if is any
+			this->m_grabbableList.add(Cast<IGrabbable>(otherActor));
+			
+			// TODO make ball unable to move and roll towards center?
 		}
 	}
 }
@@ -40,15 +33,28 @@ void AGoalTriggerBox::OnOverlapEnd(AActor* overlappedActor, AActor* otherActor)
 {
 	if (otherActor && otherActor != this)
 	{
-		if (GEngine) // TODO remove
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("EXITED")));
+		if (otherActor->IsA(ACB_DodgeballProjectile::StaticClass()))
+		{
+			this->m_grabbableList.remove(Cast<IGrabbable>(otherActor));
 
-		// TODO make it so that...
-
-			// if otherActor is ball
-				// do nothing
-
-			// else if player
-				// make unable to grab?
+			// TODO make ball able to move again?
+		}
 	}
+}
+
+bool AGoalTriggerBox::hasGrabbableObject()
+{
+	return (bool) this->m_grabbableList.getTopGrabbable();
+}
+
+IGrabbableObject* AGoalTriggerBox::getGrabbableObject()
+{
+	IGrabbable* grabbable = this->m_grabbableList.getTopGrabbable();
+
+	return grabbable ? grabbable->getGrabbableObject() : nullptr;
+}
+
+unsigned char AGoalTriggerBox::getGrabPriority()
+{
+	return UGrabbable::GOAL_PRIORITY;
 }

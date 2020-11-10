@@ -49,18 +49,20 @@ IGrabbable* GrabbableList::getTopGrabbable()
 	{
 		IGrabbable* grabbable = this->m_grabbableList[pos];
 
-		if (grabbable->isGrabbable())
+		if (grabbable->getGrabbableObject()->isGrabbable())
 			return grabbable;
 	}
 
 	return nullptr;
 }
 
-void GrabbableList::add(IGrabbable* grabbableObject)
+void GrabbableList::add(IGrabbable* grabbable)
 {
-	if (grabbableObject && grabbableObject->isGrabbable())
+	IGrabbableObject* grabbableObject = grabbable ? grabbable->getGrabbableObject() : nullptr;
+
+	if (grabbableObject)
 	{
-		unsigned char priority = grabbableObject->getGrabPriority();
+		unsigned char priority = grabbable->getGrabPriority();
 
 		int pos = this->m_length;
 
@@ -74,20 +76,20 @@ void GrabbableList::add(IGrabbable* grabbableObject)
 			pos = priorPos;
 		}
 
-		this->m_grabbableList[pos] = grabbableObject;
+		this->m_grabbableList[pos] = grabbable;
 
 		this->incrList();
 	}
 }
 
-void GrabbableList::remove(IGrabbable* grabbableObject)
+void GrabbableList::remove(IGrabbable* grabbable)
 {
-	if (grabbableObject)
+	if (grabbable)
 	{
 		int pos = 0;
 
 		for (; pos < this->m_length; pos++)
-			if (grabbableObject == this->m_grabbableList[pos])
+			if (grabbable == this->m_grabbableList[pos])
 				break;
 
 		int nextPos = pos + 1;
