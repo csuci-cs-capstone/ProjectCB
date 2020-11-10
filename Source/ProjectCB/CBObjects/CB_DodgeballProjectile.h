@@ -3,10 +3,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "../CBGeneral/Grabbable.h"
+#include "../CBGeneral/GrabbableObject.h"
 #include "CB_DodgeballProjectile.generated.h"
 
 UCLASS()
-class PROJECTCB_API ACB_DodgeballProjectile : public AActor, public IGrabbable
+class PROJECTCB_API ACB_DodgeballProjectile : public AActor, public IGrabbable, public IGrabbableObject
 {
 	GENERATED_BODY()
 
@@ -48,6 +49,9 @@ public:
 	void makeGrabbed() override;
 	void launchRelease(FVector direction) override;
 	void setGrabbedPosition(FVector position) override;
+
+	bool hasGrabbableObject() override;
+	IGrabbableObject* getGrabbableObject() override;
 	unsigned char getGrabPriority() override;
 	
 };

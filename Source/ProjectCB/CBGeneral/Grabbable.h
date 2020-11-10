@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "GrabbableObject.h"
 #include "Grabbable.generated.h"
 
 UINTERFACE(MinimalAPI)
@@ -21,13 +22,9 @@ class PROJECTCB_API IGrabbable
 
 public:
 
-	virtual bool isGrabbable() = 0;
+	virtual bool hasGrabbableObject() = 0;
 
-	virtual void makeGrabbed() = 0; // TODO combine? (would be more efficient, but less reliable)
-	virtual void setGrabbedPosition(FVector position) = 0;
-		// could theoretically be done reliably, but would require additional work
+	virtual IGrabbableObject* getGrabbableObject() = 0;
 
-	virtual void launchRelease(FVector direction) = 0;
-	
 	virtual unsigned char getGrabPriority() = 0;
 };

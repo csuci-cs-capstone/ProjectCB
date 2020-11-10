@@ -61,6 +61,16 @@ void ACB_DodgeballProjectile::setGrabbedPosition(FVector position)
 	this->SetActorLocation(position);
 }
 
+bool ACB_DodgeballProjectile::hasGrabbableObject()
+{
+	return this->isGrabbable();
+}
+
+IGrabbableObject* ACB_DodgeballProjectile::getGrabbableObject()
+{
+	return this;
+}
+
 unsigned char ACB_DodgeballProjectile::getGrabPriority()
 {
 	return UGrabbable::BALL_PRIORITY;
