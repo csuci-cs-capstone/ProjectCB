@@ -2,10 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "Engine/TriggerBox.h"
+//#include "../CBGeneral/Grabbable.h"
 #include "GoalTriggerBox.generated.h"
 
 UCLASS()
-class PROJECTCB_API AGoalTriggerBox : public ATriggerBox
+class PROJECTCB_API AGoalTriggerBox : public ATriggerBox//, public IGrabbable
 {
 	GENERATED_BODY()
 
@@ -22,5 +23,10 @@ public:
 
 	UFUNCTION()
 		void OnOverlapEnd(AActor* overlappedActor, AActor* otherActor);
+
+	//bool isGrabbable() override;
+	//void makeGrabbed() override;
+	//void launchRelease(FVector direction) override;
+	//void setGrabbedPosition(FVector position) override;
 	
 };

@@ -1,5 +1,7 @@
 #include "GoalTriggerBox.h"
-#include "DrawDebugHelpers.h"
+#include "DrawDebugHelpers.h" // TODO remove
+#include "CB_DodgeballProjectile.h"
+#include "../CBPlayer/CB_PlayerCharacter.h"
 
 AGoalTriggerBox::AGoalTriggerBox()
 {
@@ -18,8 +20,19 @@ void AGoalTriggerBox::OnOverlapBegin(AActor* overlappedActor, AActor* otherActor
 {
 	if (otherActor && otherActor != this)
 	{
-		if (GEngine)
+		if (GEngine) // TODO remove
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("ENTERED")));
+
+		if (otherActor->IsA(ACB_DodgeballProjectile::StaticClass()))
+		{
+			// add ball to ball arraylist
+			// make ball unable to move and roll towards center?
+		}
+		else if (otherActor->IsA(ACB_PlayerCharacter::StaticClass()))
+		{
+			// allow for ball to be picked up
+					// if grab is pressed, ball is picked up and removed from top of ball list if is any
+		}
 	}
 }
 
@@ -27,7 +40,15 @@ void AGoalTriggerBox::OnOverlapEnd(AActor* overlappedActor, AActor* otherActor)
 {
 	if (otherActor && otherActor != this)
 	{
-		if (GEngine)
+		if (GEngine) // TODO remove
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("EXITED")));
+
+		// TODO make it so that...
+
+			// if otherActor is ball
+				// do nothing
+
+			// else if player
+				// make unable to grab?
 	}
 }

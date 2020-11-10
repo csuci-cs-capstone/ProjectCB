@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "../../CBPlayer/PlayerBasics.h"
 #include "../../CBGeneral/Grabbable.h"
+#include "../../CBGeneral/GrabbableList.h"
 #include "Throw_Hold.h"
 #include "Throw_Release.h"
 
@@ -26,7 +27,8 @@ public:
 
 	static const FVector THROW_DIRECTION;
 
-	IGrabbable* m_grabbableObject;
+	//IGrabbable* m_grabbableObject;
+	GrabbableList* m_grabbableList;
 
 	Throw(PlayerBasics& playerBasics);
 
