@@ -58,6 +58,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Components")
 		UStaticMeshComponent* staticMesh;
 
+	UPROPERTY(EditAnywhere, Category = "Components")
+		USkeletalMeshComponent* skeletalMesh;
+
 	UPROPERTY(EditAnywhere, Category = "Throwing")
 		TSubclassOf<class ACB_DodgeballProjectile> DodgeballProjectileClass;
 

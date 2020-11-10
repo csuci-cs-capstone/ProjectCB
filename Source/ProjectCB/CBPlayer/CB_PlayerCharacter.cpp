@@ -5,6 +5,7 @@
 #include "ProjectCB/CBObjects/CB_DodgeballProjectile.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -21,18 +22,22 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
-	staticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMeshComponent");
-	staticMesh->SetupAttachment(RootComponent);
+	this->skeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMeshComponent");
+	this->skeletalMesh->SetupAttachment(RootComponent);
+
+	//staticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMeshComponent");
+	//staticMesh->SetupAttachment(RootComponent);
 
 	//LOAD in player/ghost models from uassets
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> playerMeshAsset(TEXT("StaticMesh'/Game/PlayerBP/PrototypeModel/CharacterPrototype.CharacterPrototype'"));
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> ghostMeshAsset(TEXT("StaticMesh'/Game/PlayerBP/PrototypeGhostModel/GhostPrototypeModel.GhostPrototypeModel'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> playerMeshAsset(TEXT("SkeletalMesh'/Game/PlayerBP/PrototypeSkeletalModel/Character1Asset.Character1Asset'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> ghostMeshAsset(TEXT("SkeletalMesh'/Game/PlayerBP/PrototypeGhostModel/GhostSkeletal/GhostPrototypeModel.GhostPrototypeModel_GhostPrototypeModel'"));
 	
 	this->m_basics.m_playerModel = playerMeshAsset.Object;
 	this->m_basics.m_ghostModel = ghostMeshAsset.Object;
-	this->m_basics.m_playerMeshComponent = staticMesh;
+	this->m_basics.m_playerSkeletalMeshComponent = skeletalMesh;
 
-	staticMesh->SetStaticMesh(playerMeshAsset.Object);
+	//staticMesh->SetStaticMesh(playerMeshAsset.Object);
+	skeletalMesh->SetSkeletalMesh(playerMeshAsset.Object);
 
 	//Customize the character movement component here!
 	GetCharacterMovement()->MaxWalkSpeed = Movement::PLAYER_GROUND_SPEED;
@@ -50,7 +55,7 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 
 	this->cameraArm = CreateDefaultSubobject<USpringArmComponent>("CameraSpringArm");
-	this->cameraArm->SetupAttachment(staticMesh);
+	this->cameraArm->SetupAttachment(skeletalMesh);
 	this->cameraArm->TargetArmLength = 500.0f; // TODO add to CameraMovement class
 	
 	this->camera = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
@@ -70,7 +75,7 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 
 	this->grabRoot = CreateDefaultSubobject<USceneComponent>(TEXT("GrabRoot"));
 	this->grabRoot->SetRelativeLocation(FVector(2 * PlayerBasics::PLAYER_RADIUS, 0.0f, PlayerBasics::PLAYER_HEIGHT));
-	this->grabRoot->SetupAttachment(staticMesh);
+	this->grabRoot->SetupAttachment(skeletalMesh);
 
 	this->grabBox = CreateDefaultSubobject<UBoxComponent>(TEXT("GrabBox"));
 	this->grabBox->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
