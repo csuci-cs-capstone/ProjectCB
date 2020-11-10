@@ -64,19 +64,30 @@ void GrabbableList::add(IGrabbable* grabbable)
 	{
 		unsigned char priority = grabbable->getGrabPriority();
 
-		int pos = this->m_length;
+		int pos = 0;
 
-		while (pos > 0)
+		for (; pos < this->m_length; pos++)
 		{
-			int priorPos = pos - 1;
+			int nextPos = pos + 1;
 
-			if (priority >= this->m_grabbableList[priorPos]->getGrabPriority())
+			if (grabbable == this->m_grabbableList[pos])
+				return;
+			else if (priority < this->m_grabbableList[pos]->getGrabPriority())
 				break;
-
-			pos = priorPos;
 		}
 
-		this->m_grabbableList[pos] = grabbable;
+		int lastPos = this->m_length;
+
+		while (lastPos > pos)
+		{
+			int priorPos = lastPos - 1;
+
+			this->m_grabbableList[lastPos] = this->m_grabbableList[priorPos];
+
+			lastPos = priorPos;
+		}
+
+		this->m_grabbableList[lastPos] = grabbable;
 
 		this->incrList();
 	}
