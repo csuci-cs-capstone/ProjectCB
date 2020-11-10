@@ -80,7 +80,7 @@ void PlayerBasics::makeGhost()
 	this->m_currentHeight = PlayerBasics::PLAYER_HEIGHT;
 
 	//Model/Anims
-	m_playerMeshComponent->SetStaticMesh(m_ghostModel);
+	m_playerSkeletalMeshComponent->SetSkeletalMesh(m_ghostModel);
 
 	updateAttributes();
 
@@ -149,7 +149,7 @@ void PlayerBasics::makeAlive()
 	this->m_playerState = PlayerBasics::PLAYER_ALIVE;
 
 	//Model/Anims
-	m_playerMeshComponent->SetStaticMesh(m_playerModel);
+	m_playerSkeletalMeshComponent->SetSkeletalMesh(m_playerModel);
 }
 
 void PlayerBasics::makeGrabbed()

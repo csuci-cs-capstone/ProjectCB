@@ -57,9 +57,13 @@ public:
 	CameraMovement m_cameraMovement;
 
 	//Prototype models read TODO read in skeletalMesh
-	UStaticMeshComponent* m_playerMeshComponent;
-	UStaticMesh* m_playerModel;
-	UStaticMesh* m_ghostModel;
+	//UStaticMeshComponent* m_playerMeshComponent;
+	//UStaticMesh* m_playerModel;
+	//UStaticMesh* m_ghostModel;
+
+	USkeletalMeshComponent* m_playerSkeletalMeshComponent;
+	USkeletalMesh* m_playerModel;
+	USkeletalMesh* m_ghostModel;
 
 /////
 

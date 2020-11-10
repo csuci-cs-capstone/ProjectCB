@@ -12,6 +12,8 @@ ACB_DodgeballProjectile::ACB_DodgeballProjectile()
 	PrimaryActorTick.bCanEverTick = true;
 
 	this->DodgeballMesh = CreateDefaultSubobject<UStaticMeshComponent>("DodgeballMesh");
+	//Set to simulate physics so that the projectile is not a kinematic body but a rigid body
+	this->DodgeballMesh->SetSimulatePhysics(true);
 
 	SetRootComponent(DodgeballMesh);
 
