@@ -20,7 +20,12 @@ private:
 	static const float PROJECTILE_SPEED;
 	static const float PROJECTILE_GRAVITY;
 
+	static const float GROUND_DECELERATION;
+
 	BallState m_ballState;
+
+	float m_previousVelocityZ;
+	bool m_grounded;
 
 public:	
 

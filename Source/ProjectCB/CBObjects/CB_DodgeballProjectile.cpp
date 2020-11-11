@@ -5,6 +5,8 @@
 const float ACB_DodgeballProjectile::PROJECTILE_SPEED = 3000.0f;
 const float ACB_DodgeballProjectile::PROJECTILE_GRAVITY = 1.0f;
 
+const float ACB_DodgeballProjectile::GROUND_DECELERATION = 10.0f;
+
 // Sets default values
 ACB_DodgeballProjectile::ACB_DodgeballProjectile()
 {
@@ -22,6 +24,9 @@ ACB_DodgeballProjectile::ACB_DodgeballProjectile()
 	this->DodgeballMovement->MaxSpeed = ACB_DodgeballProjectile::PROJECTILE_SPEED;
 	this->DodgeballMovement->ProjectileGravityScale = ACB_DodgeballProjectile::PROJECTILE_GRAVITY;
 	this->DodgeballMovement->bShouldBounce = true;
+
+	this->m_previousVelocityZ = 0.0f;
+	this->m_grounded = true;
 }
 
 // Called when the game starts or when spawned
@@ -35,11 +40,39 @@ void ACB_DodgeballProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	FVector velocity = this->DodgeballMesh->GetPhysicsLinearVelocity();
+
+	if (this->m_grounded)
+	{
+		if (velocity.X > ACB_DodgeballProjectile::GROUND_DECELERATION)
+			velocity.X = velocity.X - ACB_DodgeballProjectile::GROUND_DECELERATION;
+		else if (velocity.X < -ACB_DodgeballProjectile::GROUND_DECELERATION)
+			velocity.X = velocity.X + ACB_DodgeballProjectile::GROUND_DECELERATION;
+		else
+			velocity.X = 0;
+
+		if (velocity.Y > ACB_DodgeballProjectile::GROUND_DECELERATION)
+			velocity.Y = velocity.Y - ACB_DodgeballProjectile::GROUND_DECELERATION;
+		else if (velocity.Y < -ACB_DodgeballProjectile::GROUND_DECELERATION)
+			velocity.Y = velocity.Y + ACB_DodgeballProjectile::GROUND_DECELERATION;
+		else
+			velocity.Y = 0;
+
+		this->DodgeballMesh->SetPhysicsLinearVelocity(velocity);
+
+		// TODO temporarily disable physics (should enable upon interaction with player or ball if not in goal)
+	}
+	else if (velocity.Z >= 0 && this->m_previousVelocityZ <= 0)
+		this->m_grounded = true;
+
+	//if(velocity.Z)
+
 	//float squaredSize = 1.0f;
 
 	//if(this->DodgeballMovement->Velocity.SizeSquared() <= squaredSize)
 	//	this->DodgeballMesh->SetSimulatePhysics(false);
 
+	this->m_previousVelocityZ = velocity.Z;
 }
 
 ACB_DodgeballProjectile::BallState ACB_DodgeballProjectile::getBallState()
@@ -62,6 +95,8 @@ void ACB_DodgeballProjectile::makeGrabbed()
 void ACB_DodgeballProjectile::launchRelease(FVector direction)
 {
 	this->m_ballState = ACB_DodgeballProjectile::BALL_PROJECTILE;
+
+	this->m_grounded = false;
 
 	this->DodgeballMesh->SetSimulatePhysics(true);
 
