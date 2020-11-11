@@ -2,6 +2,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
+//const FVector ACB_DodgeballProjectile::GOAL_CENTER = FVector();
+
 const float ACB_DodgeballProjectile::PROJECTILE_SPEED = 3000.0f;
 const float ACB_DodgeballProjectile::PROJECTILE_GRAVITY = 1.0f;
 

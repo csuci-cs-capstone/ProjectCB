@@ -14,6 +14,20 @@ void AGoalTriggerBox::BeginPlay()
 	Super::BeginPlay();
 
 	DrawDebugBox(GetWorld(), GetActorLocation(), GetComponentsBoundingBox().GetExtent(), FColor::Green, true, -1, 0, 5);
+
+	//FVector scale = this->GetActorTransform().GetLocation();
+
+	//if (GEngine)
+	//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("size: %d"), scale.X));
+
+	//FVector relativeScale = this->GetTransform().GetScale3D();
+
+	//if (GEngine)
+	//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("relative: %d"), relativeScale.X));
+
+	//this->GetActorTransform().GetScale3D();
+
+	// 8.75 4.25
 }
 
 void AGoalTriggerBox::OnOverlapBegin(AActor* overlappedActor, AActor* otherActor)

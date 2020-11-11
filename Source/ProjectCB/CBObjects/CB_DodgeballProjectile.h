@@ -16,6 +16,8 @@ public:
 	enum BallState { BALL_PROJECTILE = 0, BALL_GRABBED };
 
 private:
+
+	//static const FVector GOAL_CENTER;
 	
 	static const float PROJECTILE_SPEED;
 	static const float PROJECTILE_GRAVITY;
