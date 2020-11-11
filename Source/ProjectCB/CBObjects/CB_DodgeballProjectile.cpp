@@ -49,11 +49,15 @@ bool ACB_DodgeballProjectile::isGrabbable()
 void ACB_DodgeballProjectile::makeGrabbed()
 {
 	this->m_ballState = ACB_DodgeballProjectile::BALL_GRABBED;
+
+	this->DodgeballMesh->SetSimulatePhysics(false);
 }
 
 void ACB_DodgeballProjectile::launchRelease(FVector direction)
 {
 	this->m_ballState = ACB_DodgeballProjectile::BALL_PROJECTILE;
+
+	this->DodgeballMesh->SetSimulatePhysics(true);
 
 	this->DodgeballMovement->AddForce(ACB_DodgeballProjectile::PROJECTILE_SPEED * 1000 * direction);
 }
