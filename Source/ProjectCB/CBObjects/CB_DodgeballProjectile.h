@@ -16,6 +16,8 @@ public:
 	enum BallState { BALL_PROJECTILE = 0, BALL_GRABBED };
 
 private:
+
+	//static const FVector GOAL_CENTER;
 	
 	static const float PROJECTILE_SPEED;
 	static const float PROJECTILE_GRAVITY;
@@ -24,10 +26,12 @@ private:
 
 	BallState m_ballState;
 
-	float m_previousVelocityZ;
+	FVector m_previousVelocity;
 	bool m_grounded;
 
-public:	
+public:
+
+	bool m_inGoal;
 
 	// Sets default values for this actor's properties
 	ACB_DodgeballProjectile();
