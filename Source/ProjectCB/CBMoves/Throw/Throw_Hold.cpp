@@ -3,6 +3,15 @@
 
 void Throw::catchStartUpdate(float deltaTime)
 {
+	//IGrabbable* topGrabbable = this->m_grabbableList.getTopGrabbable();
+	//IGrabbableObject* topGrabbableObject = topGrabbable ? topGrabbable->getGrabbableObject() : nullptr;
+
+	//if (topGrabbableObject)
+	//{
+	//	topGrabbableObject->makeGrabbed();
+	//	this->m_grabbedObject = topGrabbableObject;
+	//}
+
 	this->m_playerBasics->m_throwState = PlayerBasics::CATCH_AIM; // TODO implement startup
 }
 
@@ -31,14 +40,4 @@ void Throw::catchAimUpdate(float deltaTime)
 void Throw::throwAimUpdate(float deltaTime)
 {
 	// TODO implement aim
-}
-
-void Throw::catchCooldownUpdate(float deltaTime)
-{
-	this->m_playerBasics->m_throwState = PlayerBasics::THROW_OFF; // TODO implement cooldown
-}
-
-void Throw::throwCooldownUpdate(float deltaTime)
-{
-	this->m_playerBasics->m_throwState = PlayerBasics::THROW_OFF; // TODO implement cooldown
 }
