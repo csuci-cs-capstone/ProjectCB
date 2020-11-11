@@ -2,7 +2,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
-const float ACB_DodgeballProjectile::PROJECTILE_SPEED = 2500.0f;
+const float ACB_DodgeballProjectile::PROJECTILE_SPEED = 3000.0f;
 const float ACB_DodgeballProjectile::PROJECTILE_GRAVITY = 1.0f;
 
 // Sets default values
@@ -34,6 +34,12 @@ void ACB_DodgeballProjectile::BeginPlay()
 void ACB_DodgeballProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	//float squaredSize = 1.0f;
+
+	//if(this->DodgeballMovement->Velocity.SizeSquared() <= squaredSize)
+	//	this->DodgeballMesh->SetSimulatePhysics(false);
+
 }
 
 ACB_DodgeballProjectile::BallState ACB_DodgeballProjectile::getBallState()
@@ -59,7 +65,11 @@ void ACB_DodgeballProjectile::launchRelease(FVector direction)
 
 	this->DodgeballMesh->SetSimulatePhysics(true);
 
-	this->DodgeballMovement->AddForce(ACB_DodgeballProjectile::PROJECTILE_SPEED * 1000 * direction);
+	direction.Normalize();
+
+	this->DodgeballMesh->SetPhysicsLinearVelocity(ACB_DodgeballProjectile::PROJECTILE_SPEED * direction);
+
+	//this->DodgeballMovement->AddForce(ACB_DodgeballProjectile::PROJECTILE_SPEED * 1000 * direction);
 }
 
 void ACB_DodgeballProjectile::setGrabbedPosition(FVector position)
