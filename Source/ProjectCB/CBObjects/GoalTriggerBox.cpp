@@ -42,7 +42,9 @@ void AGoalTriggerBox::OnOverlapBegin(AActor* overlappedActor, AActor* otherActor
 
 			dodgeball->m_inGoal = true;
 
-			
+			// TODO make it move towards the position from it's current position
+			dodgeball->m_goalLocation = this->GetActorLocation();
+
 			// TODO make ball unable to move and roll towards center?
 		}
 	}
