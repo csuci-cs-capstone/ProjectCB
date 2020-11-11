@@ -29,6 +29,7 @@ ACB_DodgeballProjectile::ACB_DodgeballProjectile()
 
 	this->m_previousVelocity = FVector(0.0f, 0.0f, 0.0f);
 	this->m_grounded = true;
+	this->m_inGoal = false;
 }
 
 // Called when the game starts or when spawned
@@ -46,20 +47,26 @@ void ACB_DodgeballProjectile::Tick(float DeltaTime)
 
 	if (this->m_inGoal)
 	{
-		bool bounced = velocity.X >= 0 && this->m_previousVelocity.X < 0;
-		bounced = bounced || velocity.X <= 0 && this->m_previousVelocity.X > 0;
-		bounced = bounced || velocity.Y >= 0 && this->m_previousVelocity.Y < 0;
-		bounced = bounced || velocity.Y <= 0 && this->m_previousVelocity.Y > 0;
-		bounced = bounced || velocity.X >= 0 && this->m_previousVelocity.X < 0;
+		this->DodgeballMesh->SetSimulatePhysics(false);
 
-		if (bounced)
-		{
-			//FVector diff = CENTER_POINT - CURRENT_POSITION
+		this->SetActorLocation(this->m_goalLocation);
 
-			// TODO use diff to move towards centerpoint at a constant rate?
-				// Once Velocity is near 0 turn off physics
-				// physics should be turned back on to allow for objects to move towards center once again?
-		}
+		//this->DodgeballMesh->SetSimulatePhysics(false);
+
+		//bool bounced = velocity.X >= 0 && this->m_previousVelocity.X < 0;
+		//bounced = bounced || velocity.X <= 0 && this->m_previousVelocity.X > 0;
+		//bounced = bounced || velocity.Y >= 0 && this->m_previousVelocity.Y < 0;
+		//bounced = bounced || velocity.Y <= 0 && this->m_previousVelocity.Y > 0;
+		//bounced = bounced || velocity.X >= 0 && this->m_previousVelocity.X < 0;
+
+		//if (bounced)
+		//{
+		//	//FVector diff = CENTER_POINT - CURRENT_POSITION
+
+		//	// TODO use diff to move towards centerpoint at a constant rate?
+		//		// Once Velocity is near 0 turn off physics
+		//		// physics should be turned back on to allow for objects to move towards center once again?
+		//}
 	}
 	else
 	{

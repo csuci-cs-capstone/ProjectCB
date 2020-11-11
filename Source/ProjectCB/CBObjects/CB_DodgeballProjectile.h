@@ -32,6 +32,7 @@ private:
 public:
 
 	bool m_inGoal;
+	FVector m_goalLocation;
 
 	// Sets default values for this actor's properties
 	ACB_DodgeballProjectile();
