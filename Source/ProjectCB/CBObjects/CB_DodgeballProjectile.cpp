@@ -25,7 +25,7 @@ ACB_DodgeballProjectile::ACB_DodgeballProjectile()
 	this->DodgeballMovement->ProjectileGravityScale = ACB_DodgeballProjectile::PROJECTILE_GRAVITY;
 	this->DodgeballMovement->bShouldBounce = true;
 
-	this->m_previousVelocityZ = 0.0f;
+	this->m_previousVelocity = FVector(0.0f, 0.0f, 0.0f);
 	this->m_grounded = true;
 }
 
@@ -42,37 +42,52 @@ void ACB_DodgeballProjectile::Tick(float DeltaTime)
 
 	FVector velocity = this->DodgeballMesh->GetPhysicsLinearVelocity();
 
-	if (this->m_grounded)
+	if (this->m_inGoal)
 	{
-		if (velocity.X > ACB_DodgeballProjectile::GROUND_DECELERATION)
-			velocity.X = velocity.X - ACB_DodgeballProjectile::GROUND_DECELERATION;
-		else if (velocity.X < -ACB_DodgeballProjectile::GROUND_DECELERATION)
-			velocity.X = velocity.X + ACB_DodgeballProjectile::GROUND_DECELERATION;
-		else
-			velocity.X = 0;
+		bool bounced = velocity.X >= 0 && this->m_previousVelocity.X < 0;
+		bounced = bounced || velocity.X <= 0 && this->m_previousVelocity.X > 0;
+		bounced = bounced || velocity.Y >= 0 && this->m_previousVelocity.Y < 0;
+		bounced = bounced || velocity.Y <= 0 && this->m_previousVelocity.Y > 0;
+		bounced = bounced || velocity.X >= 0 && this->m_previousVelocity.X < 0;
 
-		if (velocity.Y > ACB_DodgeballProjectile::GROUND_DECELERATION)
-			velocity.Y = velocity.Y - ACB_DodgeballProjectile::GROUND_DECELERATION;
-		else if (velocity.Y < -ACB_DodgeballProjectile::GROUND_DECELERATION)
-			velocity.Y = velocity.Y + ACB_DodgeballProjectile::GROUND_DECELERATION;
-		else
-			velocity.Y = 0;
+		if (bounced)
+		{
+			//FVector diff = CENTER_POINT - CURRENT_POSITION
 
-		this->DodgeballMesh->SetPhysicsLinearVelocity(velocity);
-
-		// TODO temporarily disable physics (should enable upon interaction with player or ball if not in goal)
+			// TODO use diff to move towards centerpoint at a constant rate?
+				// Once Velocity is near 0 turn off physics
+				// physics should be turned back on to allow for objects to move towards center once again?
+		}
 	}
-	else if (velocity.Z >= 0 && this->m_previousVelocityZ <= 0)
-		this->m_grounded = true;
+	else
+	{
+		if (this->m_grounded)
+		{
+			if (velocity.X > ACB_DodgeballProjectile::GROUND_DECELERATION)
+				velocity.X = velocity.X - ACB_DodgeballProjectile::GROUND_DECELERATION;
+			else if (velocity.X < -ACB_DodgeballProjectile::GROUND_DECELERATION)
+				velocity.X = velocity.X + ACB_DodgeballProjectile::GROUND_DECELERATION;
+			else
+				velocity.X = 0.0f;
 
-	//if(velocity.Z)
+			if (velocity.Y > ACB_DodgeballProjectile::GROUND_DECELERATION)
+				velocity.Y = velocity.Y - ACB_DodgeballProjectile::GROUND_DECELERATION;
+			else if (velocity.Y < -ACB_DodgeballProjectile::GROUND_DECELERATION)
+				velocity.Y = velocity.Y + ACB_DodgeballProjectile::GROUND_DECELERATION;
+			else
+				velocity.Y = 0.0f;
 
-	//float squaredSize = 1.0f;
+			//velocity.IsNearlyZero();
 
-	//if(this->DodgeballMovement->Velocity.SizeSquared() <= squaredSize)
-	//	this->DodgeballMesh->SetSimulatePhysics(false);
+			this->DodgeballMesh->SetPhysicsLinearVelocity(velocity);
 
-	this->m_previousVelocityZ = velocity.Z;
+			// TODO temporarily disable physics (should enable upon interaction with player or ball if not in goal)
+		}
+		else if (velocity.Z >= 0 && this->m_previousVelocity.Z <= 0)
+			this->m_grounded = true;
+	}
+
+	this->m_previousVelocity = velocity;
 }
 
 ACB_DodgeballProjectile::BallState ACB_DodgeballProjectile::getBallState()

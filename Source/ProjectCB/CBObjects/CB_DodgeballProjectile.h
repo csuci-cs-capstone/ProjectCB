@@ -24,10 +24,12 @@ private:
 
 	BallState m_ballState;
 
-	float m_previousVelocityZ;
+	FVector m_previousVelocity;
 	bool m_grounded;
 
-public:	
+public:
+
+	bool m_inGoal;
 
 	// Sets default values for this actor's properties
 	ACB_DodgeballProjectile();

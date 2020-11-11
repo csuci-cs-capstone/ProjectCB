@@ -22,7 +22,12 @@ void AGoalTriggerBox::OnOverlapBegin(AActor* overlappedActor, AActor* otherActor
 	{
 		if (otherActor->IsA(ACB_DodgeballProjectile::StaticClass()))
 		{
-			this->m_grabbableList.add(Cast<IGrabbable>(otherActor));
+			ACB_DodgeballProjectile* dodgeball = Cast<ACB_DodgeballProjectile>(otherActor);
+
+			this->m_grabbableList.add(dodgeball);
+
+			dodgeball->m_inGoal = true;
+
 			
 			// TODO make ball unable to move and roll towards center?
 		}
@@ -35,7 +40,11 @@ void AGoalTriggerBox::OnOverlapEnd(AActor* overlappedActor, AActor* otherActor)
 	{
 		if (otherActor->IsA(ACB_DodgeballProjectile::StaticClass()))
 		{
-			this->m_grabbableList.remove(Cast<IGrabbable>(otherActor));
+			ACB_DodgeballProjectile* dodgeball = Cast<ACB_DodgeballProjectile>(otherActor);
+
+			this->m_grabbableList.remove(dodgeball);
+
+			dodgeball->m_inGoal = false;
 
 			// TODO make ball able to move again?
 		}
