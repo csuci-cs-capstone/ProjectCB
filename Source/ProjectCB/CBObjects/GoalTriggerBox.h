@@ -24,7 +24,12 @@ private:
 
 	GrabbableList m_grabbableList;
 
-	FVector getBallOffset();
+	FVector m_currentBallOffset;
+
+	FVector getBallPosition(size_t index);
+
+	void updateBallOffset();
+	void updateBallPositions();
 
 protected:
 
