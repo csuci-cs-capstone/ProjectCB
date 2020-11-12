@@ -13,7 +13,24 @@ class PROJECTCB_API AGoalTriggerBox : public ATriggerBox, public IGrabbable
 
 private:
 
+	static const FVector BALL_POSITIONS[];
+	static const FVector BALL_OFFSET;
+
+	static const float DIFF_X;
+	static const float DIFF_Y;
+	static const float DIFF_Z;
+
+	static const short MAX_BALLS_DISPLAYED;
+
 	GrabbableList m_grabbableList;
+
+	FVector m_currentBallOffset;
+
+	FVector getBallPosition(size_t index);
+
+	bool updateBallOffsetOnAdd();
+	bool updateBallOffsetOnRemove();
+	void updateBallPositions(bool changedLayout);
 
 protected:
 

@@ -30,4 +30,10 @@ public:
 	void add(IGrabbable* grabbable);
 
 	void remove(IGrabbable* grabbable);
+
+	size_t length();
+
+	IGrabbable* operator[](size_t index);
+
+	IGrabbable* get(size_t index);
 };

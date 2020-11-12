@@ -23,14 +23,22 @@ void Throw::onRelease()
 {
 	if (this->m_playerBasics->m_throwState == PlayerBasics::THROW_AIM) // TODO should buffer for startup
 	{
-		// THROW BALL
+		switch (this->m_playerBasics->getPlayerState())
+		{
+			case PlayerBasics::PLAYER_ALIVE:
+				this->m_grabbedObject->launchRelease( // TODO should probably ensure it can't not exist in throw state
+					this->m_playerBasics->m_movement.getPlayerRotation().RotateVector(FVector(1.0f, 0.0f, 0.0f)));
+				break;
+			case PlayerBasics::PLAYER_GRABBED:
+				this->m_grabbedObject->launchRelease( // TODO should probably ensure it can't not exist in throw state
+					this->m_playerBasics->m_movement.getPlayerRotation().RotateVector(FVector(1.0f, 0.0f, 0.0f)));
+				break;
+			default:
+				this->m_grabbedObject->launchRelease(FVector(0.0f, 0.0f, 0.0f));
+				break;
+		}
 
-		this->m_grabbedObject->launchRelease( // TODO should probably ensure it exists first
-			this->m_playerBasics->m_movement.getPlayerRotation().RotateVector(FVector(1.0f,0.0f,0.0f)));
-		
-			// TODO launch ball in current player direction
-		this->m_grabbedObject = nullptr; // TODO should set the launched object to null not the grabbable
-		// TODO might want to ensure that there is no way grabbable can not be null when in throw state
+		this->m_grabbedObject = nullptr;
 
 		this->m_playerBasics->m_throwState = PlayerBasics::THROW_COOLDOWN;
 	}
