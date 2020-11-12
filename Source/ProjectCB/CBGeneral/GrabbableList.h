@@ -30,4 +30,6 @@ public:
 	void add(IGrabbable* grabbable);
 
 	void remove(IGrabbable* grabbable);
+
+	size_t length();
 };

@@ -120,3 +120,8 @@ void GrabbableList::remove(IGrabbable* grabbable)
 		}
 	}
 }
+
+size_t GrabbableList::length()
+{
+	return this->m_length;
+}
