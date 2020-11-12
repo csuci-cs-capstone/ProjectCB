@@ -20,6 +20,7 @@ ACB_DodgeballProjectile::ACB_DodgeballProjectile()
 	this->DodgeballMesh->SetSimulatePhysics(true);
 
 	SetRootComponent(DodgeballMesh);
+	
 
 	this->DodgeballMovement = CreateDefaultSubobject<UProjectileMovementComponent>("DodgeballMovement");
 	this->DodgeballMovement->InitialSpeed = 0;
@@ -30,12 +31,15 @@ ACB_DodgeballProjectile::ACB_DodgeballProjectile()
 	this->m_previousVelocity = FVector(0.0f, 0.0f, 0.0f);
 	this->m_grounded = true;
 	this->m_inGoal = false;
+
+	this->OnActorHit.AddDynamic(this, &ACB_DodgeballProjectile::OnHit);
 }
 
 // Called when the game starts or when spawned
 void ACB_DodgeballProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+
 }
 
 // Called every frame
@@ -73,6 +77,7 @@ void ACB_DodgeballProjectile::Tick(float DeltaTime)
 				velocity.Y = 0.0f;
 
 			this->DodgeballMesh->SetPhysicsLinearVelocity(velocity);
+			
 		}
 		else if (velocity.Z >= 0 && this->m_previousVelocity.Z <= 0)
 			this->m_grounded = true;
@@ -84,6 +89,14 @@ void ACB_DodgeballProjectile::Tick(float DeltaTime)
 ACB_DodgeballProjectile::BallState ACB_DodgeballProjectile::getBallState()
 {
 	return this->m_ballState;
+}
+
+void ACB_DodgeballProjectile::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
+{
+	UE_LOG(LogTemp, Warning, TEXT("We got a hit!"));
+
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("OnHit is called!"));
 }
 
 bool ACB_DodgeballProjectile::isGrabbable()
@@ -104,11 +117,12 @@ void ACB_DodgeballProjectile::launchRelease(FVector direction)
 
 	this->m_grounded = false;
 
-	this->DodgeballMesh->SetSimulatePhysics(true);
+	this->DodgeballMesh->SetSimulatePhysics(false);
 
 	direction.Normalize();
 
-	this->DodgeballMesh->SetPhysicsLinearVelocity(ACB_DodgeballProjectile::PROJECTILE_SPEED * direction);
+	//this->DodgeballMesh->SetPhysicsLinearVelocity(ACB_DodgeballProjectile::PROJECTILE_SPEED * direction);
+	this->DodgeballMovement->SetVelocityInLocalSpace(ACB_DodgeballProjectile::PROJECTILE_SPEED * direction);
 }
 
 void ACB_DodgeballProjectile::setGrabbedPosition(FVector position)
