@@ -47,26 +47,12 @@ void ACB_DodgeballProjectile::Tick(float DeltaTime)
 
 	if (this->m_inGoal)
 	{
-		this->DodgeballMesh->SetSimulatePhysics(false);
+		if (this->isGrabbable())
+		{
+			this->DodgeballMesh->SetSimulatePhysics(false);
 
-		this->SetActorLocation(this->m_goalLocation);
-
-		//this->DodgeballMesh->SetSimulatePhysics(false);
-
-		//bool bounced = velocity.X >= 0 && this->m_previousVelocity.X < 0;
-		//bounced = bounced || velocity.X <= 0 && this->m_previousVelocity.X > 0;
-		//bounced = bounced || velocity.Y >= 0 && this->m_previousVelocity.Y < 0;
-		//bounced = bounced || velocity.Y <= 0 && this->m_previousVelocity.Y > 0;
-		//bounced = bounced || velocity.X >= 0 && this->m_previousVelocity.X < 0;
-
-		//if (bounced)
-		//{
-		//	//FVector diff = CENTER_POINT - CURRENT_POSITION
-
-		//	// TODO use diff to move towards centerpoint at a constant rate?
-		//		// Once Velocity is near 0 turn off physics
-		//		// physics should be turned back on to allow for objects to move towards center once again?
-		//}
+			this->SetActorLocation(this->m_goalLocation);
+		}
 	}
 	else
 	{
