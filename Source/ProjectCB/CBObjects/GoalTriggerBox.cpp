@@ -8,50 +8,87 @@ const float AGoalTriggerBox::DIFF_Y = 50.0f;
 const float AGoalTriggerBox::DIFF_X = -sqrt(3.0f) * DIFF_Y / 2.0f;
 const float AGoalTriggerBox::DIFF_Z = 1.5f * DIFF_Y / 2.0f;
 
-const short AGoalTriggerBox::MAX_BALLS_DISPLAYED = 19; // TODO change to be accurate with game
+const short AGoalTriggerBox::MAX_BALLS_DISPLAYED = 35;
 
-const FVector AGoalTriggerBox::BALL_OFFSET = FVector(100.0f, 0.0f, -150.0f);
+const FVector AGoalTriggerBox::BALL_OFFSET
+	= FVector(100.0f - (AGoalTriggerBox::DIFF_Y / 2), 0.0f, -100.0f - AGoalTriggerBox::DIFF_Y);
 
 const FVector AGoalTriggerBox::BALL_POSITIONS[] = {
 
-	// LAYER 1
+	// STACK 1
 
 	FVector(0.0f, 0.0f, 0.0f),
+
+	// STACK 2
+
 	FVector(0.0f, DIFF_Y, 0.0f),
-	FVector(0.0f, -DIFF_Y, 0.0f),
-	FVector(0.0f, 2.0f * DIFF_Y, 0.0f),
-	FVector(0.0f, 2.0f * -DIFF_Y, 0.0f),
-
 	FVector(DIFF_X, 0.5f * DIFF_Y, 0.0f),
-	FVector(DIFF_X, 0.5f * -DIFF_Y, 0.0f),
-	FVector(DIFF_X, 1.5f * DIFF_Y, 0.0f),
-	FVector(DIFF_X, 1.5f * -DIFF_Y, 0.0f),
-
-	FVector(2.0f * DIFF_X, 0.0f, 0.0f),
-	FVector(2.0f * DIFF_X, DIFF_Y, 0.0f),
-	FVector(2.0f * DIFF_X, -DIFF_Y, 0.0f),
-
-	FVector(3.0f * DIFF_X, 0.5f * DIFF_Y, 0.0f),
-	FVector(3.0f * DIFF_X, 0.5f * -DIFF_Y, 0.0f),
-
-	FVector(4.0f * DIFF_X, 0.0f, 0.0f),
-
-	// LAYER 2
 
 	FVector(0.5f * DIFF_X, 0.5f * DIFF_Y, DIFF_Z),
+
+	// STACK 3
+
+	FVector(0.0f, -DIFF_Y, 0.0f),
+	FVector(DIFF_X, 0.5f * -DIFF_Y, 0.0f),
+	FVector(2.0f * DIFF_X, 0.0f, 0.0f),
+
 	FVector(0.5f * DIFF_X, 0.5f * -DIFF_Y, DIFF_Z),
-	FVector(0.5f * DIFF_X, 1.5f * DIFF_Y, DIFF_Z),
-	FVector(0.5f * DIFF_X, 1.5f * -DIFF_Y, DIFF_Z),
-
 	FVector(1.5f * DIFF_X, 0.0f, DIFF_Z),
+
+	FVector(1.0f * DIFF_X, 0.0f, 2.0f * DIFF_Z),
+
+	// STACK 4
+
+	FVector(0.0f, 2.0f * DIFF_Y, 0.0f),
+	FVector(DIFF_X, 1.5f * DIFF_Y, 0.0f),
+	FVector(2.0f * DIFF_X, DIFF_Y, 0.0f),
+	FVector(3.0f * DIFF_X, 0.5f * DIFF_Y, 0.0f),
+
+	FVector(0.5f * DIFF_X, 1.5f * DIFF_Y, DIFF_Z),
 	FVector(1.5f * DIFF_X, DIFF_Y, DIFF_Z),
-	FVector(1.5f * DIFF_X, -DIFF_Y, DIFF_Z),
-
 	FVector(2.5f * DIFF_X, 0.5f * DIFF_Y, DIFF_Z),
-	FVector(2.5f * DIFF_X, 0.5f * -DIFF_Y, DIFF_Z),
 
+	FVector(1.0f * DIFF_X, DIFF_Y, 2.0f * DIFF_Z),
+	FVector(2.0f * DIFF_X, 0.5f * DIFF_Y, 2.0f * DIFF_Z),
+
+	FVector(1.5f * DIFF_X, 0.5f * DIFF_Y, 3.0f * DIFF_Z),
+
+	// STACK 5
+
+	FVector(0.0f, 2.0f * -DIFF_Y, 0.0f),
+	FVector(DIFF_X, 1.5f * -DIFF_Y, 0.0f),
+	FVector(2.0f * DIFF_X, -DIFF_Y, 0.0f),
+	FVector(3.0f * DIFF_X, 0.5f * -DIFF_Y, 0.0f),
+	FVector(4.0f * DIFF_X, 0.0f, 0.0f),
+
+	FVector(0.5f * DIFF_X, 1.5f * -DIFF_Y, DIFF_Z),
+	FVector(1.5f * DIFF_X, -DIFF_Y, DIFF_Z),
+	FVector(2.5f * DIFF_X, 0.5f * -DIFF_Y, DIFF_Z),
 	FVector(3.5f * DIFF_X, 0.0f, DIFF_Z),
+
+	FVector(1.0f * DIFF_X, -DIFF_Y, 2.0f * DIFF_Z),
+	FVector(2.0f * DIFF_X, 0.5f * -DIFF_Y, 2.0f * DIFF_Z),
+	FVector(3.0f * DIFF_X, 0.0f, 2.0f * DIFF_Z),
+
+	FVector(1.5f * DIFF_X, 0.5f * -DIFF_Y, 3.0f * DIFF_Z),
+	FVector(2.5f * DIFF_X, 0.0f, 3.0f * DIFF_Z),
+
+	FVector(2.0f * DIFF_X, 0.0f, 4.0f * DIFF_Z),
 };
+
+FVector AGoalTriggerBox::getBallOffset()
+{
+	//switch (this->m_grabbableList.length())
+	//{
+	//case 0:
+	//	return AGoalTriggerBox::BALL_OFFSET;
+	//case 1:
+	//	return AGoalTriggerBox::BALL_OFFSET;
+	//default:
+	//	return AGoalTriggerBox::BALL_OFFSET;
+	//}
+	return AGoalTriggerBox::BALL_OFFSET;
+}
 
 AGoalTriggerBox::AGoalTriggerBox()
 {
@@ -64,20 +101,6 @@ void AGoalTriggerBox::BeginPlay()
 	Super::BeginPlay();
 
 	DrawDebugBox(GetWorld(), GetActorLocation(), GetComponentsBoundingBox().GetExtent(), FColor::Green, true, -1, 0, 5);
-
-	//FVector scale = this->GetActorTransform().GetLocation();
-
-	//if (GEngine)
-	//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("size: %d"), scale.X));
-
-	//FVector relativeScale = this->GetTransform().GetScale3D();
-
-	//if (GEngine)
-	//	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("relative: %d"), relativeScale.X));
-
-	//this->GetActorTransform().GetScale3D();
-
-	// 8.75 4.25
 }
 
 void AGoalTriggerBox::OnOverlapBegin(AActor* overlappedActor, AActor* otherActor)
@@ -90,17 +113,13 @@ void AGoalTriggerBox::OnOverlapBegin(AActor* overlappedActor, AActor* otherActor
 
 			dodgeball->m_inGoal = true;
 
-			dodgeball->m_goalLocation = this->GetActorLocation() + AGoalTriggerBox::BALL_OFFSET
-				+ AGoalTriggerBox::BALL_POSITIONS[this->m_grabbableList.length() % AGoalTriggerBox::MAX_BALLS_DISPLAYED];
+			dodgeball->m_goalLocation = this->GetActorLocation() + this->GetActorRotation().RotateVector(
+				AGoalTriggerBox::BALL_OFFSET
+				+ AGoalTriggerBox::BALL_POSITIONS[this->m_grabbableList.length() % AGoalTriggerBox::MAX_BALLS_DISPLAYED]);
+
+			// TODO update position of all dodgeballs based on offset for all additions / subtractions upon change in length
 
 			this->m_grabbableList.add(dodgeball);
-
-			
-
-			// TODO make it move towards the position from it's current position
-			
-
-			// TODO make ball unable to move and roll towards center?
 		}
 	}
 }
