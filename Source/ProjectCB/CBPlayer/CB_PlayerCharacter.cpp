@@ -286,7 +286,8 @@ void ACB_PlayerCharacter::makeGrabbed()
 void ACB_PlayerCharacter::launchRelease(FVector direction)
 {
 	this->m_basics.makeAlive();
-	this->GetCharacterMovement()->Velocity = direction; // TODO set velocity in direction
+	//this->GetCharacterMovement()->Velocity = direction; // TODO set velocity in direction
+	this->m_basics.launchPlayer(direction);
 }
 
 void ACB_PlayerCharacter::setGrabbed(FVector position, FRotator rotation)

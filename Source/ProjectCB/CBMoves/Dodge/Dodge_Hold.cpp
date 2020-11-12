@@ -75,10 +75,6 @@ void Dodge::startDodge() // Release
 	direction = direction.Size() > 1 ? direction.GetUnsafeNormal() : direction;
 	this->m_dodgeProportion.m_proportion = 1 - direction.Size();
 
-	//this->m_playerBasics->m_velocity = (this->m_dodgeProportion.invProp() * Dodge_Release::DIVE_HORIZONTAL_VELOCITY)
-	//	* direction;
-	// TODO make sure velocity is appropriate
-
 	this->m_playerBasics->m_currentMobility = this->m_dodgeProportion.getProportion(Dodge_Release::DODGE_MOBILITY,
 		Dodge_Release::DIVE_MOBILITY);
 

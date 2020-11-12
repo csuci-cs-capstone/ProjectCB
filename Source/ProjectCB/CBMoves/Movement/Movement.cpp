@@ -115,3 +115,12 @@ void Movement::resetMovement(float amount)
 {
 	this->m_currentMovementVelocity *= 1.0f - amount;
 }
+
+void Movement::setMovementVelocity(FVector velocity)
+{
+	this->m_inputVelocity.X = velocity.X;
+	this->m_inputVelocity.Y = velocity.Y;
+
+	this->m_currentMovementVelocity.X = velocity.X;
+	this->m_currentMovementVelocity.Y = velocity.Y;
+}
