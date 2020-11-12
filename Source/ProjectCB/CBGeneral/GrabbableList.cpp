@@ -125,3 +125,10 @@ size_t GrabbableList::length()
 {
 	return this->m_length;
 }
+
+IGrabbable* GrabbableList::operator[](size_t index) { return this->get(index); }
+
+IGrabbable* GrabbableList::get(size_t index)
+{
+	return this->m_grabbableList[index];
+}

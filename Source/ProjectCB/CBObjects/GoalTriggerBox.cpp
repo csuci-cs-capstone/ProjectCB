@@ -76,18 +76,71 @@ const FVector AGoalTriggerBox::BALL_POSITIONS[] = {
 	FVector(2.0f * DIFF_X, 0.0f, 4.0f * DIFF_Z),
 };
 
-FVector AGoalTriggerBox::getBallOffset()
+FVector AGoalTriggerBox::getBallPosition(size_t index)
 {
-	//switch (this->m_grabbableList.length())
-	//{
-	//case 0:
-	//	return AGoalTriggerBox::BALL_OFFSET;
-	//case 1:
-	//	return AGoalTriggerBox::BALL_OFFSET;
-	//default:
-	//	return AGoalTriggerBox::BALL_OFFSET;
-	//}
-	return AGoalTriggerBox::BALL_OFFSET;
+	return this->GetActorLocation() + this->GetActorRotation().RotateVector(this->m_currentBallOffset
+		+ AGoalTriggerBox::BALL_POSITIONS[index % AGoalTriggerBox::MAX_BALLS_DISPLAYED]);
+}
+
+void AGoalTriggerBox::updateBallOffset()
+{
+	switch (this->m_grabbableList.length())
+	{
+	case 2:
+		this->m_currentBallOffset = AGoalTriggerBox::BALL_OFFSET + FVector(0.0f, -AGoalTriggerBox::DIFF_Y / 2.0f, 0.0f);
+		break;
+	case 3:
+		this->m_currentBallOffset = AGoalTriggerBox::BALL_OFFSET + FVector(0.0f, -AGoalTriggerBox::DIFF_Y / 2.0f, 0.0f);
+		break;
+	case 4:
+		this->m_currentBallOffset = AGoalTriggerBox::BALL_OFFSET + FVector(0.0f, -AGoalTriggerBox::DIFF_Y / 2.0f, 0.0f);
+		break;
+	case 11:
+		this->m_currentBallOffset = AGoalTriggerBox::BALL_OFFSET + FVector(0.0f, -AGoalTriggerBox::DIFF_Y / 2.0f, 0.0f);
+		break;
+	case 12:
+		this->m_currentBallOffset = AGoalTriggerBox::BALL_OFFSET + FVector(0.0f, -AGoalTriggerBox::DIFF_Y / 2.0f, 0.0f);
+		break;
+	case 13:
+		this->m_currentBallOffset = AGoalTriggerBox::BALL_OFFSET + FVector(0.0f, -AGoalTriggerBox::DIFF_Y / 2.0f, 0.0f);
+		break;
+	case 14:
+		this->m_currentBallOffset = AGoalTriggerBox::BALL_OFFSET + FVector(0.0f, -AGoalTriggerBox::DIFF_Y / 2.0f, 0.0f);
+		break;
+	case 15:
+		this->m_currentBallOffset = AGoalTriggerBox::BALL_OFFSET + FVector(0.0f, -AGoalTriggerBox::DIFF_Y / 2.0f, 0.0f);
+		break;
+	case 16:
+		this->m_currentBallOffset = AGoalTriggerBox::BALL_OFFSET + FVector(0.0f, -AGoalTriggerBox::DIFF_Y / 2.0f, 0.0f);
+		break;
+	case 17:
+		this->m_currentBallOffset = AGoalTriggerBox::BALL_OFFSET + FVector(0.0f, -AGoalTriggerBox::DIFF_Y / 2.0f, 0.0f);
+		break;
+	case 18:
+		this->m_currentBallOffset = AGoalTriggerBox::BALL_OFFSET + FVector(0.0f, -AGoalTriggerBox::DIFF_Y / 2.0f, 0.0f);
+		break;
+	case 19:
+		this->m_currentBallOffset = AGoalTriggerBox::BALL_OFFSET + FVector(0.0f, -AGoalTriggerBox::DIFF_Y / 2.0f, 0.0f);
+		break;
+	case 20:
+		this->m_currentBallOffset = AGoalTriggerBox::BALL_OFFSET + FVector(0.0f, -AGoalTriggerBox::DIFF_Y / 2.0f, 0.0f);
+		break;
+	default:
+		this->m_currentBallOffset = AGoalTriggerBox::BALL_OFFSET;
+		break;
+	}
+}
+
+void AGoalTriggerBox::updateBallPositions()
+{
+	AGoalTriggerBox::updateBallOffset();
+
+	for (size_t index = 0; index < this->m_grabbableList.length(); index++)
+	{
+		ACB_DodgeballProjectile* dodgeball = Cast<ACB_DodgeballProjectile>(this->m_grabbableList[index]);
+
+		dodgeball->m_goalLocation = this->getBallPosition(index);
+	}
 }
 
 AGoalTriggerBox::AGoalTriggerBox()
@@ -113,13 +166,9 @@ void AGoalTriggerBox::OnOverlapBegin(AActor* overlappedActor, AActor* otherActor
 
 			dodgeball->m_inGoal = true;
 
-			dodgeball->m_goalLocation = this->GetActorLocation() + this->GetActorRotation().RotateVector(
-				AGoalTriggerBox::BALL_OFFSET
-				+ AGoalTriggerBox::BALL_POSITIONS[this->m_grabbableList.length() % AGoalTriggerBox::MAX_BALLS_DISPLAYED]);
-
-			// TODO update position of all dodgeballs based on offset for all additions / subtractions upon change in length
-
 			this->m_grabbableList.add(dodgeball);
+
+			updateBallPositions();
 		}
 	}
 }
@@ -132,11 +181,11 @@ void AGoalTriggerBox::OnOverlapEnd(AActor* overlappedActor, AActor* otherActor)
 		{
 			ACB_DodgeballProjectile* dodgeball = Cast<ACB_DodgeballProjectile>(otherActor);
 
-			this->m_grabbableList.remove(dodgeball);
-
 			dodgeball->m_inGoal = false;
 
-			// TODO make ball able to move again?
+			this->m_grabbableList.remove(dodgeball);
+
+			updateBallPositions();
 		}
 	}
 }
