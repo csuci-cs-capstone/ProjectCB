@@ -24,6 +24,8 @@ private:
 
 	GrabbableList m_grabbableList;
 
+	FVector getBallOffset();
+
 protected:
 
 	void BeginPlay() override;

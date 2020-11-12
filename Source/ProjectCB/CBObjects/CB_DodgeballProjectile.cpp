@@ -51,7 +51,7 @@ void ACB_DodgeballProjectile::Tick(float DeltaTime)
 		{
 			this->DodgeballMesh->SetSimulatePhysics(false);
 
-			this->SetActorLocation(this->m_goalLocation);
+			this->SetActorLocation(this->m_goalLocation); // TODO make move towards position from it's current position
 		}
 	}
 	else
@@ -72,11 +72,7 @@ void ACB_DodgeballProjectile::Tick(float DeltaTime)
 			else
 				velocity.Y = 0.0f;
 
-			//velocity.IsNearlyZero();
-
 			this->DodgeballMesh->SetPhysicsLinearVelocity(velocity);
-
-			// TODO temporarily disable physics (should enable upon interaction with player or ball if not in goal)
 		}
 		else if (velocity.Z >= 0 && this->m_previousVelocity.Z <= 0)
 			this->m_grounded = true;
@@ -113,8 +109,6 @@ void ACB_DodgeballProjectile::launchRelease(FVector direction)
 	direction.Normalize();
 
 	this->DodgeballMesh->SetPhysicsLinearVelocity(ACB_DodgeballProjectile::PROJECTILE_SPEED * direction);
-
-	//this->DodgeballMovement->AddForce(ACB_DodgeballProjectile::PROJECTILE_SPEED * 1000 * direction);
 }
 
 void ACB_DodgeballProjectile::setGrabbedPosition(FVector position)
