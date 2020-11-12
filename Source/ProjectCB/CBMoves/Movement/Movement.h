@@ -37,7 +37,7 @@ public:
 
 	Movement();
 
-	void setStartRotation(FRotator startRotation);
+	void setStartRotation(FRotator startRotation); // TODO set player rotation
 
 	FRotator getPlayerRotation();
 
@@ -53,4 +53,6 @@ public:
 	FVector getInputVector(float cameraRotationYaw);
 
 	void resetMovement(float amount);
+
+	void setMovementVelocity(FVector velocity);
 };

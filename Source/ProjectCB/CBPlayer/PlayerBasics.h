@@ -24,6 +24,10 @@ public:
 	static const float PLAYER_START_WORLD_LOCATION_Z;
 	static const float WORLD_LOCATION_PROPORTION_Z; // TODO add to camera
 
+	static const float LAUNCH_SPEED;
+	static const float LAUNCH_MOBILITY;
+	static const float LAUNCH_HEIGHT;
+
 	enum PlayerState { PLAYER_ALIVE = 0, PLAYER_GRABBED, PLAYER_GHOST };
 	enum DodgeState { DODGE_OFF = 0, DODGE_STARTUP, DODGE_DUCK, DODGE_IDLE, DODGE_JUMP, DODGE_COOLDOWN };
 	enum ThrowState { THROW_OFF = 0, CATCH_STARTUP, THROW_STARTUP, CATCH_AIM, THROW_AIM, CATCH_COOLDOWN, THROW_COOLDOWN };
@@ -95,4 +99,6 @@ public:
 	void makeAlive();
 
 	void makeGrabbed();
+
+	void launchPlayer(FVector direction);
 };
