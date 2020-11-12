@@ -289,10 +289,12 @@ void ACB_PlayerCharacter::launchRelease(FVector direction)
 	this->GetCharacterMovement()->Velocity = direction; // TODO set velocity in direction
 }
 
-void ACB_PlayerCharacter::setGrabbedPosition(FVector position)
+void ACB_PlayerCharacter::setGrabbed(FVector position, FRotator rotation)
 {
 	this->SetActorLocation(position);
 	this->GetCharacterMovement()->Velocity = FVector(0.0f, 0.0f, 0.0f);
+
+	// TODO set player turn rotation to rotation
 }
 
 bool ACB_PlayerCharacter::hasGrabbableObject()

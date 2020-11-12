@@ -12,10 +12,8 @@ CameraMovement::CameraMovement()
 
 void CameraMovement::updateCamera(const float amount)
 {
-	if (amount == 0) // TODO check for threshold
-	{
+	if (amount == 0)
 		this->m_velocity = 0;
-	}
 	else if (amount < 0)
 	{
 		if (this->m_velocity > 0)

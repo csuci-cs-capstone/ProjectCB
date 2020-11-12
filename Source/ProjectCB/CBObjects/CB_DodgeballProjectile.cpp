@@ -111,9 +111,10 @@ void ACB_DodgeballProjectile::launchRelease(FVector direction)
 	this->DodgeballMesh->SetPhysicsLinearVelocity(ACB_DodgeballProjectile::PROJECTILE_SPEED * direction);
 }
 
-void ACB_DodgeballProjectile::setGrabbedPosition(FVector position)
+void ACB_DodgeballProjectile::setGrabbed(FVector position, FRotator rotation)
 {
 	this->SetActorLocation(position);
+	this->SetActorRotation(rotation);
 }
 
 bool ACB_DodgeballProjectile::hasGrabbableObject()
