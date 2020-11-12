@@ -23,8 +23,6 @@ PlayerBasics::PlayerBasics()
 
 	this->m_currentWorldLocationZ = PlayerBasics::PLAYER_START_WORLD_LOCATION_Z;
 
-	//this->m_movement.setPlayerBasics(this);
-
 	this->m_currentMobility = 1.0f;
 	this->m_previousMobility = this->m_currentMobility;
 

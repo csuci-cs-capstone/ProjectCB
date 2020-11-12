@@ -6,11 +6,15 @@
 struct PROJECTCB_API Movement
 {
 	// TODO add other movement variables here
-
+	
 	static const float PLAYER_GROUND_SPEED;
 	static const float PLAYER_AIR_SPEED;
 	static const float PLAYER_ACCELERATION; // between 0 and 1
 	static const float PLAYER_DECELERATION; // between 0 and 1
+
+	static const float GHOST_SPEED;
+	static const float GHOST_ACCELERATION; // between 0 and 1
+	static const float GHOST_DECELERATION; // between 0 and 1
 
 private:
 
@@ -19,7 +23,7 @@ private:
 	FRotator m_startRotation;
 	FRotator m_playerRotation;
 
-	FVector2D m_inputVelocity; // TODO make private
+	FVector2D m_inputVelocity;
 	FVector2D m_currentMovementVelocity;
 	FVector2D m_currentRotationVelocity;
 

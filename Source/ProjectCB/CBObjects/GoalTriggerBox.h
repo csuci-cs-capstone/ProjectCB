@@ -30,7 +30,7 @@ private:
 
 	bool updateBallOffsetOnAdd();
 	bool updateBallOffsetOnRemove();
-	void updateBallPositions(bool changedLayout);
+	void updateBallPositions(bool changedLayout, bool added);
 
 protected:
 

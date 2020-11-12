@@ -2,10 +2,16 @@
 #include <math.h>
 #include "../../CBMath/MathConstants.h"
 
+// TODO add GHOST_SPEED;
+
 const float Movement::PLAYER_GROUND_SPEED = 1000.0f;
 const float Movement::PLAYER_AIR_SPEED = Movement::PLAYER_GROUND_SPEED * 1.75f;
 const float Movement::PLAYER_ACCELERATION = 1.0f / 16.0f;
 const float Movement::PLAYER_DECELERATION = Movement::PLAYER_ACCELERATION * 1.5f;
+
+const float Movement::GHOST_SPEED = Movement::PLAYER_GROUND_SPEED * 0.75f;
+const float Movement::GHOST_ACCELERATION = Movement::PLAYER_ACCELERATION;
+const float Movement::GHOST_DECELERATION = Movement::PLAYER_DECELERATION;
 
 void Movement::updateVelocity(FVector2D& currentVelocity, float mobility)
 {
