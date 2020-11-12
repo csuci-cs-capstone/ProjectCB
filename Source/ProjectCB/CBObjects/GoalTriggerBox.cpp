@@ -124,7 +124,7 @@ bool AGoalTriggerBox::updateBallOffsetOnRemove()
 	}
 }
 
-void AGoalTriggerBox::updateBallPositions(bool changedLayout)
+void AGoalTriggerBox::updateBallPositions(bool changedLayout, bool added)
 {
 	if (changedLayout)
 	{
@@ -135,7 +135,7 @@ void AGoalTriggerBox::updateBallPositions(bool changedLayout)
 			dodgeball->m_goalLocation = this->getBallPosition(index);
 		}
 	}
-	else
+	else if (added)
 	{
 		size_t index = this->m_grabbableList.length() - 1;
 
@@ -172,7 +172,7 @@ void AGoalTriggerBox::OnOverlapBegin(AActor* overlappedActor, AActor* otherActor
 
 			this->m_grabbableList.add(dodgeball);
 
-			updateBallPositions(this->updateBallOffsetOnAdd());
+			updateBallPositions(this->updateBallOffsetOnAdd(), true);
 		}
 	}
 }
@@ -189,7 +189,7 @@ void AGoalTriggerBox::OnOverlapEnd(AActor* overlappedActor, AActor* otherActor)
 
 			this->m_grabbableList.remove(dodgeball);
 
-			updateBallPositions(this->updateBallOffsetOnRemove());
+			updateBallPositions(this->updateBallOffsetOnRemove(), false);
 		}
 	}
 }

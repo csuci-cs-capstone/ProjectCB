@@ -15,6 +15,10 @@ const float PlayerBasics::PLAYER_FAST_GRAVITY = 1.5f * PlayerBasics::PLAYER_BASE
 const float PlayerBasics::PLAYER_START_WORLD_LOCATION_Z = 250.0f;
 const float PlayerBasics::WORLD_LOCATION_PROPORTION_Z = 0.75f;
 
+const float PlayerBasics::LAUNCH_SPEED = 100.0f;
+const float PlayerBasics::LAUNCH_MOBILITY = 0.25f;
+const float PlayerBasics::LAUNCH_HEIGHT = 50.0f;
+
 PlayerBasics::PlayerBasics()
 {
 	this->m_playerState = PLAYER_ALIVE;
@@ -22,8 +26,6 @@ PlayerBasics::PlayerBasics()
 	this->m_throwState = THROW_OFF;
 
 	this->m_currentWorldLocationZ = PlayerBasics::PLAYER_START_WORLD_LOCATION_Z;
-
-	//this->m_movement.setPlayerBasics(this);
 
 	this->m_currentMobility = 1.0f;
 	this->m_previousMobility = this->m_currentMobility;
@@ -155,4 +157,19 @@ void PlayerBasics::makeAlive()
 void PlayerBasics::makeGrabbed()
 {
 	this->m_playerState = PlayerBasics::PLAYER_GRABBED;
+}
+
+void PlayerBasics::launchPlayer(FVector direction)
+{
+	if (direction.IsNearlyZero())
+		this->m_movement.setMovementVelocity(direction);
+	else
+	{
+		this->m_movement.setMovementVelocity(direction.GetUnsafeNormal());
+		this->m_jumpZVelocity = getJumpVelocity(PlayerBasics::LAUNCH_HEIGHT);
+		this->m_shouldJump = true;
+	}
+
+	this->m_currentMobility = PlayerBasics::LAUNCH_MOBILITY;
+	this->updateAttributes();
 }

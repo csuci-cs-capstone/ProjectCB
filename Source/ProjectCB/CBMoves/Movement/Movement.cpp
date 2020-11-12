@@ -2,10 +2,16 @@
 #include <math.h>
 #include "../../CBMath/MathConstants.h"
 
+// TODO add GHOST_SPEED;
+
 const float Movement::PLAYER_GROUND_SPEED = 1000.0f;
 const float Movement::PLAYER_AIR_SPEED = Movement::PLAYER_GROUND_SPEED * 1.75f;
 const float Movement::PLAYER_ACCELERATION = 1.0f / 16.0f;
 const float Movement::PLAYER_DECELERATION = Movement::PLAYER_ACCELERATION * 1.5f;
+
+const float Movement::GHOST_SPEED = Movement::PLAYER_GROUND_SPEED * 0.75f;
+const float Movement::GHOST_ACCELERATION = Movement::PLAYER_ACCELERATION;
+const float Movement::GHOST_DECELERATION = Movement::PLAYER_DECELERATION;
 
 void Movement::updateVelocity(FVector2D& currentVelocity, float mobility)
 {
@@ -38,6 +44,7 @@ Movement::Movement()
 	this->m_currentRotationVelocity.X = 0.0f;
 	this->m_currentRotationVelocity.Y = 0.0f;
 
+	this->m_startRotation = FRotator(0.0f, 0.0f, 0.0f);
 	this->m_playerRotation = FRotator(0.0f, 0.0f, 0.0f);
 
 	this->m_playerSpeed = Movement::PLAYER_GROUND_SPEED;
@@ -56,9 +63,14 @@ void Movement::updateVelocity(float mobility)
 		* atan2f(this->m_currentRotationVelocity.Y, this->m_currentRotationVelocity.X);
 }
 
-const FRotator& Movement::getPlayerRotation()
+void Movement::setStartRotation(FRotator startRotation)
 {
-	return this->m_playerRotation;
+	this->m_startRotation = startRotation;
+}
+
+FRotator Movement::getPlayerRotation()
+{
+	return this->m_startRotation + this->m_playerRotation;
 }
 
 void Movement::isGrounded(bool grounded)
@@ -102,4 +114,13 @@ void Movement::addInputVector(FVector inputVector)
 void Movement::resetMovement(float amount)
 {
 	this->m_currentMovementVelocity *= 1.0f - amount;
+}
+
+void Movement::setMovementVelocity(FVector velocity)
+{
+	this->m_inputVelocity.X = velocity.X;
+	this->m_inputVelocity.Y = velocity.Y;
+
+	this->m_currentMovementVelocity.X = velocity.X;
+	this->m_currentMovementVelocity.Y = velocity.Y;
 }

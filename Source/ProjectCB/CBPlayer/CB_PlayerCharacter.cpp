@@ -89,6 +89,8 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 void ACB_PlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	this->m_basics.m_movement.setStartRotation(this->cameraArm->GetComponentRotation());
 }
 
 // Called every frame
@@ -124,10 +126,7 @@ void ACB_PlayerCharacter::playerUpdate(float deltaTime)
 
 	if (this->m_basics.m_shouldJump) // TODO set jump movement to 1 to jump
 	{
-		//characterMovement->Velocity = this->m_basics.m_velocity; // TODO remove
 		characterMovement->JumpZVelocity = this->m_basics.m_jumpZVelocity;
-
-		// TODO make use leap velocity and make it so that mobility is accounted for in deceleration
 
 		Jump();
 
@@ -142,6 +141,7 @@ void ACB_PlayerCharacter::playerUpdate(float deltaTime)
 void ACB_PlayerCharacter::cameraUpdate()
 {
 	FVector currentLocation = this->cameraArm->GetComponentLocation();
+
 	const FRotator& playerRotation = this->m_basics.m_movement.getPlayerRotation();
 
 	this->GetCapsuleComponent()->SetRelativeRotation(playerRotation);
@@ -286,13 +286,16 @@ void ACB_PlayerCharacter::makeGrabbed()
 void ACB_PlayerCharacter::launchRelease(FVector direction)
 {
 	this->m_basics.makeAlive();
-	this->GetCharacterMovement()->Velocity = direction;// TODO set velocity in direction
+	//this->GetCharacterMovement()->Velocity = direction; // TODO set velocity in direction
+	this->m_basics.launchPlayer(direction);
 }
 
-void ACB_PlayerCharacter::setGrabbedPosition(FVector position)
+void ACB_PlayerCharacter::setGrabbed(FVector position, FRotator rotation)
 {
 	this->SetActorLocation(position);
 	this->GetCharacterMovement()->Velocity = FVector(0.0f, 0.0f, 0.0f);
+
+	// TODO set player turn rotation to rotation
 }
 
 bool ACB_PlayerCharacter::hasGrabbableObject()
