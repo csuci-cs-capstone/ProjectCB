@@ -15,6 +15,8 @@ struct PROJECTCB_API Movement
 private:
 
 	float m_inputRotationYaw;
+
+	FRotator m_startRotation;
 	FRotator m_playerRotation;
 
 	FVector2D m_inputVelocity; // TODO make private
@@ -31,7 +33,9 @@ public:
 
 	Movement();
 
-	const FRotator& getPlayerRotation(); // TODO remove?
+	void setStartRotation(FRotator startRotation);
+
+	FRotator getPlayerRotation();
 
 	void updateVelocity(float mobility);
 

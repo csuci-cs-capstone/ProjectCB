@@ -38,6 +38,7 @@ Movement::Movement()
 	this->m_currentRotationVelocity.X = 0.0f;
 	this->m_currentRotationVelocity.Y = 0.0f;
 
+	this->m_startRotation = FRotator(0.0f, 0.0f, 0.0f);
 	this->m_playerRotation = FRotator(0.0f, 0.0f, 0.0f);
 
 	this->m_playerSpeed = Movement::PLAYER_GROUND_SPEED;
@@ -56,9 +57,14 @@ void Movement::updateVelocity(float mobility)
 		* atan2f(this->m_currentRotationVelocity.Y, this->m_currentRotationVelocity.X);
 }
 
-const FRotator& Movement::getPlayerRotation()
+void Movement::setStartRotation(FRotator startRotation)
 {
-	return this->m_playerRotation;
+	this->m_startRotation = startRotation;
+}
+
+FRotator Movement::getPlayerRotation()
+{
+	return this->m_startRotation + this->m_playerRotation;
 }
 
 void Movement::isGrounded(bool grounded)
