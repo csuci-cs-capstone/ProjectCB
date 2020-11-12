@@ -28,8 +28,9 @@ private:
 
 	FVector getBallPosition(size_t index);
 
-	void updateBallOffset();
-	void updateBallPositions();
+	bool updateBallOffsetOnAdd();
+	bool updateBallOffsetOnRemove();
+	void updateBallPositions(bool changedLayout);
 
 protected:
 
