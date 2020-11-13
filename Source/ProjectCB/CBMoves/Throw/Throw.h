@@ -33,6 +33,8 @@ public:
 	Throw(PlayerBasics& playerBasics);
 
 	void onPress();
-	void onRelease();
+	void onRelease(FRotator playerRotation);
 	void update(FVector playerPosition, FRotator playerRotation, float deltaTime);
+
+	void drop();
 };

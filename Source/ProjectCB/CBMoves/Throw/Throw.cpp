@@ -19,7 +19,7 @@ void Throw::onPress()
 	}
 }
 
-void Throw::onRelease()
+void Throw::onRelease(FRotator playerRotation)
 {
 	if (this->m_playerBasics->m_throwState == PlayerBasics::THROW_AIM) // TODO should buffer for startup
 	{
@@ -27,14 +27,16 @@ void Throw::onRelease()
 		{
 			case PlayerBasics::PLAYER_ALIVE:
 				this->m_grabbedObject->launchRelease( // TODO should probably ensure it can't not exist in throw state
-					this->m_playerBasics->m_movement.getPlayerRotation().RotateVector(FVector(1.0f, 0.0f, 0.0f)));
+					this->m_playerBasics->m_movement.getPlayerRotation().RotateVector(FVector(1.0f, 0.0f, 0.0f)),
+					playerRotation);
 				break;
 			case PlayerBasics::PLAYER_GRABBED:
 				this->m_grabbedObject->launchRelease( // TODO should probably ensure it can't not exist in throw state
-					this->m_playerBasics->m_movement.getPlayerRotation().RotateVector(FVector(1.0f, 0.0f, 0.0f)));
+					this->m_playerBasics->m_movement.getPlayerRotation().RotateVector(FVector(1.0f, 0.0f, 0.0f)),
+					playerRotation);
 				break;
 			default:
-				this->m_grabbedObject->launchRelease(FVector(0.0f, 0.0f, 0.0f));
+				this->m_grabbedObject->launchRelease(FVector(0.0f, 0.0f, 0.0f), playerRotation);
 				break;
 		}
 
@@ -81,4 +83,13 @@ void Throw::update(FVector playerPosition, FRotator playerRotation, float deltaT
 	if (this->m_grabbedObject)
 		this->m_grabbedObject->setGrabbed(playerPosition + playerRotation.RotateVector(FVector(75.0f, 0.0f, 0.0f)),
 			playerRotation);
+}
+
+void Throw::drop()
+{
+	if (this->m_grabbedObject)
+	{
+		this->m_grabbedObject->launchRelease(FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f, 0.0f, 0.0f));
+		this->m_grabbedObject = nullptr;
+	}
 }
