@@ -60,6 +60,9 @@ void PlayerBasics::updateGroundState(bool grounded)
 {
 	this->m_grounded = grounded;
 
+	if(this->m_grounded)
+		this->m_currentMobility = 1.0f;
+
 	this->m_movement.isGrounded(this->m_grounded);
 }
 
