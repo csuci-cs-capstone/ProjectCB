@@ -152,7 +152,9 @@ void ACB_PlayerCharacter::cameraUpdate()
 
 	this->cameraArm->SetWorldLocation(FVector(currentLocation.X, currentLocation.Y, this->m_basics.m_currentWorldLocationZ));
 
-	this->grabBox->SetRelativeRotation(playerRotation);
+	
+	//this->grabBox->SetRelativeRotation(playerRotation);
+	this->grabBox->SetRelativeRotation(this->skeletalMesh->GetRelativeRotation());
 }
 
 void ACB_PlayerCharacter::adjustGravity(UCharacterMovementComponent* characterMovement)
