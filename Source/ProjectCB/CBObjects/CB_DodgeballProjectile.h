@@ -23,7 +23,6 @@ private:
 	BallState m_ballState;
 
 	FVector m_previousVelocity;
-	bool m_grounded;
 
 public:
 
@@ -43,14 +42,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Components")
 		class UProjectileMovementComponent* DodgeballMovement;
 
+	UFUNCTION()
+		void OnHit(AActor* selfActor, AActor* otherActor, FVector normalImpulse, const FHitResult& hit);
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	BallState getBallState();
-
-	UFUNCTION()
-	void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
 
 	bool inAir();
 
