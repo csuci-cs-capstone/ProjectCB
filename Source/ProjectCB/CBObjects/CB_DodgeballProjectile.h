@@ -11,13 +11,9 @@ class PROJECTCB_API ACB_DodgeballProjectile : public AActor, public IGrabbable, 
 {
 	GENERATED_BODY()
 
-public:
-
-	enum BallState { BALL_PROJECTILE = 0, BALL_GRABBED };
-
 private:
 
-	//static const FVector GOAL_CENTER;
+	enum BallState { BALL_GROUNDED = 0, BALL_GRABBED, BALL_PROJECTILE };
 	
 	static const float PROJECTILE_SPEED;
 	static const float PROJECTILE_GRAVITY;
@@ -56,6 +52,7 @@ public:
 	UFUNCTION()
 	void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
 
+	bool inAir();
 
 	// Grabbable
 
