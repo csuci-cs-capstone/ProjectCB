@@ -77,7 +77,7 @@ void ACB_DodgeballProjectile::Tick(float DeltaTime)
 				velocity.Y = velocity.Y + ACB_DodgeballProjectile::GROUND_DECELERATION;
 			else
 			{
-				this->DodgeballMesh->SetPhysicsAngularVelocity(FVector(0.0f, 0.0f, 0.0f));
+				this->DodgeballMesh->SetPhysicsAngularVelocityInDegrees(FVector(0.0f, 0.0f, 0.0f));
 				velocity.Y = 0.0f;
 			}
 
@@ -100,8 +100,7 @@ void ACB_DodgeballProjectile::Tick(float DeltaTime)
 
 bool ACB_DodgeballProjectile::inAir()
 {
-	return this->m_ballState == ACB_DodgeballProjectile::BALL_GRABBED
-		|| this->m_ballState == ACB_DodgeballProjectile::BALL_PROJECTILE;
+	return this->m_ballState == ACB_DodgeballProjectile::BALL_PROJECTILE;
 }
 
 bool ACB_DodgeballProjectile::isGrabbable()
