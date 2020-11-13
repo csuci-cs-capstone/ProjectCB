@@ -133,6 +133,13 @@ void ACB_PlayerCharacter::playerUpdate(float deltaTime)
 		this->m_basics.m_shouldJump = false;
 	}
 
+	if (this->m_basics.m_fellOff)
+	{
+		this->m_throw.drop();
+
+		this->m_basics.m_fellOff = false;
+	}
+
 	this->m_basics.m_movement.updateVelocity(this->m_basics.m_currentMobility);
 
 	GetCharacterMovement()->Velocity = this->m_basics.m_movement.getMovementVelocity(GetCharacterMovement()->Velocity.Z);
@@ -247,7 +254,7 @@ void ACB_PlayerCharacter::ShootAction() // TODO create a Dodgeball Generator
 
 void ACB_PlayerCharacter::StopShootAction()
 {
-	this->m_throw.onRelease();
+	this->m_throw.onRelease(this->GetActorRotation());
 }
 
 void ACB_PlayerCharacter::AliveAction()
@@ -287,19 +294,18 @@ void ACB_PlayerCharacter::makeGrabbed()
 	this->m_basics.makeGrabbed();
 }
 
-void ACB_PlayerCharacter::launchRelease(FVector direction)
+void ACB_PlayerCharacter::launchRelease(FVector direction, FRotator rotation)
 {
 	this->m_basics.makeAlive();
 	//this->GetCharacterMovement()->Velocity = direction; // TODO set velocity in direction
-	this->m_basics.launchPlayer(direction);
+	this->m_basics.launchPlayer(direction, rotation);
 }
 
 void ACB_PlayerCharacter::setGrabbed(FVector position, FRotator rotation)
 {
 	this->SetActorLocation(position);
 	this->GetCharacterMovement()->Velocity = FVector(0.0f, 0.0f, 0.0f);
-
-	// TODO set player turn rotation to rotation
+	this->m_basics.m_movement.setRotation(rotation);
 }
 
 bool ACB_PlayerCharacter::hasGrabbableObject()

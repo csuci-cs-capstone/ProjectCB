@@ -68,6 +68,11 @@ void Movement::setStartRotation(FRotator startRotation)
 	this->m_startRotation = startRotation;
 }
 
+void Movement::setRotation(FRotator rotation)
+{
+	this->m_playerRotation = rotation - this->m_startRotation;
+}
+
 FRotator Movement::getPlayerRotation()
 {
 	return this->m_startRotation + this->m_playerRotation;
