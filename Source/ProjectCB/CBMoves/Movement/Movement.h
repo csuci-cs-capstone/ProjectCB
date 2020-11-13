@@ -38,6 +38,7 @@ public:
 	Movement();
 
 	void setStartRotation(FRotator startRotation); // TODO set player rotation
+	void setRotation(FRotator rotation);
 
 	FRotator getPlayerRotation();
 

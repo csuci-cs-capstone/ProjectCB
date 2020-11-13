@@ -20,7 +20,7 @@ public:
 
 	virtual void makeGrabbed() = 0;
 
-	virtual void launchRelease(FVector direction) = 0;
+	virtual void launchRelease(FVector direction, FRotator rotation) = 0;
 
 	virtual void setGrabbed(FVector position, FRotator rotation) = 0;
 

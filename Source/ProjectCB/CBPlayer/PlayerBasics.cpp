@@ -36,6 +36,7 @@ PlayerBasics::PlayerBasics()
 	this->m_jumpZVelocity = 0;
 
 	this->m_shouldJump = false;
+	this->m_fellOff = false;
 }
 
 float PlayerBasics::getJumpVelocity(float height)
@@ -81,6 +82,8 @@ void PlayerBasics::makeGhost()
 	this->m_currentMobility = 1.0f;
 	this->m_currentHeight = PlayerBasics::PLAYER_HEIGHT;
 
+	// DROP GRABBED ITEM
+
 	//Model/Anims
 	m_playerSkeletalMeshComponent->SetSkeletalMesh(m_ghostModel);
 
@@ -119,6 +122,8 @@ FVector PlayerBasics::checkAliveBounds(FVector playerPosition)
 		playerPosition.Z = PlayerBasics::PLAYER_SPAWN_POSITION_Z;
 
 		this->makeGhost();
+
+		this->m_fellOff = true;
 	}
 
 	return playerPosition;
@@ -159,7 +164,7 @@ void PlayerBasics::makeGrabbed()
 	this->m_playerState = PlayerBasics::PLAYER_GRABBED;
 }
 
-void PlayerBasics::launchPlayer(FVector direction)
+void PlayerBasics::launchPlayer(FVector direction, FRotator rotation)
 {
 	if (direction.IsNearlyZero())
 		this->m_movement.setMovementVelocity(direction);
@@ -169,6 +174,8 @@ void PlayerBasics::launchPlayer(FVector direction)
 		this->m_jumpZVelocity = getJumpVelocity(PlayerBasics::LAUNCH_HEIGHT);
 		this->m_shouldJump = true;
 	}
+
+	this->m_movement.setRotation(rotation);
 
 	this->m_currentMobility = PlayerBasics::LAUNCH_MOBILITY;
 	this->updateAttributes();

@@ -98,17 +98,16 @@ void ACB_DodgeballProjectile::makeGrabbed()
 	this->DodgeballMesh->SetSimulatePhysics(false);
 }
 
-void ACB_DodgeballProjectile::launchRelease(FVector direction)
+void ACB_DodgeballProjectile::launchRelease(FVector direction, FRotator rotation)
 {
 	this->m_ballState = ACB_DodgeballProjectile::BALL_PROJECTILE;
 
 	this->m_grounded = false;
 
 	this->DodgeballMesh->SetSimulatePhysics(true);
+	this->DodgeballMesh->SetPhysicsLinearVelocity(ACB_DodgeballProjectile::PROJECTILE_SPEED * direction.GetSafeNormal());
 
-	direction.Normalize();
-
-	this->DodgeballMesh->SetPhysicsLinearVelocity(ACB_DodgeballProjectile::PROJECTILE_SPEED * direction);
+	this->SetActorRotation(rotation);
 }
 
 void ACB_DodgeballProjectile::setGrabbed(FVector position, FRotator rotation)

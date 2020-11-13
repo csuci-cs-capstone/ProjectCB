@@ -77,6 +77,7 @@ public:
 	float m_jumpZVelocity;
 
 	bool m_shouldJump;
+	bool m_fellOff;
 
 	PlayerBasics();
 
@@ -100,5 +101,5 @@ public:
 
 	void makeGrabbed();
 
-	void launchPlayer(FVector direction);
+	void launchPlayer(FVector direction, FRotator rotation);
 };
