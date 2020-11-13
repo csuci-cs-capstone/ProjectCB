@@ -113,6 +113,7 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 	cameraUpdate();
 
 	this->m_basics.m_movement.resetInputVelocity();
+
 }
 
 void ACB_PlayerCharacter::playerUpdate(float deltaTime)
@@ -161,6 +162,7 @@ void ACB_PlayerCharacter::cameraUpdate()
 
 	
 	//this->grabBox->SetRelativeRotation(playerRotation);
+	//Quick way to make sure grabBox follows model orientation
 	this->grabBox->SetRelativeRotation(this->skeletalMesh->GetRelativeRotation());
 }
 

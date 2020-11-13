@@ -69,6 +69,8 @@ public:
 	USkeletalMesh* m_playerModel;
 	USkeletalMesh* m_ghostModel;
 
+	FVector m_rootPosition; //TODO remove temporary fix!
+
 /////
 
 	FRotator m_inputRotation;
