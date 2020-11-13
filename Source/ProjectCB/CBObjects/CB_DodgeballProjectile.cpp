@@ -97,6 +97,9 @@ void ACB_DodgeballProjectile::OnHit(AActor* SelfActor, AActor* OtherActor, FVect
 
 	if (GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("OnHit is called!"));
+	//reset the physics so the ball can be thrown again by setting simulate physics back on
+	this->DodgeballMesh->SetSimulatePhysics(true);
+
 }
 
 bool ACB_DodgeballProjectile::isGrabbable()

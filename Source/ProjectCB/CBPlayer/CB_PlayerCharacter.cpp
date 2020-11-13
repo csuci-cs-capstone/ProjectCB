@@ -258,8 +258,9 @@ void ACB_PlayerCharacter::AliveAction()
 void ACB_PlayerCharacter::OnEnterGrabBox(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
 	UPrimitiveComponent* otherComponent, int32 otherBodyIndex, bool fromSweep, const FHitResult& sweepResult)
 {
+	
 	if (this == otherActor)
-		return;
+		return;	
 
 	this->m_throw.m_grabbableList.add(Cast<IGrabbable>(otherActor));
 }
@@ -280,6 +281,7 @@ bool ACB_PlayerCharacter::isGrabbable()
 
 void ACB_PlayerCharacter::makeGrabbed()
 {
+	this->grabBox->SetGenerateOverlapEvents(false);
 	this->m_basics.makeGrabbed();
 }
 
