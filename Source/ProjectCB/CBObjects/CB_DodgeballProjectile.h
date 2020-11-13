@@ -53,6 +53,10 @@ public:
 
 	BallState getBallState();
 
+	UFUNCTION()
+	void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
+
+
 	// Grabbable
 
 	bool isGrabbable() override;

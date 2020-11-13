@@ -83,6 +83,7 @@ void Throw::update(FVector playerPosition, FRotator playerRotation, float deltaT
 	if (this->m_grabbedObject)
 		this->m_grabbedObject->setGrabbed(playerPosition + playerRotation.RotateVector(FVector(75.0f, 0.0f, 0.0f)),
 			playerRotation);
+
 }
 
 void Throw::drop()

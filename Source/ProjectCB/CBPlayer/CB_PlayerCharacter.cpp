@@ -113,6 +113,7 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 	cameraUpdate();
 
 	this->m_basics.m_movement.resetInputVelocity();
+
 }
 
 void ACB_PlayerCharacter::playerUpdate(float deltaTime)
@@ -159,7 +160,10 @@ void ACB_PlayerCharacter::cameraUpdate()
 
 	this->cameraArm->SetWorldLocation(FVector(currentLocation.X, currentLocation.Y, this->m_basics.m_currentWorldLocationZ));
 
-	this->grabBox->SetRelativeRotation(playerRotation);
+	
+	//this->grabBox->SetRelativeRotation(playerRotation);
+	//Quick way to make sure grabBox follows model orientation
+	this->grabBox->SetRelativeRotation(this->skeletalMesh->GetRelativeRotation());
 }
 
 void ACB_PlayerCharacter::adjustGravity(UCharacterMovementComponent* characterMovement)
@@ -265,8 +269,9 @@ void ACB_PlayerCharacter::AliveAction()
 void ACB_PlayerCharacter::OnEnterGrabBox(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
 	UPrimitiveComponent* otherComponent, int32 otherBodyIndex, bool fromSweep, const FHitResult& sweepResult)
 {
+	
 	if (this == otherActor)
-		return;
+		return;	
 
 	this->m_throw.m_grabbableList.add(Cast<IGrabbable>(otherActor));
 }
@@ -287,6 +292,7 @@ bool ACB_PlayerCharacter::isGrabbable()
 
 void ACB_PlayerCharacter::makeGrabbed()
 {
+	this->grabBox->SetGenerateOverlapEvents(false);
 	this->m_basics.makeGrabbed();
 }
 
