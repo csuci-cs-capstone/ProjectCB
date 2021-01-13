@@ -14,6 +14,7 @@ private:
 
 	PlayerBasics* m_playerBasics;
 	IGrabbableObject* m_grabbedObject;
+	FTransform m_grabTransform;
 
 	void catchStartUpdate(float deltaTime);
 	void throwStartUpdate(float deltaTime);
@@ -37,4 +38,9 @@ public:
 	void update(FVector playerPosition, FRotator playerRotation, float deltaTime);
 
 	void drop();
+
+	//NOTE
+	//Can move the functionality to where you think it fits better but I put it the throw class for right now!
+	void removeBall();
+	void launchBall(FRotator playerRotation);
 };

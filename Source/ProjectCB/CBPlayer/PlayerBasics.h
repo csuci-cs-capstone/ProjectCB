@@ -5,6 +5,7 @@
 #include "../CBMoves/Movement/Movement.h"
 #include "../CBMoves/Movement/CameraMovement.h"
 
+
 struct PROJECTCB_API PlayerBasics
 {
 public:
@@ -59,11 +60,12 @@ public:
 
 	Movement m_movement;
 	CameraMovement m_cameraMovement;
+	
+	//a reference to the current level so we can spawn objects from code
+	UWorld* m_gameWorldRef;
 
-	//Prototype models read TODO read in skeletalMesh
-	//UStaticMeshComponent* m_playerMeshComponent;
-	//UStaticMesh* m_playerModel;
-	//UStaticMesh* m_ghostModel;
+	UPROPERTY()
+	TSubclassOf<class ACB_DodgeballProjectile> dodgeballClassRef;
 
 	USkeletalMeshComponent* m_playerSkeletalMeshComponent;
 	USkeletalMesh* m_playerModel;
