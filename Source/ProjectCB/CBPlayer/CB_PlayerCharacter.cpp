@@ -25,10 +25,7 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	this->skeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMeshComponent");
 	this->skeletalMesh->SetupAttachment(RootComponent);
 
-	//staticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMeshComponent");
-	//staticMesh->SetupAttachment(RootComponent);
-
-	//LOAD in player/ghost models from uassets
+	//LOAD in from uassets here
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> playerMeshAsset(TEXT("SkeletalMesh'/Game/PlayerBP/PrototypeSkeletalModel/Character1Asset.Character1Asset'"));
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> ghostMeshAsset(TEXT("SkeletalMesh'/Game/PlayerBP/PrototypeGhostModel/GhostSkeletal/GhostPrototypeModel.GhostPrototypeModel_GhostPrototypeModel'"));
 	
@@ -36,7 +33,6 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	this->m_basics.m_ghostModel = ghostMeshAsset.Object;
 	this->m_basics.m_playerSkeletalMeshComponent = skeletalMesh;
 
-	//staticMesh->SetStaticMesh(playerMeshAsset.Object);
 	skeletalMesh->SetSkeletalMesh(playerMeshAsset.Object);
 
 	//Customize the character movement component here!
@@ -90,6 +86,8 @@ void ACB_PlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	this->m_basics.m_gameWorldRef = GetWorld();
+	this->m_basics.dodgeballClassRef = DodgeballProjectileClass;
 	this->m_basics.m_movement.setStartRotation(this->cameraArm->GetComponentRotation());
 }
 

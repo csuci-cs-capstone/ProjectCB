@@ -14,6 +14,6 @@ ACB_Captureball_GameMode::ACB_Captureball_GameMode()
 		DefaultPawnClass = PlayerCharacterBPClass.Class;
 	}
 
-
+	//TODO set up AWS gameliftSDK and create a struct to bridge the sever functionality here.
 	
 }
