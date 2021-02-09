@@ -15,6 +15,7 @@ private:
 
 	enum BallState { BALL_GROUNDED = 0, BALL_GRABBED, BALL_PROJECTILE };
 	
+	static const float BALL_RADIUS;
 	static const float PROJECTILE_SPEED;
 	static const float PROJECTILE_GRAVITY;
 
@@ -23,6 +24,8 @@ private:
 	BallState m_ballState;
 
 	FVector m_previousVelocity;
+
+	short m_resetCollisionFrame;
 
 public:
 
@@ -53,6 +56,7 @@ public:
 
 	// Grabbable
 
+	float getRadius() override;
 	bool isGrabbable() override;
 	void makeGrabbed() override;
 	void launchRelease(FVector direction, FRotator rotation) override;

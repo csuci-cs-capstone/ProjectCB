@@ -24,6 +24,7 @@ public:
 private:
 
 	// General
+	short m_resetCollisionFrame;
 	
 	void playerUpdate(float deltaTime);
 
@@ -89,6 +90,7 @@ public:
 
 	void AliveAction();
 
+	float getRadius() override;
 	bool isGrabbable() override;
 	void makeGrabbed() override;
 	void launchRelease(FVector direction, FRotator rotation) override;

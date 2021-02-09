@@ -16,6 +16,8 @@ class PROJECTCB_API IGrabbableObject
 
 public:
 
+	virtual float getRadius() = 0;
+
 	virtual bool isGrabbable() = 0;
 
 	virtual void makeGrabbed() = 0;

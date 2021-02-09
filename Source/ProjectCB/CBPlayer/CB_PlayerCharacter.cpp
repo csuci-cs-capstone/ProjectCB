@@ -23,7 +23,7 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
 	this->skeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMeshComponent");
-	this->skeletalMesh->SetupAttachment(RootComponent);
+	this->skeletalMesh->SetupAttachment(this->RootComponent);
 
 	//LOAD in from uassets here
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> playerMeshAsset(TEXT("SkeletalMesh'/Game/PlayerBP/PrototypeSkeletalModel/Character1Asset.Character1Asset'"));
@@ -51,7 +51,7 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 
 	this->cameraArm = CreateDefaultSubobject<USpringArmComponent>("CameraSpringArm");
-	this->cameraArm->SetupAttachment(skeletalMesh);
+	this->cameraArm->SetupAttachment(this->RootComponent);
 	this->cameraArm->TargetArmLength = 500.0f; // TODO add to CameraMovement class
 	
 	this->camera = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
@@ -86,6 +86,8 @@ void ACB_PlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	this->m_resetCollisionFrame = PlayerBasics::RESET_COLLISION_FRAMES + 1;
+
 	this->m_basics.m_gameWorldRef = GetWorld();
 	this->m_basics.dodgeballClassRef = DodgeballProjectileClass;
 	this->m_basics.m_movement.setStartRotation(this->cameraArm->GetComponentRotation());
@@ -105,8 +107,14 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 	this->m_dodge.update(DeltaTime);
 	this->m_throw.update(this->GetActorLocation(), this->GetActorRotation(), DeltaTime);
 
+// START RADIUS UPDATE
+
 	UCapsuleComponent* capsuleComponent = GetCapsuleComponent();
-	capsuleComponent->SetCapsuleSize(PlayerBasics::PLAYER_RADIUS, this->m_basics.m_currentHeight);
+	capsuleComponent->SetCapsuleSize(this->m_basics.m_currentRadius, this->m_basics.m_currentHeight);
+	this->skeletalMesh->SetRelativeLocation(FVector(PlayerBasics::PLAYER_RADIUS - this->m_basics.m_currentRadius, 0.0f,
+		-PlayerBasics::PLAYER_HEIGHT));
+
+// END RADIUS UPDATE
 
 	cameraUpdate();
 
@@ -142,6 +150,17 @@ void ACB_PlayerCharacter::playerUpdate(float deltaTime)
 	this->m_basics.m_movement.updateVelocity(this->m_basics.m_currentMobility);
 
 	GetCharacterMovement()->Velocity = this->m_basics.m_movement.getMovementVelocity(GetCharacterMovement()->Velocity.Z);
+
+	if (this->m_resetCollisionFrame >= 0)
+	{
+		if (this->m_resetCollisionFrame < PlayerBasics::RESET_COLLISION_FRAMES)
+			this->m_resetCollisionFrame++;
+		else if (this->m_resetCollisionFrame == PlayerBasics::RESET_COLLISION_FRAMES)
+		{
+			this->SetActorEnableCollision(true);
+			this->m_resetCollisionFrame++;
+		}
+	}
 }
 
 void ACB_PlayerCharacter::cameraUpdate()
@@ -283,6 +302,11 @@ void ACB_PlayerCharacter::OnLeaveGrabBox(UPrimitiveComponent* overlappedComponen
 	this->m_throw.m_grabbableList.remove(Cast<IGrabbable>(otherActor));
 }
 
+float ACB_PlayerCharacter::getRadius()
+{
+	return PlayerBasics::PLAYER_RADIUS;
+}
+
 bool ACB_PlayerCharacter::isGrabbable()
 {
 	return this->m_basics.getPlayerState() == PlayerBasics::PLAYER_ALIVE;
@@ -296,6 +320,7 @@ void ACB_PlayerCharacter::makeGrabbed()
 
 void ACB_PlayerCharacter::launchRelease(FVector direction, FRotator rotation)
 {
+	this->m_resetCollisionFrame = 0;
 	this->m_basics.makeAlive();
 	//this->GetCharacterMovement()->Velocity = direction; // TODO set velocity in direction
 	this->m_basics.launchPlayer(direction, rotation);
@@ -303,6 +328,8 @@ void ACB_PlayerCharacter::launchRelease(FVector direction, FRotator rotation)
 
 void ACB_PlayerCharacter::setGrabbed(FVector position, FRotator rotation)
 {
+	this->m_resetCollisionFrame = -1;
+	this->SetActorEnableCollision(false);
 	this->SetActorLocation(position);
 	this->GetCharacterMovement()->Velocity = FVector(0.0f, 0.0f, 0.0f);
 	this->m_basics.m_movement.setRotation(rotation);
