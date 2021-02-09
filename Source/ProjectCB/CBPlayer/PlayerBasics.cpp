@@ -19,6 +19,8 @@ const float PlayerBasics::LAUNCH_SPEED = 100.0f;
 const float PlayerBasics::LAUNCH_MOBILITY = 0.25f;
 const float PlayerBasics::LAUNCH_HEIGHT = 50.0f;
 
+const short PlayerBasics::RESET_COLLISION_FRAMES = 60;
+
 PlayerBasics::PlayerBasics()
 {
 	this->m_playerState = PLAYER_ALIVE;
@@ -29,6 +31,8 @@ PlayerBasics::PlayerBasics()
 
 	this->m_currentMobility = 1.0f;
 	this->m_previousMobility = this->m_currentMobility;
+
+	this->m_currentRadius = PlayerBasics::PLAYER_RADIUS;
 
 	this->m_currentHeight = PlayerBasics::PLAYER_HEIGHT;
 	this->m_previousHeight = this->m_currentHeight;

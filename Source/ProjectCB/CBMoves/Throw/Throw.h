@@ -28,6 +28,7 @@ private:
 public:
 
 	static const FVector THROW_DIRECTION;
+	static const float GRAB_OFFSET;
 
 	GrabbableList m_grabbableList;
 
