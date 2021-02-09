@@ -47,15 +47,11 @@ void Throw::onRelease(FRotator playerRotation)
 				
 				break;
 			case PlayerBasics::PLAYER_GRABBED:
-				if (GEngine)
-					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Ball Released on grabbed"));
 				this->m_grabbedObject->launchRelease( // TODO should probably ensure it can't not exist in throw state
 					this->m_playerBasics->m_movement.getPlayerRotation().RotateVector(FVector(1.0f, 0.0f, 0.0f)),
 					playerRotation);
 				break;
 			default:
-				if (GEngine)
-					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Ball Released on default"));
 				this->m_grabbedObject->launchRelease(FVector(0.0f, 0.0f, 0.0f), playerRotation);
 				break;
 		}
