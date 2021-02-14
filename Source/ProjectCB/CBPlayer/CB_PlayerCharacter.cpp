@@ -18,6 +18,8 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	this->m_basics.m_playerRef = this;
+
 	GetCapsuleComponent()->InitCapsuleSize(25.0f, 50.0f); // TODO create default size
 
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
@@ -32,6 +34,7 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	this->m_basics.m_playerModel = playerMeshAsset.Object;
 	this->m_basics.m_ghostModel = ghostMeshAsset.Object;
 	this->m_basics.m_playerSkeletalMeshComponent = skeletalMesh;
+	
 
 	skeletalMesh->SetSkeletalMesh(playerMeshAsset.Object);
 
@@ -348,4 +351,9 @@ IGrabbableObject* ACB_PlayerCharacter::getGrabbableObject()
 unsigned char ACB_PlayerCharacter::getGrabPriority()
 {
 	return UGrabbable::PLAYER_PRIORITY;
+}
+
+void ACB_PlayerCharacter::ignoreCollisionsOnThrownObject(AActor* spawnedActor)
+{
+	this->MoveIgnoreActorAdd(spawnedActor);
 }
