@@ -14,6 +14,7 @@ void ACB_GridGenerator::spawnBox(size_t gridX, size_t gridY)
 
     if (GEngine)
         GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("spawned box")));
+
 }
 
 void ACB_GridGenerator::generateGrid()
