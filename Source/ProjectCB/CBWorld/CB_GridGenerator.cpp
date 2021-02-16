@@ -10,16 +10,6 @@ const float ACB_GridGenerator::BOX_SIZE = 300.0f;
 const float ACB_GridGenerator::WIDTH_OFFSET = -ACB_GridGenerator::BOX_SIZE * (ACB_GridGenerator::STAGE_WIDTH - 1);
 const float ACB_GridGenerator::LENGTH_OFFSET = -ACB_GridGenerator::BOX_SIZE * (ACB_GridGenerator::STAGE_LENGTH - 1);
 
-//ACB_GridBox* ACB_GridGenerator::F2DArray::operator[](size_t pos)
-//{
-//    return this->m_array[pos];
-//}
-//
-//void ACB_GridGenerator::F2DArray::Add(ACB_GridBox* box)
-//{
-//    this->m_array.Add(box);
-//}
-
 ACB_GridBox* ACB_GridGenerator::spawnBox(size_t lengthPos, size_t widthPos)
 {
     FActorSpawnParameters spawnParams;
@@ -39,7 +29,7 @@ void ACB_GridGenerator::generateGrid()
 
         for (size_t width = 0; width < ACB_GridGenerator::STAGE_WIDTH; width++)
         {
-            if (length <= (ACB_GridGenerator::STAGE_LENGTH / 2))
+            if (length < ((ACB_GridGenerator::STAGE_LENGTH + 1) / 2))
             {
                 this->m_deletableBoxes.Add((length * ACB_GridGenerator::STAGE_WIDTH) + width);
                 this->m_numOfBoxes++;
