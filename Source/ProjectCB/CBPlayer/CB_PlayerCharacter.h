@@ -7,6 +7,7 @@
 #include "../CBMoves/Throw/Throw.h"
 #include "GameFramework/Character.h"
 #include "Components/BoxComponent.h"
+#include "Animation/BlendSpace1D.h"
 #include "CB_PlayerCharacter.generated.h"
 
 UCLASS()
@@ -69,6 +70,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = "Components")
 		class USpringArmComponent* cameraArm;
 
+	//ANIM
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Anims")
+		UBlendSpace1D* blendspace;
+
 public:
 
 	// Called every frame
@@ -102,5 +107,15 @@ public:
 	/// @brief Adds an actor to the ignore collisions list
 	/// @param spawnedActor 
 	void ignoreCollisionsOnThrownObject(AActor* spawnedActor);
+
+	//Animation Updating Functions
+	bool onGround();
+	bool onDuck();
+	bool onThrowing();
+	void resetThrowing();
+	/// @brief Checks X and Y speed only, used for animations
+	float groundMoveSpeed();
+	/// @brief Check if the PlayerCharacter has a Grabbable Object, used for the catch animation
+	bool onCatch();
 
 };
