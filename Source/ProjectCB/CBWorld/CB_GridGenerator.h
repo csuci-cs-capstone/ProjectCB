@@ -13,22 +13,9 @@ class PROJECTCB_API ACB_GridGenerator : public AActor
 
 private:
 
-	//USTRUCT()
-	//struct F2DArray
-	//{
-	//	GENERATED_BODY()
-
-	//public:
-
-	//	TArray<ACB_GridBox*> m_array;
-
-	//	ACB_GridBox* operator[] (size_t pos);
-
-	//	void Add(ACB_GridBox* box);
-	//};
-
 	static const float START_SECONDS;
 	static const float UPDATE_INTERVAL;
+	static const float FALL_TIME;
 
 	static const size_t STAGE_WIDTH;
 	static const size_t STAGE_LENGTH;
@@ -40,9 +27,15 @@ private:
 	TArray<size_t> m_deletableBoxes;
 	size_t m_numOfBoxes;
 	TArray<TArray<ACB_GridBox*>> m_grid;
+
+	size_t m_numOfFallingBoxes;
+	TArray<ACB_GridBox*> m_fallingBoxes;
 	FTimerHandle m_timerHandle;
+	FTimerHandle m_fallHandle;
 
 	ACB_GridBox* spawnBox(size_t lengthPos, size_t widthPos);
+
+	void deleteBoxes();
 
 	void generateGrid();
 

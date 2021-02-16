@@ -4,11 +4,13 @@ ACB_GridBox::ACB_GridBox()
 {
  	PrimaryActorTick.bCanEverTick = false;
 
-	this->m_isFalling = false;
-
 	this->BoxMesh = CreateDefaultSubobject<UStaticMeshComponent>("BoxMesh");
-
 	SetRootComponent(this->BoxMesh);
+
+	this->StandardMaterial = CreateDefaultSubobject<UMaterial>(TEXT("StandardMaterial"));
+	this->FallingMaterial = CreateDefaultSubobject<UMaterial>(TEXT("FallingMaterial"));
+
+	this->BoxMesh->SetMaterial(0, this->StandardMaterial);
 }
 
 void ACB_GridBox::BeginPlay()
@@ -19,10 +21,9 @@ void ACB_GridBox::BeginPlay()
 void ACB_GridBox::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	//if (this->m_isFalling)
-	//{
-	//	// update position
-	//}
 }
 
+void ACB_GridBox::startFall()
+{
+	this->BoxMesh->SetMaterial(0, this->FallingMaterial);
+}
