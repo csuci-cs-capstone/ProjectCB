@@ -8,7 +8,9 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include <Animation/AnimSingleNodeInstance.h>
 #include "GameFramework/CharacterMovementComponent.h"
+
 
 #define print(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("%s"), text));
 
@@ -91,6 +93,8 @@ void ACB_PlayerCharacter::BeginPlay()
 	this->m_basics.m_gameWorldRef = GetWorld();
 	this->m_basics.dodgeballClassRef = DodgeballProjectileClass;
 	this->m_basics.m_movement.setStartRotation(this->cameraArm->GetComponentRotation());
+
+	//this->skeletalMesh->PlayAnimation(this->blendspace, true);
 }
 
 // Called every frame
@@ -118,6 +122,14 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 
 	cameraUpdate();
 
+	
+	/*
+	FVector groundVelocity = this->GetVelocity();
+	groundVelocity.Z = 0;
+	float currentSpeed = groundVelocity.Size();
+	FVector idleRunBlendParams(currentSpeed, 0.0f, 0.0f);
+	this->skeletalMesh->GetSingleNodeInstance()->SetBlendSpaceInput(idleRunBlendParams);*/
+	
 	this->m_basics.m_movement.resetInputVelocity();
 
 }
@@ -348,4 +360,43 @@ IGrabbableObject* ACB_PlayerCharacter::getGrabbableObject()
 unsigned char ACB_PlayerCharacter::getGrabPriority()
 {
 	return UGrabbable::PLAYER_PRIORITY;
+}
+
+//ANIM HELPERS
+bool ACB_PlayerCharacter::onGround()
+{
+	
+	return this->m_basics.isGrounded();
+}
+
+bool ACB_PlayerCharacter::onDuck()
+{
+	return this->m_basics.m_ducking;
+}
+
+bool ACB_PlayerCharacter::onThrowing()
+{
+	
+	bool objectThrown = this->m_basics.m_throwing;
+	//this->m_basics.m_throwing = false;
+	return objectThrown;
+}
+
+void ACB_PlayerCharacter::resetThrowing()
+{
+	this->m_basics.m_throwing = false;
+}
+
+float ACB_PlayerCharacter::groundMoveSpeed()
+{
+	FVector groundVelocity = this->GetVelocity();
+	groundVelocity.Z = 0;
+	float currentSpeed = groundVelocity.Size();
+	return currentSpeed;
+}
+
+bool ACB_PlayerCharacter::onCatch()
+{
+	bool objectCatched = (this->m_throw.m_grabbableList.length() == 0) ? false : true;
+	return objectCatched;
 }

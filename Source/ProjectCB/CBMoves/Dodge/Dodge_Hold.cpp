@@ -13,7 +13,7 @@ void Dodge::startDuck()
 
 	this->m_playerBasics->m_dodgeState = PlayerBasics::DODGE_STARTUP;
 	this->m_frame = true;
-
+	this->m_playerBasics->m_ducking = true;
 	this->m_playerBasics->updateAttributes();
 }
 
@@ -82,10 +82,11 @@ void Dodge::startDodge() // Release
 		this->m_playerBasics->getJumpVelocity(Dodge_Release::DODGE_HEIGHT),
 		this->m_playerBasics->getJumpVelocity(Dodge_Release::DIVE_HEIGHT));
 
+	
 	this->m_playerBasics->m_shouldJump = true;
 
 	// Start Jump
-
+	this->m_playerBasics->m_ducking = false;
 	this->m_playerBasics->m_dodgeState = PlayerBasics::DODGE_JUMP;
 	this->m_frame = true;
 
