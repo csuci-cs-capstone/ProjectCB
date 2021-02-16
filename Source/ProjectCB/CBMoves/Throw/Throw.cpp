@@ -134,9 +134,14 @@ void Throw::launchBall(FRotator playerRotation)
 	auto dodgeball = this->m_playerBasics->m_gameWorldRef->SpawnActor<ACB_DodgeballProjectile>(this->m_playerBasics->dodgeballClassRef, 
 		spawnTransform, spawnParameters);
 
+	this->m_playerBasics->m_throwing = true;
+
 	dodgeball->m_playerRef = this->m_playerBasics->m_playerRef;
 	auto playerBody = Cast<ACB_PlayerCharacter>(this->m_playerBasics->m_playerRef);
 	playerBody->ignoreCollisionsOnThrownObject(dodgeball);
+
 	dodgeball->launchRelease(this->m_playerBasics->m_movement.getPlayerRotation().RotateVector(FVector(1.0f, 0.0f, 0.0f)), playerRotation);
+
+	
 
 }
