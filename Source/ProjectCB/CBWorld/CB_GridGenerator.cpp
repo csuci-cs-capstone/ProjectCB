@@ -39,7 +39,7 @@ void ACB_GridGenerator::generateGrid()
 
         for (size_t width = 0; width < ACB_GridGenerator::STAGE_WIDTH; width++)
         {
-            if (length <= (ACB_GridGenerator::STAGE_LENGTH / 2))
+            if (length < ((ACB_GridGenerator::STAGE_LENGTH + 1) / 2))
             {
                 this->m_deletableBoxes.Add((length * ACB_GridGenerator::STAGE_WIDTH) + width);
                 this->m_numOfBoxes++;
