@@ -1,5 +1,6 @@
 #include "CB_DodgeballProjectile.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "../CBPlayer/CB_PlayerCharacter.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
@@ -42,7 +43,8 @@ ACB_DodgeballProjectile::ACB_DodgeballProjectile()
 void ACB_DodgeballProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-
+	if(this->m_playerRef != nullptr)
+		this->DodgeballMesh->IgnoreActorWhenMoving(this->m_playerRef, true);
 	this->m_resetCollisionFrame = PlayerBasics::RESET_COLLISION_FRAMES + 1;
 }
 
@@ -106,6 +108,8 @@ void ACB_DodgeballProjectile::Tick(float DeltaTime)
 			this->m_resetCollisionFrame++;
 		else if (this->m_resetCollisionFrame == PlayerBasics::RESET_COLLISION_FRAMES)
 		{
+			//if (this->m_playerRef != nullptr)
+				//this->DodgeballMesh->IgnoreActorWhenMoving(this->m_playerRef, false);
 			this->SetActorEnableCollision(true);
 			this->m_resetCollisionFrame++;
 		}
@@ -147,7 +151,13 @@ void ACB_DodgeballProjectile::launchRelease(FVector direction, FRotator rotation
 	this->DodgeballMovement->Velocity = ACB_DodgeballProjectile::PROJECTILE_SPEED * direction;
 	this->DodgeballMovement->Velocity.Z = 0.0f;
 
+	/*FVector adjustedLocation = GetActorLocation();
+	FVector teleportLocation = adjustedLocation;
+
+	this->GetWorld()->FindTeleportSpot(this, teleportLocation, rotation);
+	this->SetActorLocationAndRotation(teleportLocation, rotation, false, nullptr, ETeleportType::ResetPhysics);*/
 	this->SetActorRotation(rotation);
+	
 }
 
 void ACB_DodgeballProjectile::setGrabbed(FVector position, FRotator rotation)

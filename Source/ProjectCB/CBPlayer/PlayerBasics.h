@@ -68,6 +68,8 @@ public:
 	//a reference to the current level so we can spawn objects from code
 	UWorld* m_gameWorldRef;
 
+	AActor* m_playerRef;
+
 	UPROPERTY()
 	TSubclassOf<class ACB_DodgeballProjectile> dodgeballClassRef;
 

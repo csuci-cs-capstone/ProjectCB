@@ -104,6 +104,9 @@ public:
 	bool hasGrabbableObject() override;
 	IGrabbableObject* getGrabbableObject() override;
 	unsigned char getGrabPriority() override;
+	/// @brief Adds an actor to the ignore collisions list
+	/// @param spawnedActor 
+	void ignoreCollisionsOnThrownObject(AActor* spawnedActor);
 
 	//Animation Updating Functions
 	bool onGround();
