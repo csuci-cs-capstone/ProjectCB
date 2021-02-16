@@ -71,6 +71,10 @@ public:
 	USkeletalMesh* m_playerModel;
 	USkeletalMesh* m_ghostModel;
 
+	//ANIM Helpers
+	bool m_throwing = false;
+	bool m_ducking = false;
+
 	FVector m_rootPosition; //TODO remove temporary fix!
 
 /////
