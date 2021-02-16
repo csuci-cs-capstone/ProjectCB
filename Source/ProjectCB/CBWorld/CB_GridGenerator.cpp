@@ -39,8 +39,12 @@ void ACB_GridGenerator::generateGrid()
 
         for (size_t width = 0; width < ACB_GridGenerator::STAGE_WIDTH; width++)
         {
-            this->m_deletableBoxes.Add((length * ACB_GridGenerator::STAGE_WIDTH) + width);
-            this->m_numOfBoxes++;
+            if (length <= (ACB_GridGenerator::STAGE_LENGTH / 2))
+            {
+                this->m_deletableBoxes.Add((length * ACB_GridGenerator::STAGE_WIDTH) + width);
+                this->m_numOfBoxes++;
+            }
+            
             boxArray.Add(spawnBox(length, width));
         }
 
@@ -61,7 +65,13 @@ void ACB_GridGenerator::updateGrid()
         size_t length = boxID / ACB_GridGenerator::STAGE_WIDTH;
         size_t width = boxID - (length * ACB_GridGenerator::STAGE_WIDTH);
 
-        this->m_grid[length][width]->Destroy();
+        if (length == (ACB_GridGenerator::STAGE_LENGTH / 2))
+            this->m_grid[length][width]->Destroy();
+        else
+        {
+            this->m_grid[ACB_GridGenerator::STAGE_LENGTH - length - 1][ACB_GridGenerator::STAGE_WIDTH - width - 1]->Destroy();
+            this->m_grid[length][width]->Destroy();
+        }
 
         this->m_deletableBoxes.RemoveAt(boxPos);
     }
