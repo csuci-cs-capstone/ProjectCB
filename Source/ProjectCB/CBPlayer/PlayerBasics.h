@@ -53,8 +53,12 @@ public:
 	float m_currentMobility;
 	float m_previousMobility;
 
+	float m_currentRadius;
+
 	float m_currentHeight;
 	float m_previousHeight;
+
+	static const short RESET_COLLISION_FRAMES;
 
 //////
 

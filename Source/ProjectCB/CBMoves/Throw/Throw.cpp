@@ -2,6 +2,7 @@
 #include "ProjectCB/CBObjects/CB_DodgeballProjectile.h"
 
 const FVector Throw::THROW_DIRECTION = FVector(1, 0, 0.025).GetUnsafeNormal();
+const float Throw::GRAB_OFFSET = 0.0f;
 
 Throw::Throw(PlayerBasics& playerBasics)
 {
@@ -14,7 +15,6 @@ void Throw::onPress()
 	{
 		if (this->m_grabbedObject)
 			this->m_playerBasics->m_throwState = PlayerBasics::THROW_STARTUP;
-
 		else
 			this->m_playerBasics->m_throwState = PlayerBasics::CATCH_STARTUP;
 	}
@@ -24,6 +24,8 @@ void Throw::onRelease(FRotator playerRotation)
 {
 	if (this->m_playerBasics->m_throwState == PlayerBasics::THROW_AIM) // TODO should buffer for startup
 	{
+		this->m_playerBasics->m_currentRadius = PlayerBasics::PLAYER_RADIUS;
+
 		switch (this->m_playerBasics->getPlayerState())
 		{
 			case PlayerBasics::PLAYER_ALIVE:
@@ -45,15 +47,11 @@ void Throw::onRelease(FRotator playerRotation)
 				
 				break;
 			case PlayerBasics::PLAYER_GRABBED:
-				if (GEngine)
-					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Ball Released on grabbed"));
 				this->m_grabbedObject->launchRelease( // TODO should probably ensure it can't not exist in throw state
 					this->m_playerBasics->m_movement.getPlayerRotation().RotateVector(FVector(1.0f, 0.0f, 0.0f)),
 					playerRotation);
 				break;
 			default:
-				if (GEngine)
-					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Ball Released on default"));
 				this->m_grabbedObject->launchRelease(FVector(0.0f, 0.0f, 0.0f), playerRotation);
 				break;
 		}
@@ -99,8 +97,8 @@ void Throw::update(FVector playerPosition, FRotator playerRotation, float deltaT
 	}
 
 	if (this->m_grabbedObject)
-		this->m_grabbedObject->setGrabbed(playerPosition + playerRotation.RotateVector(FVector(75.0f, 0.0f, 0.0f)),
-			playerRotation);
+		this->m_grabbedObject->setGrabbed(playerPosition + playerRotation.RotateVector(FVector(Throw::GRAB_OFFSET
+			+ this->m_grabbedObject->getRadius(), 0.0f, 0.0f)), playerRotation);
 
 }
 

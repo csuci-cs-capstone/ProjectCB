@@ -26,6 +26,9 @@ void Throw::catchAimUpdate(float deltaTime)
 			this->m_grabbedObject = topGrabbableObject;
 		}
 	}
+	else
+		this->m_playerBasics->m_currentRadius = PlayerBasics::PLAYER_RADIUS + this->m_grabbedObject->getRadius()
+			+ (Throw::GRAB_OFFSET / 2.0f);
 }
 
 void Throw::throwAimUpdate(float deltaTime)
