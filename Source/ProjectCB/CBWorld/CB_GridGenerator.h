@@ -15,9 +15,17 @@ private:
 	static const float START_SECONDS;
 	static const float UPDATE_INTERVAL;
 
+	static const size_t STAGE_WIDTH;
+	static const size_t STAGE_LENGTH;
+
+	static const float BOX_SIZE;
+	static const float WIDTH_OFFSET;
+	static const float LENGTH_OFFSET;
+
+	//TArray<TArray<ACB_GridBox*>> m_grid;
 	FTimerHandle m_timerHandle;
 
-	void spawnBox(size_t gridX, size_t gridY);
+	void spawnBox(size_t lengthPos, size_t widthPos);
 
 	void generateGrid();
 

@@ -3,34 +3,37 @@
 const float ACB_GridGenerator::START_SECONDS = 10.0f;
 const float ACB_GridGenerator::UPDATE_INTERVAL = 10.0f;
 
-void ACB_GridGenerator::spawnBox(size_t gridX, size_t gridY)
+const size_t ACB_GridGenerator::STAGE_WIDTH = 3;
+const size_t ACB_GridGenerator::STAGE_LENGTH = 5;
+
+const float ACB_GridGenerator::BOX_SIZE = 300.0f;
+const float ACB_GridGenerator::WIDTH_OFFSET = -ACB_GridGenerator::BOX_SIZE * (ACB_GridGenerator::STAGE_WIDTH - 1);
+const float ACB_GridGenerator::LENGTH_OFFSET = -ACB_GridGenerator::BOX_SIZE * (ACB_GridGenerator::STAGE_LENGTH - 1);
+
+void ACB_GridGenerator::spawnBox(size_t lengthPos, size_t widthPos)
 {
     FActorSpawnParameters spawnParams;
 
-    FVector location = FVector(0.0f, 0.0f, 500.0f);
+    FVector location = FVector(ACB_GridGenerator::LENGTH_OFFSET + (2 * lengthPos * ACB_GridGenerator::BOX_SIZE),
+        ACB_GridGenerator::WIDTH_OFFSET + (2 * widthPos * ACB_GridGenerator::BOX_SIZE), 0.0f);
     FRotator rotation = FRotator(0.0f, 0.0f, 0.0f);
 
     ACB_GridBox* spawnedBox = GetWorld()->SpawnActor<ACB_GridBox>(this->BoxClass, location, rotation, spawnParams);
-
-    if (GEngine)
-        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("spawned box")));
-
 }
 
 void ACB_GridGenerator::generateGrid()
 {
-    
+    for (size_t length = 0; length < ACB_GridGenerator::STAGE_LENGTH; length++)
+        for (size_t width = 0; width < ACB_GridGenerator::STAGE_WIDTH; width++)
+            spawnBox(length, width);
 }
 
 void ACB_GridGenerator::updateGrid()
 {
-    // Once we've called this function enough times, clear the Timer.
-    //if (--RepeatingCallsRemaining <= 0)
-    //{
-    //    GetWorldTimerManager().ClearTimer(MemberTimerHandle);
-    //    // MemberTimerHandle can now be reused for any other Timer.
-    //}
-    // Do something here...
+   
+
+
+    //GetWorldTimerManager().ClearTimer(this->m_timerHandle);
 }
 
 ACB_GridGenerator::ACB_GridGenerator()
@@ -41,11 +44,6 @@ ACB_GridGenerator::ACB_GridGenerator()
 void ACB_GridGenerator::BeginPlay()
 {
     Super::BeginPlay();
-
-    if (GEngine)
-        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("begun play")));
-
-    spawnBox(0, 0);
 
     generateGrid();
 

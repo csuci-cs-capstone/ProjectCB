@@ -8,7 +8,11 @@ UCLASS()
 class PROJECTCB_API ACB_GridBox : public AActor
 {
 	GENERATED_BODY()
-	
+
+private:
+
+	bool m_isFalling;
+
 public:
 
 	ACB_GridBox();
@@ -23,4 +27,6 @@ protected:
 public:
 
 	virtual void Tick(float DeltaTime) override;
+
+	void makeFall();
 };
