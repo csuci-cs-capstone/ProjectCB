@@ -2,7 +2,7 @@
 
 const float ACB_GridGenerator::START_SECONDS = 16.0f;
 const float ACB_GridGenerator::UPDATE_INTERVAL = 9.0f;
-const float ACB_GridGenerator::FALL_TIME = 6.0f;
+const float ACB_GridGenerator::FALL_TIME = 3.0f;
 
 const size_t ACB_GridGenerator::STAGE_WIDTH = 4;
 const size_t ACB_GridGenerator::STAGE_LENGTH = 6;
