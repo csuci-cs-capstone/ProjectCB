@@ -1,13 +1,13 @@
 #include "CB_GridGenerator.h"
 
-const float ACB_GridGenerator::START_SECONDS = 9.0f;
+const float ACB_GridGenerator::START_SECONDS = 16.0f;
 const float ACB_GridGenerator::UPDATE_INTERVAL = 9.0f;
 const float ACB_GridGenerator::FALL_TIME = 6.0f;
 
-const size_t ACB_GridGenerator::STAGE_WIDTH = 3;
-const size_t ACB_GridGenerator::STAGE_LENGTH = 5;
+const size_t ACB_GridGenerator::STAGE_WIDTH = 4;
+const size_t ACB_GridGenerator::STAGE_LENGTH = 6;
 
-const float ACB_GridGenerator::BOX_SIZE = 300.0f;
+const float ACB_GridGenerator::BOX_SIZE = 250.0f;
 const float ACB_GridGenerator::WIDTH_OFFSET = -ACB_GridGenerator::BOX_SIZE * (ACB_GridGenerator::STAGE_WIDTH - 1);
 const float ACB_GridGenerator::LENGTH_OFFSET = -ACB_GridGenerator::BOX_SIZE * (ACB_GridGenerator::STAGE_LENGTH - 1);
 
