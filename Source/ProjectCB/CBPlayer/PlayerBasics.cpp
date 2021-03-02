@@ -67,7 +67,8 @@ void PlayerBasics::updateGroundState(bool grounded)
 	if(this->m_grounded)
 		this->m_currentMobility = 1.0f;
 
-	this->m_movement.isGrounded(this->m_grounded);
+	this->m_movement.isGrounded(this->m_grounded,
+		this->m_playerState == PlayerBasics::PlayerState::PLAYER_GHOST);
 }
 
 bool PlayerBasics::isGrounded()

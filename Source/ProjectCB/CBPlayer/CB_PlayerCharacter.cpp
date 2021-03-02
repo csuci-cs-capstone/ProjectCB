@@ -337,7 +337,6 @@ unsigned char ACB_PlayerCharacter::getGrabPriority()
 //ANIM HELPERS
 bool ACB_PlayerCharacter::onGround()
 {
-	
 	return this->m_basics.isGrounded();
 }
 
@@ -348,7 +347,6 @@ bool ACB_PlayerCharacter::onDuck()
 
 bool ACB_PlayerCharacter::onThrowing()
 {
-	
 	bool objectThrown = this->m_basics.m_throwing;
 	//this->m_basics.m_throwing = false;
 	return objectThrown;
@@ -376,5 +374,4 @@ bool ACB_PlayerCharacter::onCatch()
 void ACB_PlayerCharacter::ignoreCollisionsOnThrownObject(AActor* spawnedActor)
 {
 	this->MoveIgnoreActorAdd(spawnedActor);
-
 }

@@ -45,7 +45,7 @@ public:
 
 	void updateVelocity(float mobility);
 
-	void isGrounded(bool grounded);
+	void isGrounded(bool grounded, bool isGhost);
 
 	FVector getMovementVelocity(float velocityZ);
 

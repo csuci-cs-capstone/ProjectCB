@@ -83,7 +83,7 @@ FRotator Movement::getPlayerRotation()
 	return this->m_startRotation + this->m_playerRotation;
 }
 
-void Movement::isGrounded(bool grounded)
+void Movement::isGrounded(bool grounded, bool isGhost)
 {
 	if (grounded)
 	{
@@ -102,6 +102,9 @@ void Movement::isGrounded(bool grounded)
 		this->m_playerSpeed = Movement::PLAYER_AIR_SPEED;
 		this->m_inAir = true;
 	}
+
+	if (isGhost)
+		this->m_playerSpeed = Movement::PLAYER_GROUND_SPEED;
 }
 
 void Movement::setInputRotation(float inputRotationYaw)
