@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "CB_GridBox.h"
+#include "../CBObjects/CB_DodgeballProjectile.h"
 #include "Math/UnrealMathUtility.h"
 #include "CB_GridGenerator.generated.h"
 
@@ -24,6 +25,9 @@ private:
 	static const float WIDTH_OFFSET;
 	static const float LENGTH_OFFSET;
 
+	static const float BALL_SPAWN_START_SECONDS;
+	static const float BALL_SPAWN_UPDATE_INTERVAL;
+
 	TArray<size_t> m_deletableBoxes;
 	size_t m_numOfBoxes;
 	TArray<TArray<ACB_GridBox*>> m_grid;
@@ -32,6 +36,7 @@ private:
 	TArray<ACB_GridBox*> m_fallingBoxes;
 	FTimerHandle m_timerHandle;
 	FTimerHandle m_fallHandle;
+	FTimerHandle m_ballHandle;
 
 	ACB_GridBox* spawnBox(size_t lengthPos, size_t widthPos);
 

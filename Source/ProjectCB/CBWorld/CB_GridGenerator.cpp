@@ -1,7 +1,7 @@
 #include "CB_GridGenerator.h"
 
-const float ACB_GridGenerator::START_SECONDS = 16.0f;
-const float ACB_GridGenerator::UPDATE_INTERVAL = 9.0f;
+const float ACB_GridGenerator::START_SECONDS = 9.0f;
+const float ACB_GridGenerator::UPDATE_INTERVAL = 16.0f;
 const float ACB_GridGenerator::FALL_TIME = 3.0f;
 
 const size_t ACB_GridGenerator::STAGE_WIDTH = 4;
@@ -10,6 +10,9 @@ const size_t ACB_GridGenerator::STAGE_LENGTH = 6;
 const float ACB_GridGenerator::BOX_SIZE = 250.0f;
 const float ACB_GridGenerator::WIDTH_OFFSET = -ACB_GridGenerator::BOX_SIZE * (ACB_GridGenerator::STAGE_WIDTH - 1);
 const float ACB_GridGenerator::LENGTH_OFFSET = -ACB_GridGenerator::BOX_SIZE * (ACB_GridGenerator::STAGE_LENGTH - 1);
+
+const float ACB_GridGenerator::BALL_SPAWN_START_SECONDS = ACB_GridGenerator::START_SECONDS / 2.0f;
+const float ACB_GridGenerator::BALL_SPAWN_UPDATE_INTERVAL = ACB_GridGenerator::UPDATE_INTERVAL / 2.0f;
 
 void ACB_GridGenerator::deleteBoxes()
 {
@@ -25,7 +28,7 @@ ACB_GridBox* ACB_GridGenerator::spawnBox(size_t lengthPos, size_t widthPos)
     FActorSpawnParameters spawnParams;
 
     FVector location = FVector(ACB_GridGenerator::LENGTH_OFFSET + (2 * lengthPos * ACB_GridGenerator::BOX_SIZE),
-        ACB_GridGenerator::WIDTH_OFFSET + (2 * widthPos * ACB_GridGenerator::BOX_SIZE), 500.0f);
+        ACB_GridGenerator::WIDTH_OFFSET + (2 * widthPos * ACB_GridGenerator::BOX_SIZE), 0.0f);
     FRotator rotation = FRotator(0.0f, 0.0f, 0.0f);
 
     return GetWorld()->SpawnActor<ACB_GridBox>(this->BoxClass, location, rotation, spawnParams);
@@ -36,10 +39,13 @@ void ACB_GridGenerator::spawnBall(size_t lengthPos, size_t widthPos)
     FActorSpawnParameters spawnParams;
 
     FVector location = FVector(ACB_GridGenerator::LENGTH_OFFSET + (2 * lengthPos * ACB_GridGenerator::BOX_SIZE),
-        ACB_GridGenerator::WIDTH_OFFSET + (2 * widthPos * ACB_GridGenerator::BOX_SIZE), 0.0f);
+        ACB_GridGenerator::WIDTH_OFFSET + (2 * widthPos * ACB_GridGenerator::BOX_SIZE), 500.0f);
     FRotator rotation = FRotator(0.0f, 0.0f, 0.0f);
 
-    GetWorld()->SpawnActor<ACB_DodgeballProjectile>(this->DodgeballClass, location, rotation, spawnParams);
+    ACB_DodgeballProjectile* ball = GetWorld()->SpawnActor<ACB_DodgeballProjectile>(this->DodgeballClass,
+        location, rotation, spawnParams);
+
+    ball->SetActorScale3D(FVector(0.5f, 0.5f, 0.5f));
 }
 
 void ACB_GridGenerator::spawnBalls()
@@ -53,15 +59,19 @@ void ACB_GridGenerator::spawnBalls()
         size_t length1 = boxID / ACB_GridGenerator::STAGE_WIDTH;
         size_t width1 = boxID - (length1 * ACB_GridGenerator::STAGE_WIDTH);
 
-        spawnBox(length1, width1);
+        spawnBall(length1, width1);
 
         if (length1 != (ACB_GridGenerator::STAGE_LENGTH / 2))
         {
             size_t length2 = ACB_GridGenerator::STAGE_LENGTH - length1 - 1;
             size_t width2 = ACB_GridGenerator::STAGE_WIDTH - width1 - 1;
 
-            spawnBox(length2, width2);
+            spawnBall(length2, width2);
         }
+    }
+    else
+    {
+        GetWorldTimerManager().ClearTimer(this->m_ballHandle);
     }
 }
 
@@ -121,8 +131,6 @@ void ACB_GridGenerator::updateGrid()
         GetWorldTimerManager().ClearTimer(this->m_timerHandle);
         GetWorldTimerManager().ClearTimer(this->m_fallHandle);
     }
-
-    spawnBalls();
 }
 
 ACB_GridGenerator::ACB_GridGenerator()
@@ -139,16 +147,26 @@ void ACB_GridGenerator::BeginPlay()
 
     generateGrid();
 
-    GetWorldTimerManager().SetTimer(this->m_timerHandle, this, &ACB_GridGenerator::updateGrid, ACB_GridGenerator::START_SECONDS, true,
-        ACB_GridGenerator::UPDATE_INTERVAL);
+    GetWorldTimerManager().SetTimer(this->m_timerHandle, this, &ACB_GridGenerator::updateGrid,
+        ACB_GridGenerator::UPDATE_INTERVAL, true, ACB_GridGenerator::START_SECONDS);
 
-    GetWorldTimerManager().SetTimer(this->m_fallHandle, this, &ACB_GridGenerator::deleteBoxes, ACB_GridGenerator::START_SECONDS, true,
-        ACB_GridGenerator::FALL_TIME);
+    GetWorldTimerManager().SetTimer(this->m_fallHandle, this, &ACB_GridGenerator::deleteBoxes,
+        ACB_GridGenerator::FALL_TIME, true, ACB_GridGenerator::START_SECONDS);
+
+    GetWorldTimerManager().SetTimer(this->m_ballHandle, this, &ACB_GridGenerator::spawnBalls,
+        ACB_GridGenerator::BALL_SPAWN_UPDATE_INTERVAL, true, ACB_GridGenerator::BALL_SPAWN_START_SECONDS);
+
+    size_t centerLength = ACB_GridGenerator::STAGE_LENGTH / 2.0f;
+    size_t centerWidth = ACB_GridGenerator::STAGE_WIDTH / 2.0f;
+
+    spawnBall(centerLength, centerWidth);
+    spawnBall(centerLength - 1, centerWidth);
+    spawnBall(centerLength, centerWidth - 1);
+    spawnBall(centerLength - 1, centerWidth - 1);
 }
 
 void ACB_GridGenerator::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
