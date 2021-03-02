@@ -35,6 +35,10 @@ private:
 
 	ACB_GridBox* spawnBox(size_t lengthPos, size_t widthPos);
 
+	void spawnBall(size_t lengthPos, size_t widthPos);
+
+	void spawnBalls();
+
 	void deleteBoxes();
 
 	void generateGrid();
@@ -47,6 +51,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
 		TSubclassOf<class ACB_GridBox> BoxClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
+		TSubclassOf<class ACB_DodgeballProjectile> DodgeballClass;
 
 protected:
 
