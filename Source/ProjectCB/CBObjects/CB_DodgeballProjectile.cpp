@@ -53,6 +53,9 @@ void ACB_DodgeballProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (this->GetActorLocation().Z < -500.0f)
+		this->Destroy();
+
 	FVector velocity = this->DodgeballMesh->GetPhysicsLinearVelocity();
 
 	if (this->m_inGoal)
