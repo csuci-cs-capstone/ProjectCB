@@ -174,10 +174,11 @@ void PlayerBasics::makeGrabbed()
 void PlayerBasics::launchPlayer(FVector direction, FRotator rotation)
 {
 	if (direction.IsNearlyZero())
-		this->m_movement.setMovementVelocity(direction);
+		this->m_movement.setMovementVelocity(FVector(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 	else
 	{
-		this->m_movement.setMovementVelocity(direction.GetUnsafeNormal());
+		FVector normalizedDirection = direction.GetUnsafeNormal();
+		this->m_movement.setMovementVelocity(normalizedDirection, normalizedDirection);
 		this->m_jumpZVelocity = getJumpVelocity(PlayerBasics::LAUNCH_HEIGHT);
 		this->m_shouldJump = true;
 	}

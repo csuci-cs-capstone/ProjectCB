@@ -254,36 +254,6 @@ void ACB_PlayerCharacter::StopJumpAction()
 void ACB_PlayerCharacter::ShootAction() // TODO create a Dodgeball Generator
 {
 	this->m_throw.onPress();
-
-	//if (this->DodgeballProjectileClass)
-	//{
-	//	FActorSpawnParameters spawnParameters;
-
-	//	spawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	//	spawnParameters.bNoFail = true;
-	//	spawnParameters.Owner = this;
-	//	spawnParameters.Instigator = this;
-
-	//	FTransform spawnTransform;
-
-	//	//Scale forward vector by 20.0f so it won't clip into the capsule collider
-	//	FVector spawnLocation = GetActorForwardVector() * 125.0f
-	//		+ FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z);
-
-	//	const FRotator& cameraRotation = this->m_basics.m_cameraMovement.getCameraRotation();
-	//	const FRotator& playerRotation = this->m_basics.m_cameraMovement.getCameraRotation();
-
-	//	FRotator spawnRotation(Controller->GetControlRotation().Pitch,
-	//		GetActorRotation().Yaw + cameraRotation.Yaw - playerRotation.Yaw, 0);
-
-	//	spawnTransform.SetLocation(spawnLocation);
-	//	spawnTransform.SetScale3D(FVector(0.5f));
-
-	//	auto dodgeball = GetWorld()->SpawnActor<ACB_DodgeballProjectile>(this->DodgeballProjectileClass,
-	//		spawnTransform, spawnParameters);
-
-	//	dodgeball->launchRelease(spawnRotation.RotateVector(Throw::THROW_DIRECTION));
-	//}
 }
 
 void ACB_PlayerCharacter::StopShootAction()
@@ -301,7 +271,6 @@ void ACB_PlayerCharacter::AliveAction()
 void ACB_PlayerCharacter::OnEnterGrabBox(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
 	UPrimitiveComponent* otherComponent, int32 otherBodyIndex, bool fromSweep, const FHitResult& sweepResult)
 {
-	
 	if (this == otherActor)
 		return;	
 
@@ -337,7 +306,6 @@ void ACB_PlayerCharacter::launchRelease(FVector direction, FRotator rotation)
 {
 	this->m_resetCollisionFrame = 0;
 	this->m_basics.makeAlive();
-	//this->GetCharacterMovement()->Velocity = direction; // TODO set velocity in direction
 	this->m_basics.launchPlayer(direction, rotation);
 }
 
