@@ -1,0 +1,1 @@
+https://dycgd0undb.execute-api.us-east-1.amazonaws.com/CBStage1/getsigninresult

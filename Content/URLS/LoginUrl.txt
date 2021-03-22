@@ -1,0 +1,1 @@
+https://captureball.auth.us-east-1.amazoncognito.com/login?client_id=2nhmbnln07s4jqmnh7irf3tgqq&response_type=code&scope=openid+profile&redirect_uri=https://dycgd0undb.execute-api.us-east-1.amazonaws.com/CBStage1/getsigninresult
