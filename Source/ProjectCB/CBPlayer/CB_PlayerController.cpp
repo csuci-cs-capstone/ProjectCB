@@ -3,11 +3,12 @@
 
 ACB_PlayerController::ACB_PlayerController() 
 {
-
+	//this->bRespawnImmediately = false;
 }
 
 void ACB_PlayerController::BeginPlay()
 {
+	Super::BeginPlay();
 }
 
 void ACB_PlayerController::SetupInputComponent()

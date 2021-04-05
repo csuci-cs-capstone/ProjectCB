@@ -10,24 +10,53 @@ UCB_GameInstance::UCB_GameInstance()
 {
 	UCB_TextReaderComponent* TextReader = CreateDefaultSubobject<UCB_TextReaderComponent>(TEXT("TextReaderComp"));
 
-	ApiURL = TextReader->ReadFile("URLS/ApiUrl.txt");
-
+	ApiURL = TextReader->ReadFile("../Content/URLS/ApiUrl.txt");
+	RegionCode = TextReader->ReadFile("../Content/URLS/RegionCode.txt");
 	HttpModule = &FHttpModule::Get();
 }
 
 void UCB_GameInstance::Shutdown()
 {
-	Super::Shutdown();
+	GetWorld()->GetTimerManager().ClearTimer(RetrieveNewTokensHandle);
+	GetWorld()->GetTimerManager().ClearTimer(GetResponseTimeHandle);
 
-	if (AccessToken.Len() > 0)
+	if (AccessToken.Len() > 0) 
 	{
+		if (MatchmakingTicketId.Len() > 0) 
+		{
+			TSharedPtr<FJsonObject> RequestObj = MakeShareable(new FJsonObject);
+			RequestObj->SetStringField("ticketId", MatchmakingTicketId);
+
+			FString RequestBody;
+			TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&RequestBody);
+			if (FJsonSerializer::Serialize(RequestObj.ToSharedRef(), Writer)) 
+			{
+				TSharedRef<IHttpRequest> StopMatchmakingRequest = HttpModule->CreateRequest();
+				StopMatchmakingRequest->SetURL(ApiURL + "/stopmatchmaking");
+				StopMatchmakingRequest->SetVerb("POST");
+				StopMatchmakingRequest->SetHeader("Content-Type", "application/json");
+				StopMatchmakingRequest->SetHeader("Authorization", AccessToken);
+				StopMatchmakingRequest->SetContentAsString(RequestBody);
+				StopMatchmakingRequest->ProcessRequest();
+			}
+		}
 		TSharedRef<IHttpRequest> InvalidateTokensRequest = HttpModule->CreateRequest();
 		InvalidateTokensRequest->SetURL(ApiURL + "/invalidatetokens");
 		InvalidateTokensRequest->SetVerb("GET");
-		InvalidateTokensRequest->SetHeader("Content Type", "application/json");
+		//InvalidateTokensRequest->SetHeader("Content-Type", "application/json");
 		InvalidateTokensRequest->SetHeader("Authorization", AccessToken);
 		InvalidateTokensRequest->ProcessRequest();
 	}
+
+	Super::Shutdown();
+}
+
+//Give an opurtunity for custom game instance classes to setup what it needs
+void UCB_GameInstance::Init()
+{
+	Super::Init();
+
+	GetWorld()->GetTimerManager().SetTimer(GetResponseTimeHandle, this, &UCB_GameInstance::GetResponseTime, 1.0f, true, 1.0f);
 }
 
 void UCB_GameInstance::SetCognitoTokens(FString NewAccessToken, FString NewIdToken, FString NewRefreshToken)
@@ -70,6 +99,15 @@ void UCB_GameInstance::RetrieveNewTokens()
 	}
 }
 
+void UCB_GameInstance::GetResponseTime()
+{
+	TSharedRef<IHttpRequest> GetResponseTimeRequest = HttpModule->CreateRequest();
+	GetResponseTimeRequest->OnProcessRequestComplete().BindUObject(this, &UCB_GameInstance::OnGetResponseTimeResponseReceived);
+	GetResponseTimeRequest->SetURL("https://gamelift." + RegionCode + ".amazonaws.com");
+	GetResponseTimeRequest->SetVerb("GET");
+	GetResponseTimeRequest->ProcessRequest();
+}
+
 void UCB_GameInstance::OnRetrieveNewTokensResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
 {
 	if (bWasSuccessful)
@@ -79,7 +117,7 @@ void UCB_GameInstance::OnRetrieveNewTokensResponseReceived(FHttpRequestPtr Reque
 
 		if (FJsonSerializer::Deserialize(Reader, JsonObject))
 		{
-			if (!JsonObject->HasField("error"))
+			if (JsonObject->HasField("accessToken") && JsonObject->HasField("idToken"))
 			{
 				SetCognitoTokens(JsonObject->GetStringField("accessToken"), JsonObject->GetStringField("idToken"), RefreshToken);
 			}
@@ -94,3 +132,17 @@ void UCB_GameInstance::OnRetrieveNewTokensResponseReceived(FHttpRequestPtr Reque
 		GetWorld()->GetTimerManager().SetTimer(RetrieveNewTokensHandle, this, &UCB_GameInstance::RetrieveNewTokens, 1.0f, false, 30.0f);
 	}
 }
+
+void UCB_GameInstance::OnGetResponseTimeResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+	if (PlayerLatencies.Num() >= 4) 
+	{
+		PlayerLatencies.RemoveNode(PlayerLatencies.GetHead());
+	}
+
+	float ResponseTime = Request->GetElapsedTime() * 1000;
+	UE_LOG(LogTemp, Warning, TEXT("response time in milliseconds: %s"), *FString::SanitizeFloat(ResponseTime));
+
+	PlayerLatencies.AddTail(ResponseTime);
+}
+

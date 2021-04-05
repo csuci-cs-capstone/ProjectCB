@@ -4,11 +4,16 @@
 #include "CB_MainMenuHUD.h"
 #include "Blueprint/UserWidget.h"
 
+#define MAINMENU_PATH "/Game/UIBP/Widgets/MainMenu"
+
 ACB_MainMenuHUD::ACB_MainMenuHUD() 
 {
-	static ConstructorHelpers::FClassFinder<UUserWidget> MainMenuObj(TEXT("'/Game/UIBP/Widgets/MainMenu'"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> MainMenuObj(TEXT(MAINMENU_PATH));
 
-	MainMenuWidgetClass = MainMenuObj.Class;
+	if (MainMenuObj.Succeeded())
+	{
+		MainMenuWidgetClass = MainMenuObj.Class;
+	}
 }
 
 void ACB_MainMenuHUD::BeginPlay() 

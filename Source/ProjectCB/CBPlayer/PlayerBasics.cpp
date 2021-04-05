@@ -1,6 +1,7 @@
 #include "PlayerBasics.h"
+#include "Net/UnrealNetwork.h"
 
-const FVector2D PlayerBasics::MAX_MAP_POSITION(2212.5f, 762.5f);
+const FVector2D PlayerBasics::MAX_MAP_POSITION(1475.0f, 975.0f);
 const float PlayerBasics::MAP_RESPAWN_POSITION_OFFSET = 50.0f;
 const float PlayerBasics::MIN_MAP_POSITION_Z = -200.0f;
 
@@ -19,7 +20,7 @@ const float PlayerBasics::LAUNCH_SPEED = 100.0f;
 const float PlayerBasics::LAUNCH_MOBILITY = 0.25f;
 const float PlayerBasics::LAUNCH_HEIGHT = 50.0f;
 
-const short PlayerBasics::RESET_COLLISION_FRAMES = 60;
+const short PlayerBasics::RESET_COLLISION_FRAMES = 3; // TODO remove?
 
 PlayerBasics::PlayerBasics()
 {
@@ -67,7 +68,8 @@ void PlayerBasics::updateGroundState(bool grounded)
 	if(this->m_grounded)
 		this->m_currentMobility = 1.0f;
 
-	this->m_movement.isGrounded(this->m_grounded);
+	this->m_movement.isGrounded(this->m_grounded,
+		this->m_playerState == PlayerBasics::PlayerState::PLAYER_GHOST);
 }
 
 bool PlayerBasics::isGrounded()
@@ -174,10 +176,11 @@ void PlayerBasics::makeGrabbed()
 void PlayerBasics::launchPlayer(FVector direction, FRotator rotation)
 {
 	if (direction.IsNearlyZero())
-		this->m_movement.setMovementVelocity(direction);
+		this->m_movement.setMovementVelocity(FVector(0.0f, 0.0f, 0.0f), FVector(0.0f, 0.0f, 0.0f));
 	else
 	{
-		this->m_movement.setMovementVelocity(direction.GetUnsafeNormal());
+		FVector normalizedDirection = direction.GetUnsafeNormal();
+		this->m_movement.setMovementVelocity(normalizedDirection, normalizedDirection);
 		this->m_jumpZVelocity = getJumpVelocity(PlayerBasics::LAUNCH_HEIGHT);
 		this->m_shouldJump = true;
 	}

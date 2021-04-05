@@ -36,6 +36,9 @@ private:
 	Dodge m_dodge = Dodge(this->m_basics);
 	Throw m_throw = Throw(this->m_basics);
 
+	// Network Replication
+	virtual void OnRep_PlayerState() override;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

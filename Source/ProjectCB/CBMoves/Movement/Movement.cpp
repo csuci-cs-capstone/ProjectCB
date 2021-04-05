@@ -1,6 +1,7 @@
 #include "Movement.h"
 #include <math.h>
 #include "../../CBMath/MathConstants.h"
+#include "Net/UnrealNetwork.h"
 
 // TODO add GHOST_SPEED;
 
@@ -44,6 +45,11 @@ Movement::Movement()
 	this->m_currentRotationVelocity.X = 0.0f;
 	this->m_currentRotationVelocity.Y = 0.0f;
 
+	this->m_baseVelocity.X = 0.0f;
+	this->m_baseVelocity.Y = 0.0f;
+
+	this->m_inAir = false;
+
 	this->m_startRotation = FRotator(0.0f, 0.0f, 0.0f);
 	this->m_playerRotation = FRotator(0.0f, 0.0f, 0.0f);
 
@@ -78,12 +84,28 @@ FRotator Movement::getPlayerRotation()
 	return this->m_startRotation + this->m_playerRotation;
 }
 
-void Movement::isGrounded(bool grounded)
+void Movement::isGrounded(bool grounded, bool isGhost)
 {
 	if (grounded)
+	{
 		this->m_playerSpeed = Movement::PLAYER_GROUND_SPEED;
+
+		if (this->m_inAir)
+		{
+			this->m_baseVelocity.X = 0.0f;
+			this->m_baseVelocity.Y = 0.0f;
+
+			this->m_inAir = false;
+		}
+	}
 	else
+	{
 		this->m_playerSpeed = Movement::PLAYER_AIR_SPEED;
+		this->m_inAir = true;
+	}
+
+	if (isGhost)
+		this->m_playerSpeed = Movement::PLAYER_GROUND_SPEED;
 }
 
 void Movement::setInputRotation(float inputRotationYaw)
@@ -101,7 +123,7 @@ FVector Movement::getInputVector(float cameraRotationYaw)
 
 FVector Movement::getMovementVelocity(float velocityZ)
 {
-	return FVector(this->m_playerSpeed * this->m_currentMovementVelocity, velocityZ);
+	return FVector(this->m_playerSpeed * (this->m_currentMovementVelocity + this->m_baseVelocity), velocityZ);
 }
 
 void Movement::resetInputVelocity()
@@ -110,7 +132,7 @@ void Movement::resetInputVelocity()
 	this->m_inputVelocity.Y = 0.0f;
 }
 
-void Movement::addInputVector(FVector inputVector)
+void Movement::addInputVector(const FVector& inputVector)
 {
 	this->m_inputVelocity.X += inputVector.X;
 	this->m_inputVelocity.Y += inputVector.Y;
@@ -121,11 +143,14 @@ void Movement::resetMovement(float amount)
 	this->m_currentMovementVelocity *= 1.0f - amount;
 }
 
-void Movement::setMovementVelocity(FVector velocity)
+void Movement::setMovementVelocity(const FVector& velocity, const FVector& baseVelocity)
 {
 	this->m_inputVelocity.X = velocity.X;
 	this->m_inputVelocity.Y = velocity.Y;
 
 	this->m_currentMovementVelocity.X = velocity.X;
 	this->m_currentMovementVelocity.Y = velocity.Y;
+
+	this->m_baseVelocity.X = baseVelocity.X;
+	this->m_baseVelocity.Y = baseVelocity.Y;
 }

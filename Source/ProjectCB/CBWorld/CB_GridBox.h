@@ -9,16 +9,18 @@ class PROJECTCB_API ACB_GridBox : public AActor
 {
 	GENERATED_BODY()
 
-private:
-
-	bool m_isFalling;
-
 public:
 
 	ACB_GridBox();
 
 	UPROPERTY(EditAnywhere, Category = "Components")
 		UStaticMeshComponent* BoxMesh;
+
+	UPROPERTY(EditAnywhere)
+		class UMaterial* StandardMaterial;
+
+	UPROPERTY(EditAnywhere)
+		class UMaterial* FallingMaterial;
 
 protected:
 
@@ -28,5 +30,5 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	void makeFall();
+	void startFall();
 };

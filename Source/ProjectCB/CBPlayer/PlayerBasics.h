@@ -6,6 +6,7 @@
 #include "../CBMoves/Movement/CameraMovement.h"
 
 
+
 struct PROJECTCB_API PlayerBasics
 {
 public:
@@ -86,6 +87,7 @@ public:
 /////
 
 	FRotator m_inputRotation;
+	UPROPERTY(Replicated)
 	FVector m_velocity; // TODO remove?
 
 	float m_jumpZVelocity;
