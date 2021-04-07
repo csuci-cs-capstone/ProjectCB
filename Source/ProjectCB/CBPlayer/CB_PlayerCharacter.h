@@ -36,6 +36,10 @@ private:
 	Dodge m_dodge = Dodge(this->m_basics);
 	Throw m_throw = Throw(this->m_basics);
 
+	// Network Replication Player State
+	virtual void OnRep_PlayerState() override;
+	
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -73,6 +77,9 @@ protected:
 	//ANIM
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Anims")
 		UBlendSpace1D* blendspace;
+
+	//Networking
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:
 

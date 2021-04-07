@@ -10,6 +10,9 @@
 #include "GameFramework/SpringArmComponent.h"
 #include <Animation/AnimSingleNodeInstance.h>
 #include "GameFramework/CharacterMovementComponent.h"
+#include "ProjectCB/CBPlayer/CB_PlayerState.h"
+#include "Net/UnrealNetwork.h"
+#include "Kismet/GameplayStatics.h"
 
 
 #define print(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("%s"), text));
@@ -17,6 +20,8 @@
 // Sets default values
 ACB_PlayerCharacter::ACB_PlayerCharacter()
 {
+	this->SetReplicates(true);
+	this->SetReplicateMovement(true);
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -86,6 +91,20 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	this->grabBox->SetupAttachment(this->grabRoot);
 }
 
+
+// Network Replication for playerstate
+void ACB_PlayerCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	APlayerState* OwningPlayerState = this->GetPlayerState();
+
+	if (OwningPlayerState != nullptr)
+	{
+		ACB_PlayerState* CBOwningPlayerState = Cast<ACB_PlayerState>(OwningPlayerState);
+	}
+}
+
 // Called when the game starts or when spawned
 void ACB_PlayerCharacter::BeginPlay()
 {
@@ -98,6 +117,13 @@ void ACB_PlayerCharacter::BeginPlay()
 	this->m_basics.m_movement.setStartRotation(this->cameraArm->GetComponentRotation());
 
 	//this->skeletalMesh->PlayAnimation(this->blendspace, true);
+}
+
+void ACB_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	//DOREPLIFETIME(ACB_PlayerCharacter, this->GetActorLocation(), COND_InitialOnly);
 }
 
 // Called every frame
@@ -139,41 +165,44 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 
 void ACB_PlayerCharacter::playerUpdate(float deltaTime)
 {
-	this->SetActorLocation(this->m_basics.checkPlayerBounds(this->GetActorLocation()));
-	this->m_basics.m_movement.setInputRotation(Controller->GetControlRotation().Yaw);
-
-	UCharacterMovementComponent* characterMovement = GetCharacterMovement();
-
-	this->m_basics.updateGroundState(characterMovement->IsMovingOnGround());
-
-	if (this->m_basics.m_shouldJump) // TODO set jump movement to 1 to jump
+	if (Controller != nullptr)
 	{
-		characterMovement->JumpZVelocity = this->m_basics.m_jumpZVelocity;
+		this->SetActorLocation(this->m_basics.checkPlayerBounds(this->GetActorLocation()));
+		this->m_basics.m_movement.setInputRotation(Controller->GetControlRotation().Yaw);
 
-		Jump();
+		UCharacterMovementComponent* characterMovement = GetCharacterMovement();
 
-		this->m_basics.m_shouldJump = false;
-	}
+		this->m_basics.updateGroundState(characterMovement->IsMovingOnGround());
 
-	if (this->m_basics.m_fellOff)
-	{
-		this->m_throw.drop();
-
-		this->m_basics.m_fellOff = false;
-	}
-
-	this->m_basics.m_movement.updateVelocity(this->m_basics.m_currentMobility);
-
-	GetCharacterMovement()->Velocity = this->m_basics.m_movement.getMovementVelocity(GetCharacterMovement()->Velocity.Z);
-
-	if (this->m_resetCollisionFrame >= 0)
-	{
-		if (this->m_resetCollisionFrame < PlayerBasics::RESET_COLLISION_FRAMES)
-			this->m_resetCollisionFrame++;
-		else if (this->m_resetCollisionFrame == PlayerBasics::RESET_COLLISION_FRAMES)
+		if (this->m_basics.m_shouldJump) // TODO set jump movement to 1 to jump
 		{
-			this->SetActorEnableCollision(true);
-			this->m_resetCollisionFrame++;
+			characterMovement->JumpZVelocity = this->m_basics.m_jumpZVelocity;
+
+			Jump();
+
+			this->m_basics.m_shouldJump = false;
+		}
+
+		if (this->m_basics.m_fellOff)
+		{
+			this->m_throw.drop();
+
+			this->m_basics.m_fellOff = false;
+		}
+
+		this->m_basics.m_movement.updateVelocity(this->m_basics.m_currentMobility);
+
+		GetCharacterMovement()->Velocity = this->m_basics.m_movement.getMovementVelocity(GetCharacterMovement()->Velocity.Z);
+
+		if (this->m_resetCollisionFrame >= 0)
+		{
+			if (this->m_resetCollisionFrame < PlayerBasics::RESET_COLLISION_FRAMES)
+				this->m_resetCollisionFrame++;
+			else if (this->m_resetCollisionFrame == PlayerBasics::RESET_COLLISION_FRAMES)
+			{
+				this->SetActorEnableCollision(true);
+				this->m_resetCollisionFrame++;
+			}
 		}
 	}
 }
@@ -221,6 +250,7 @@ void ACB_PlayerCharacter::MoveVertical(float amount)
 
 		const FVector movementDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		this->m_basics.m_movement.addInputVector(amount * movementDirection);
+		
 	}
 }
 
@@ -254,36 +284,6 @@ void ACB_PlayerCharacter::StopJumpAction()
 void ACB_PlayerCharacter::ShootAction() // TODO create a Dodgeball Generator
 {
 	this->m_throw.onPress();
-
-	//if (this->DodgeballProjectileClass)
-	//{
-	//	FActorSpawnParameters spawnParameters;
-
-	//	spawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	//	spawnParameters.bNoFail = true;
-	//	spawnParameters.Owner = this;
-	//	spawnParameters.Instigator = this;
-
-	//	FTransform spawnTransform;
-
-	//	//Scale forward vector by 20.0f so it won't clip into the capsule collider
-	//	FVector spawnLocation = GetActorForwardVector() * 125.0f
-	//		+ FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z);
-
-	//	const FRotator& cameraRotation = this->m_basics.m_cameraMovement.getCameraRotation();
-	//	const FRotator& playerRotation = this->m_basics.m_cameraMovement.getCameraRotation();
-
-	//	FRotator spawnRotation(Controller->GetControlRotation().Pitch,
-	//		GetActorRotation().Yaw + cameraRotation.Yaw - playerRotation.Yaw, 0);
-
-	//	spawnTransform.SetLocation(spawnLocation);
-	//	spawnTransform.SetScale3D(FVector(0.5f));
-
-	//	auto dodgeball = GetWorld()->SpawnActor<ACB_DodgeballProjectile>(this->DodgeballProjectileClass,
-	//		spawnTransform, spawnParameters);
-
-	//	dodgeball->launchRelease(spawnRotation.RotateVector(Throw::THROW_DIRECTION));
-	//}
 }
 
 void ACB_PlayerCharacter::StopShootAction()
@@ -301,7 +301,6 @@ void ACB_PlayerCharacter::AliveAction()
 void ACB_PlayerCharacter::OnEnterGrabBox(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
 	UPrimitiveComponent* otherComponent, int32 otherBodyIndex, bool fromSweep, const FHitResult& sweepResult)
 {
-	
 	if (this == otherActor)
 		return;	
 
@@ -337,7 +336,6 @@ void ACB_PlayerCharacter::launchRelease(FVector direction, FRotator rotation)
 {
 	this->m_resetCollisionFrame = 0;
 	this->m_basics.makeAlive();
-	//this->GetCharacterMovement()->Velocity = direction; // TODO set velocity in direction
 	this->m_basics.launchPlayer(direction, rotation);
 }
 
@@ -369,7 +367,6 @@ unsigned char ACB_PlayerCharacter::getGrabPriority()
 //ANIM HELPERS
 bool ACB_PlayerCharacter::onGround()
 {
-	
 	return this->m_basics.isGrounded();
 }
 
@@ -380,7 +377,6 @@ bool ACB_PlayerCharacter::onDuck()
 
 bool ACB_PlayerCharacter::onThrowing()
 {
-	
 	bool objectThrown = this->m_basics.m_throwing;
 	//this->m_basics.m_throwing = false;
 	return objectThrown;
@@ -408,5 +404,4 @@ bool ACB_PlayerCharacter::onCatch()
 void ACB_PlayerCharacter::ignoreCollisionsOnThrownObject(AActor* spawnedActor)
 {
 	this->MoveIgnoreActorAdd(spawnedActor);
-
 }

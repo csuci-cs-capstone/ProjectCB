@@ -6,6 +6,7 @@
 #include "../CBMoves/Movement/CameraMovement.h"
 
 
+
 struct PROJECTCB_API PlayerBasics
 {
 public:
@@ -84,9 +85,10 @@ public:
 	FVector m_rootPosition; //TODO remove temporary fix!
 
 /////
-
-	FRotator m_inputRotation;
-	FVector m_velocity; // TODO remove?
+	UPROPERTY(Replicated)
+		FRotator m_inputRotation;
+	UPROPERTY(Replicated)
+		FVector m_velocity; // TODO remove?
 
 	float m_jumpZVelocity;
 

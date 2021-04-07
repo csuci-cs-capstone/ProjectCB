@@ -25,13 +25,14 @@ private:
 
 	FVector2D m_inputVelocity;
 	FVector2D m_currentMovementVelocity;
+	FVector2D m_baseVelocity;
 	FVector2D m_currentRotationVelocity;
 
 	float m_playerSpeed;
 
 	void updateVelocity(FVector2D& currentVelocity, float mobility);
 
-	bool m_movementPaused;
+	bool m_inAir;
 
 public:
 
@@ -44,16 +45,16 @@ public:
 
 	void updateVelocity(float mobility);
 
-	void isGrounded(bool grounded);
+	void isGrounded(bool grounded, bool isGhost);
 
 	FVector getMovementVelocity(float velocityZ);
 
 	void resetInputVelocity();
-	void addInputVector(FVector inputVector);
+	void addInputVector(const FVector& inputVector);
 	void setInputRotation(float inputRotationYaw);
 	FVector getInputVector(float cameraRotationYaw);
 
 	void resetMovement(float amount);
 
-	void setMovementVelocity(FVector velocity);
+	void setMovementVelocity(const FVector& velocity, const FVector& baseVelocity);
 };
