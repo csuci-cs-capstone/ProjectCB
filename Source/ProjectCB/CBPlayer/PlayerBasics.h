@@ -85,10 +85,10 @@ public:
 	FVector m_rootPosition; //TODO remove temporary fix!
 
 /////
-
-	FRotator m_inputRotation;
 	UPROPERTY(Replicated)
-	FVector m_velocity; // TODO remove?
+		FRotator m_inputRotation;
+	UPROPERTY(Replicated)
+		FVector m_velocity; // TODO remove?
 
 	float m_jumpZVelocity;
 

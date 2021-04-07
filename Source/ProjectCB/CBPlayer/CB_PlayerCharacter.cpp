@@ -20,6 +20,8 @@
 // Sets default values
 ACB_PlayerCharacter::ACB_PlayerCharacter()
 {
+	this->SetReplicates(true);
+	this->SetReplicateMovement(true);
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -90,7 +92,7 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 }
 
 
-// Network Replication
+// Network Replication for playerstate
 void ACB_PlayerCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
@@ -100,25 +102,6 @@ void ACB_PlayerCharacter::OnRep_PlayerState()
 	if (OwningPlayerState != nullptr)
 	{
 		ACB_PlayerState* CBOwningPlayerState = Cast<ACB_PlayerState>(OwningPlayerState);
-
-		if (CBOwningPlayerState != nullptr)
-		{
-			FString Team = CBOwningPlayerState->Team;
-
-			if (Team.Len() >0)
-			{
-				UMaterialInstanceDynamic* OwningPlayerMaterial = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), this);
-
-				if (Team.Equals("Blue")) {
-					OwningPlayerMaterial->SetVectorParameterValue("BodyColor", FLinearColor::Blue);
-				}
-				else if (Team.Equals("Yellow")) {
-					OwningPlayerMaterial->SetVectorParameterValue("BodyColor", FLinearColor::Yellow);
-				}
-
-				GetMesh()->SetMaterial(0, OwningPlayerMaterial);
-			}
-		}
 	}
 }
 
@@ -134,6 +117,13 @@ void ACB_PlayerCharacter::BeginPlay()
 	this->m_basics.m_movement.setStartRotation(this->cameraArm->GetComponentRotation());
 
 	//this->skeletalMesh->PlayAnimation(this->blendspace, true);
+}
+
+void ACB_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	//DOREPLIFETIME(ACB_PlayerCharacter, this->GetActorLocation(), COND_InitialOnly);
 }
 
 // Called every frame
@@ -260,6 +250,7 @@ void ACB_PlayerCharacter::MoveVertical(float amount)
 
 		const FVector movementDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		this->m_basics.m_movement.addInputVector(amount * movementDirection);
+		
 	}
 }
 
