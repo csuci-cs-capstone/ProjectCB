@@ -3,6 +3,7 @@
 #include "Components/CapsuleComponent.h"
 #include "../CBPlayer/CB_PlayerCharacter.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Net/UnrealNetwork.h"
 
 //const FVector ACB_DodgeballProjectile::GOAL_CENTER = FVector();
 
@@ -19,6 +20,7 @@ ACB_DodgeballProjectile::ACB_DodgeballProjectile()
 
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	this->SetReplicates(true);
 
 	this->DodgeballMesh = CreateDefaultSubobject<UStaticMeshComponent>("DodgeballMesh");
 	//Set to simulate physics so that the projectile is not a kinematic body but a rigid body
@@ -45,7 +47,7 @@ void ACB_DodgeballProjectile::BeginPlay()
 	Super::BeginPlay();
 	if(this->m_playerRef != nullptr)
 		this->DodgeballMesh->IgnoreActorWhenMoving(this->m_playerRef, true);
-	this->m_resetCollisionFrame = PlayerBasics::RESET_COLLISION_FRAMES + 1;
+	this->m_resetCollisionFrame = FPlayerBasics::RESET_COLLISION_FRAMES + 1;
 }
 
 // Called every frame
@@ -107,9 +109,9 @@ void ACB_DodgeballProjectile::Tick(float DeltaTime)
 
 	if (this->m_resetCollisionFrame >= 0)
 	{
-		if (this->m_resetCollisionFrame < PlayerBasics::RESET_COLLISION_FRAMES)
+		if (this->m_resetCollisionFrame < FPlayerBasics::RESET_COLLISION_FRAMES)
 			this->m_resetCollisionFrame++;
-		else if (this->m_resetCollisionFrame == PlayerBasics::RESET_COLLISION_FRAMES)
+		else if (this->m_resetCollisionFrame == FPlayerBasics::RESET_COLLISION_FRAMES)
 		{
 			//if (this->m_playerRef != nullptr)
 				//this->DodgeballMesh->IgnoreActorWhenMoving(this->m_playerRef, false);

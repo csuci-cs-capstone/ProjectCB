@@ -11,7 +11,7 @@ void Dodge::startDuck()
 {
 	// Start Duck
 
-	this->m_playerBasics->m_dodgeState = PlayerBasics::DODGE_STARTUP;
+	this->m_playerBasics->m_dodgeState = FPlayerBasics::DODGE_STARTUP;
 	this->m_frame = true;
 	this->m_playerBasics->m_ducking = true;
 	this->m_playerBasics->updateAttributes();
@@ -23,7 +23,7 @@ void Dodge::startUpdate(float deltaTime) // Startup
 	{
 		// Start Duck
 
-		this->m_playerBasics->m_dodgeState = PlayerBasics::DODGE_DUCK;
+		this->m_playerBasics->m_dodgeState = FPlayerBasics::DODGE_DUCK;
 		this->m_frame = true;
 
 		this->m_playerBasics->updateAttributes();
@@ -34,7 +34,7 @@ void Dodge::startUpdate(float deltaTime) // Startup
 
 void Dodge::duckUpdate(float deltaTime) // Hold
 {
-	if (this->m_playerBasics->getPlayerState() == PlayerBasics::PLAYER_ALIVE)
+	if (this->m_playerBasics->getPlayerState() == FPlayerBasics::PLAYER_ALIVE)
 	{
 		if (this->m_frame >= Dodge_Hold::ACTION_FRAMES)
 		{
@@ -43,7 +43,7 @@ void Dodge::duckUpdate(float deltaTime) // Hold
 
 			// Start Idle
 
-			this->m_playerBasics->m_dodgeState = PlayerBasics::DODGE_IDLE;
+			this->m_playerBasics->m_dodgeState = FPlayerBasics::DODGE_IDLE;
 			this->m_frame = true;
 
 			this->m_playerBasics->updateAttributes();
@@ -87,7 +87,7 @@ void Dodge::startDodge() // Release
 
 	// Start Jump
 	this->m_playerBasics->m_ducking = false;
-	this->m_playerBasics->m_dodgeState = PlayerBasics::DODGE_JUMP;
+	this->m_playerBasics->m_dodgeState = FPlayerBasics::DODGE_JUMP;
 	this->m_frame = true;
 
 	this->m_playerBasics->updateAttributes();

@@ -12,7 +12,7 @@ class PROJECTCB_API Throw // Catch Aim Throw
 {
 private:
 
-	PlayerBasics* m_playerBasics;
+	FPlayerBasics* m_playerBasics;
 	IGrabbableObject* m_grabbedObject;
 	FTransform m_grabTransform;
 
@@ -32,7 +32,7 @@ public:
 
 	GrabbableList m_grabbableList;
 
-	Throw(PlayerBasics& playerBasics);
+	Throw(FPlayerBasics& playerBasics);
 
 	void onPress();
 	void onRelease(FRotator playerRotation);

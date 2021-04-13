@@ -139,6 +139,9 @@ private:
 		void CountDownUntilGameOver();
 
 	UFUNCTION()
+		void IsMatchOver();
+
+	UFUNCTION()
 		void EndGame();
 
 	UFUNCTION()

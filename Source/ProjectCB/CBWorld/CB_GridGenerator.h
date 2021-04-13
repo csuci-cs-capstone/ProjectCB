@@ -5,6 +5,7 @@
 #include "CB_GridBox.h"
 #include "../CBObjects/CB_DodgeballProjectile.h"
 #include "Math/UnrealMathUtility.h"
+#include "Net/UnrealNetwork.h"
 #include "CB_GridGenerator.generated.h"
 
 UCLASS()
@@ -33,6 +34,7 @@ private:
 	TArray<TArray<ACB_GridBox*>> m_grid;
 
 	size_t m_numOfFallingBoxes;
+	UPROPERTY(Replicated)
 	TArray<ACB_GridBox*> m_fallingBoxes;
 	FTimerHandle m_timerHandle;
 	FTimerHandle m_fallHandle;

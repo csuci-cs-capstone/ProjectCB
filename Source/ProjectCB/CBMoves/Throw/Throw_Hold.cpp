@@ -3,12 +3,12 @@
 
 void Throw::catchStartUpdate(float deltaTime)
 {
-	this->m_playerBasics->m_throwState = PlayerBasics::CATCH_AIM; // TODO implement startup
+	this->m_playerBasics->m_throwState = FPlayerBasics::CATCH_AIM; // TODO implement startup
 }
 
 void Throw::throwStartUpdate(float deltaTime)
 {
-	this->m_playerBasics->m_throwState = PlayerBasics::THROW_AIM; // TODO implement startup
+	this->m_playerBasics->m_throwState = FPlayerBasics::THROW_AIM; // TODO implement startup
 }
 
 // TODO add to release
@@ -27,7 +27,7 @@ void Throw::catchAimUpdate(float deltaTime)
 		}
 	}
 	else
-		this->m_playerBasics->m_currentRadius = PlayerBasics::PLAYER_RADIUS + this->m_grabbedObject->getRadius()
+		this->m_playerBasics->m_currentRadius = FPlayerBasics::PLAYER_RADIUS + this->m_grabbedObject->getRadius()
 			+ (Throw::GRAB_OFFSET / 2.0f);
 }
 

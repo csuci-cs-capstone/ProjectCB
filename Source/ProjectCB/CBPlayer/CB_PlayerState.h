@@ -24,4 +24,11 @@ public:
 
 	UPROPERTY(Replicated)
 		FString Team;
+
+	UPROPERTY(Replicated)
+		bool bIsAlive;
+
+	UPROPERTY(Replicated)
+		int HitScore;
+
 };

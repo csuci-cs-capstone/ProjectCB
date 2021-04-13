@@ -1,5 +1,6 @@
 #include "CB_GridGenerator.h"
 
+
 const float ACB_GridGenerator::START_SECONDS = 9.0f;
 const float ACB_GridGenerator::UPDATE_INTERVAL = 16.0f;
 const float ACB_GridGenerator::FALL_TIME = 3.0f;
@@ -16,8 +17,16 @@ const float ACB_GridGenerator::BALL_SPAWN_UPDATE_INTERVAL = ACB_GridGenerator::U
 
 void ACB_GridGenerator::deleteBoxes()
 {
-    for (size_t index = 0; index < this->m_numOfFallingBoxes; index++)
-        this->m_fallingBoxes[index]->Destroy();
+    for (size_t index = 0; index < this->m_numOfFallingBoxes; index++) 
+    {
+        if (IsValid(m_fallingBoxes[index]))
+        {
+            //this->m_fallingBoxes[index]->Destroy();
+            this->m_fallingBoxes[index]->SetActorEnableCollision(false);
+            this->m_fallingBoxes[index]->BoxMesh->SetVisibility(false);
+        }
+    }
+        
 
     this->m_fallingBoxes.Empty();
     this->m_numOfFallingBoxes = 0;
@@ -123,8 +132,9 @@ void ACB_GridGenerator::updateGrid()
         }
         else
             this->m_numOfFallingBoxes = 1;
-
+        
         this->m_deletableBoxes.RemoveAt(boxPos);
+        
     }
     else
     {
@@ -136,6 +146,7 @@ void ACB_GridGenerator::updateGrid()
 ACB_GridGenerator::ACB_GridGenerator()
 {
  	PrimaryActorTick.bCanEverTick = false;
+    this->SetReplicates(true);
 
     this->m_numOfBoxes = 0;
     this->m_numOfFallingBoxes = 0;
@@ -145,8 +156,10 @@ void ACB_GridGenerator::BeginPlay()
 {
     Super::BeginPlay();
 
-    generateGrid();
+    //Had to temporarily disable this since it seemed like it was causing some issues
 
+    //generateGrid();
+    /*
     GetWorldTimerManager().SetTimer(this->m_timerHandle, this, &ACB_GridGenerator::updateGrid,
         ACB_GridGenerator::UPDATE_INTERVAL, true, ACB_GridGenerator::START_SECONDS);
 
@@ -155,18 +168,25 @@ void ACB_GridGenerator::BeginPlay()
 
     GetWorldTimerManager().SetTimer(this->m_ballHandle, this, &ACB_GridGenerator::spawnBalls,
         ACB_GridGenerator::BALL_SPAWN_UPDATE_INTERVAL, true, ACB_GridGenerator::BALL_SPAWN_START_SECONDS);
-
+    */
     size_t centerLength = ACB_GridGenerator::STAGE_LENGTH / 2.0f;
     size_t centerWidth = ACB_GridGenerator::STAGE_WIDTH / 2.0f;
 
-    spawnBall(centerLength, centerWidth);
-    spawnBall(centerLength - 1, centerWidth);
-    spawnBall(centerLength, centerWidth - 1);
-    spawnBall(centerLength - 1, centerWidth - 1);
+    //spawnBall(centerLength, centerWidth);
+    //spawnBall(centerLength - 1, centerWidth);
+    //spawnBall(centerLength, centerWidth - 1);
+    //spawnBall(centerLength - 1, centerWidth - 1);
 }
 
 void ACB_GridGenerator::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void ACB_GridGenerator::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(ACB_GridGenerator, m_fallingBoxes);
 }
 

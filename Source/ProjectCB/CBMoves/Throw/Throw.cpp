@@ -5,7 +5,7 @@
 const FVector Throw::THROW_DIRECTION = FVector(1, 0, 0.025).GetUnsafeNormal();
 const float Throw::GRAB_OFFSET = 0.0f;
 
-Throw::Throw(PlayerBasics& playerBasics)
+Throw::Throw(FPlayerBasics& playerBasics)
 {
 	this->m_playerBasics = &playerBasics;
 }
@@ -15,21 +15,21 @@ void Throw::onPress()
 	if (!this->m_playerBasics->m_throwState)
 	{
 		if (this->m_grabbedObject)
-			this->m_playerBasics->m_throwState = PlayerBasics::THROW_STARTUP;
+			this->m_playerBasics->m_throwState = FPlayerBasics::THROW_STARTUP;
 		else
-			this->m_playerBasics->m_throwState = PlayerBasics::CATCH_STARTUP;
+			this->m_playerBasics->m_throwState = FPlayerBasics::CATCH_STARTUP;
 	}
 }
 
 void Throw::onRelease(FRotator playerRotation)
 {
-	if (this->m_playerBasics->m_throwState == PlayerBasics::THROW_AIM) // TODO should buffer for startup
+	if (this->m_playerBasics->m_throwState == FPlayerBasics::THROW_AIM) // TODO should buffer for startup
 	{
-		this->m_playerBasics->m_currentRadius = PlayerBasics::PLAYER_RADIUS;
+		this->m_playerBasics->m_currentRadius = FPlayerBasics::PLAYER_RADIUS;
 
 		switch (this->m_playerBasics->getPlayerState())
 		{
-			case PlayerBasics::PLAYER_ALIVE:
+			case FPlayerBasics::PLAYER_ALIVE:
 				
 				/*this->m_grabbedObject->launchRelease( // TODO should probably ensure it can't not exist in throw state
 					this->m_playerBasics->m_movement.getPlayerRotation().RotateVector(FVector(1.0f, 0.0f, 0.0f)),
@@ -47,7 +47,7 @@ void Throw::onRelease(FRotator playerRotation)
 				}
 				
 				break;
-			case PlayerBasics::PLAYER_GRABBED:
+			case FPlayerBasics::PLAYER_GRABBED:
 				this->m_grabbedObject->launchRelease( // TODO should probably ensure it can't not exist in throw state
 					this->m_playerBasics->m_movement.getPlayerRotation().RotateVector(FVector(1.0f, 0.0f, 0.0f)),
 					playerRotation);
@@ -59,33 +59,33 @@ void Throw::onRelease(FRotator playerRotation)
 
 		this->m_grabbedObject = nullptr;
 
-		this->m_playerBasics->m_throwState = PlayerBasics::THROW_COOLDOWN;
+		this->m_playerBasics->m_throwState = FPlayerBasics::THROW_COOLDOWN;
 	}
 
-	else if (this->m_playerBasics->m_throwState == PlayerBasics::CATCH_AIM) // TODO should buffer for startup
-		this->m_playerBasics->m_throwState = PlayerBasics::CATCH_COOLDOWN;
+	else if (this->m_playerBasics->m_throwState == FPlayerBasics::CATCH_AIM) // TODO should buffer for startup
+		this->m_playerBasics->m_throwState = FPlayerBasics::CATCH_COOLDOWN;
 }
 
 void Throw::update(FVector playerPosition, FRotator playerRotation, float deltaTime)
 {
 	switch (this->m_playerBasics->m_throwState)
 	{
-	case PlayerBasics::CATCH_STARTUP:
+	case FPlayerBasics::CATCH_STARTUP:
 		this->catchStartUpdate(deltaTime);
 		break;
-	case PlayerBasics::THROW_STARTUP:
+	case FPlayerBasics::THROW_STARTUP:
 		this->throwStartUpdate(deltaTime);
 		break;
-	case PlayerBasics::CATCH_AIM:
+	case FPlayerBasics::CATCH_AIM:
 		this->catchAimUpdate(deltaTime);
 		break;
-	case PlayerBasics::THROW_AIM:
+	case FPlayerBasics::THROW_AIM:
 		this->throwAimUpdate(deltaTime);
 		break;
-	case PlayerBasics::CATCH_COOLDOWN:
+	case FPlayerBasics::CATCH_COOLDOWN:
 		this->catchCooldownUpdate(deltaTime);
 		break;
-	case PlayerBasics::THROW_COOLDOWN:
+	case FPlayerBasics::THROW_COOLDOWN:
 		this->throwCooldownUpdate(deltaTime);
 		break;
 	default:

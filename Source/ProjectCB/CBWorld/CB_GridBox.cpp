@@ -1,8 +1,10 @@
 #include "CB_GridBox.h"
+#include "Net/UnrealNetwork.h"
 
 ACB_GridBox::ACB_GridBox()
 {
  	PrimaryActorTick.bCanEverTick = false;
+	this->SetReplicates(true);
 
 	this->BoxMesh = CreateDefaultSubobject<UStaticMeshComponent>("BoxMesh");
 	SetRootComponent(this->BoxMesh);
