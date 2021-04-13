@@ -236,9 +236,14 @@ void ACB_PlayerCharacter::MoveHorizontal(float amount)
 	}
 }
 
+void ACB_PlayerCharacter::updateCameraSensitivity(float cameraSensitivity)
+{
+	this->m_basics.m_cameraMovement.setCameraSensitivity(cameraSensitivity);
+}
+
 void ACB_PlayerCharacter::RotateCamera(float amount)
 {
-	this->m_basics.m_cameraMovement.updateCamera(amount);
+	this->m_basics.m_cameraMovement.updateCamera(this->m_basics.m_movement, amount);
 }
 
 void ACB_PlayerCharacter::JumpAction()

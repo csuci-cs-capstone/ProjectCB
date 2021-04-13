@@ -33,10 +33,13 @@ private:
 	void updateVelocity(FVector2D& currentVelocity, float mobility);
 
 	bool m_inAir;
+	bool m_useCamera;
 
 public:
 
 	Movement();
+
+	void setCameraRotation(FRotator& cameraRotation, bool useCamera);
 
 	void setStartRotation(FRotator startRotation); // TODO set player rotation
 	void setRotation(FRotator rotation);
