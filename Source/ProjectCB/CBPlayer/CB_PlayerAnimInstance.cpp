@@ -3,6 +3,7 @@
 
 #include "CB_PlayerAnimInstance.h"
 #include "ProjectCB/CBPlayer/CB_PlayerCharacter.h"
+#include "Net/UnrealNetwork.h"
 
 UCB_PlayerAnimInstance::UCB_PlayerAnimInstance() 
 {
@@ -37,3 +38,4 @@ void UCB_PlayerAnimInstance::UpdateThrowAnimation()
 	playerBody->resetThrowing();
 	this->bIsThrowing = false;
 }
+

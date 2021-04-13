@@ -8,6 +8,8 @@
 #include "Json.h"
 #include "JsonUtilities.h"
 
+#define print(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("%s"), text));
+
 ACB_Captureball_GameMode::ACB_Captureball_GameMode() 
 {
 	//Set the game mode controller and character to the intended player classes
@@ -172,18 +174,24 @@ void ACB_Captureball_GameMode::BeginPlay()
 #endif
 	GetWorldTimerManager().SetTimer(HandleGameSessionUpdateHandle, this, &ACB_Captureball_GameMode::HandleGameSessionUpdate, 1.0f, true, 5.0f);
 	GetWorldTimerManager().SetTimer(HandleProcessTerminationHandle, this, &ACB_Captureball_GameMode::HandleProcessTermination, 1.0f, true, 5.0f);
-	//TODO Remove
-	/*
+	
+
+	//GAMEMODE INIT WITHOUT AWS SDK
+
 	if (GameState != nullptr)
 	{
 		ACB_GameStateBase* CBGameState = Cast<ACB_GameStateBase>(GameState);
 
 		if (CBGameState != nullptr)
 		{
-			CBGameState->LatestEvent = "GameEnded";
-			CBGameState->WinningTeam = "Blue";
+			CBGameState->HasTeamWon.AddDynamic(this, &ACB_Captureball_GameMode::IsMatchOver);
 		}
-	}*/
+	}
+
+	if (this->HasMatchStarted())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Match Started"));
+	}
 }
 
 void ACB_Captureball_GameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) 
@@ -271,32 +279,10 @@ void ACB_Captureball_GameMode::Logout(AController* Exiting)
 
 FString ACB_Captureball_GameMode::InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal)
 {
-	//ACB_PlayerController* NewCurrentController = Cast<ACB_PlayerController>(NewPlayerController);
-
-	//FString InitializedString = Super::InitNewPlayer(NewCurrentController, UniqueId, Options, Portal);
+	
 	FString InitializedString = Super::InitNewPlayer(NewPlayerController, UniqueId, Options, Portal);
-	/*
-	if (NewPlayerController != nullptr)
-	{
-		APlayerState* PlayerState = NewPlayerController->PlayerState;
-		if (PlayerState != nullptr)
-		{
-			ACB_PlayerState* CBPlayerState = Cast<ACB_PlayerState>(PlayerState);
 
-			if (CBPlayerState != nullptr) 
-			{
-				if (FMath::RandRange(0,1) == 0)
-				{
-					CBPlayerState->Team = "Blue";
-				}
-				else
-				{
-					CBPlayerState->Team = "Yellow";
-				}
-				UE_LOG(LogTemp, Warning, TEXT("PLAYER ON TEAM %s"), *CBPlayerState->Team);
-			}
-		}
-	}*/
+	FString CurrentNewPlayerTeam;
 
 #if WITH_GAMELIFT
 	const FString& PlayerSessionId = UGameplayStatics::ParseOption(Options, "PlayerSessionId");
@@ -319,6 +305,7 @@ FString ACB_Captureball_GameMode::InitNewPlayer(APlayerController* NewPlayerCont
 					{
 						auto PlayerObj = StartGameSessionState.PlayerIdToPlayer.Find(PlayerId);
 						FString Team = PlayerObj->GetTeam();
+						CurrentNewPlayerTeam = Team;
 						CBPlayerState->Team = *Team;
 					}
 				}
@@ -326,6 +313,10 @@ FString ACB_Captureball_GameMode::InitNewPlayer(APlayerController* NewPlayerCont
 		}
 	}
 #endif
+
+	ACB_GameStateBase* CBGameState = Cast<ACB_GameStateBase>(this->GameState);
+	CBGameState->AssignPlayerToTeam(CurrentNewPlayerTeam);
+
 	return InitializedString;
 }
 
@@ -348,6 +339,23 @@ void ACB_Captureball_GameMode::CountDownUntilGameOver()
 	else 
 	{
 		GetWorldTimerManager().ClearTimer(CountDownUntilGameOverHandle);
+	}
+}
+
+void ACB_Captureball_GameMode::IsMatchOver()
+{
+	if (GameState != nullptr)
+	{
+		ACB_GameStateBase* CBGameState = Cast<ACB_GameStateBase>(GameState);
+
+		if (CBGameState != nullptr)
+		{
+			if (CBGameState->BlueTeamSizeAliveCount == 0 || CBGameState->YellowTeamSizeAliveCount == 0)
+			{
+				CBGameState->bTeamHasWon = true;
+				PickAWinningTeam();
+			}
+		}
 	}
 }
 
@@ -377,13 +385,13 @@ void ACB_Captureball_GameMode::PickAWinningTeam()
 		{
 			CBGameState->LatestEvent = "GameEnded";
 
-			if (FMath::RandRange(0, 1) == 0) 
+			if (CBGameState->BlueTeamSizeAliveCount == 0) 
 			{
-				CBGameState->WinningTeam = "Blue";
+				CBGameState->WinningTeam = "Yellow";
 			}
 			else 
 			{
-				CBGameState->WinningTeam = "Yellow";
+				CBGameState->WinningTeam = "Blue";
 			}
 
 			TSharedPtr<FJsonObject> RequestObj = MakeShareable(new FJsonObject);
@@ -470,8 +478,8 @@ void ACB_Captureball_GameMode::HandleGameSessionUpdate()
 		{
 			GameSessionActivated = true;
 
-			GetWorldTimerManager().SetTimer(PickAWinningTeamHandle, this, &ACB_Captureball_GameMode::PickAWinningTeam, 1.0f, false, (float)RemainingGameTime);
-			GetWorldTimerManager().SetTimer(CountDownUntilGameOverHandle, this, &ACB_Captureball_GameMode::CountDownUntilGameOver, 1.0f, true, 0.0f);
+			//GetWorldTimerManager().SetTimer(PickAWinningTeamHandle, this, &ACB_Captureball_GameMode::PickAWinningTeam, 1.0f, false, (float)RemainingGameTime);
+			//GetWorldTimerManager().SetTimer(CountDownUntilGameOverHandle, this, &ACB_Captureball_GameMode::CountDownUntilGameOver, 1.0f, true, 0.0f);
 		}
 	}
 }

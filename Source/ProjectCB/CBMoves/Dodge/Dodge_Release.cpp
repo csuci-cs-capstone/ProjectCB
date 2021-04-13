@@ -75,7 +75,7 @@ void Dodge::jumpUpdate(float deltaTime)
 	{
 		// Start Cooldown
 
-		this->m_playerBasics->m_dodgeState = PlayerBasics::DODGE_COOLDOWN;
+		this->m_playerBasics->m_dodgeState = FPlayerBasics::DODGE_COOLDOWN;
 		this->m_frame = true;
 
 		this->m_playerBasics->m_movement.resetMovement(this->m_dodgeProportion.getProportion(
@@ -106,7 +106,7 @@ void Dodge::cooldownUpdate(float deltaTime)
 		prop = this->m_playerBasics->getAnimationPoint(prop);
 		Proportion proportion(prop);
 
-		this->m_playerBasics->m_currentHeight = proportion.getProportion(PlayerBasics::PLAYER_HEIGHT,
+		this->m_playerBasics->m_currentHeight = proportion.getProportion(FPlayerBasics::PLAYER_HEIGHT,
 			this->m_playerBasics->m_previousHeight);
 
 		this->m_frame++;
@@ -115,11 +115,11 @@ void Dodge::cooldownUpdate(float deltaTime)
 
 void Dodge::endDodge()
 {
-	this->m_playerBasics->m_dodgeState = PlayerBasics::DODGE_OFF;
+	this->m_playerBasics->m_dodgeState = FPlayerBasics::DODGE_OFF;
 	this->m_frame = false;
 
 	this->m_playerBasics->m_currentMobility = 1.0f;
-	this->m_playerBasics->m_currentHeight = PlayerBasics::PLAYER_HEIGHT;
+	this->m_playerBasics->m_currentHeight = FPlayerBasics::PLAYER_HEIGHT;
 
 	this->m_playerBasics->updateAttributes();
 }

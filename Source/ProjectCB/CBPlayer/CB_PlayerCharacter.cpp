@@ -22,6 +22,7 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 {
 	this->SetReplicates(true);
 	this->SetReplicateMovement(true);
+	
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -47,7 +48,7 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 
 	//Customize the character movement component here!
 	GetCharacterMovement()->MaxWalkSpeed = Movement::PLAYER_GROUND_SPEED;
-	GetCharacterMovement()->GravityScale = PlayerBasics::PLAYER_BASE_GRAVITY;
+	GetCharacterMovement()->GravityScale = FPlayerBasics::PLAYER_BASE_GRAVITY;
 	//GetCharacterMovement()->JumpZVelocity = this->m_jumpVelocity;
 	//GetCharacterMovement()->AirControl = this->m_jumpControl;
 
@@ -59,6 +60,7 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	//GetCharacterMovement()->bOrientRotationToMovement = true;
 	//Character will look in the direction of the axis controlling the camera
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+	this->GetCharacterMovement()->SetIsReplicated(true);
 
 	this->cameraArm = CreateDefaultSubobject<USpringArmComponent>("CameraSpringArm");
 	this->cameraArm->SetupAttachment(this->RootComponent);
@@ -80,7 +82,7 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	\*      */
 
 	this->grabRoot = CreateDefaultSubobject<USceneComponent>(TEXT("GrabRoot"));
-	this->grabRoot->SetRelativeLocation(FVector(2 * PlayerBasics::PLAYER_RADIUS, 0.0f, PlayerBasics::PLAYER_HEIGHT));
+	this->grabRoot->SetRelativeLocation(FVector(2 * FPlayerBasics::PLAYER_RADIUS, 0.0f, FPlayerBasics::PLAYER_HEIGHT));
 	this->grabRoot->SetupAttachment(skeletalMesh);
 
 	this->grabBox = CreateDefaultSubobject<UBoxComponent>(TEXT("GrabBox"));
@@ -92,7 +94,7 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 }
 
 
-// Network Replication for playerstate
+// Network Replication for playerstate use for player specific values
 void ACB_PlayerCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
@@ -110,20 +112,19 @@ void ACB_PlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	this->m_resetCollisionFrame = PlayerBasics::RESET_COLLISION_FRAMES + 1;
+	this->m_resetCollisionFrame = FPlayerBasics::RESET_COLLISION_FRAMES + 1;
 
 	this->m_basics.m_gameWorldRef = GetWorld();
 	this->m_basics.dodgeballClassRef = DodgeballProjectileClass;
 	this->m_basics.m_movement.setStartRotation(this->cameraArm->GetComponentRotation());
 
-	//this->skeletalMesh->PlayAnimation(this->blendspace, true);
 }
 
 void ACB_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	//DOREPLIFETIME(ACB_PlayerCharacter, this->GetActorLocation(), COND_InitialOnly);
+	DOREPLIFETIME(ACB_PlayerCharacter, m_basics);
 }
 
 // Called every frame
@@ -144,20 +145,12 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 
 	UCapsuleComponent* capsuleComponent = GetCapsuleComponent();
 	capsuleComponent->SetCapsuleSize(this->m_basics.m_currentRadius, this->m_basics.m_currentHeight);
-	this->skeletalMesh->SetRelativeLocation(FVector(PlayerBasics::PLAYER_RADIUS - this->m_basics.m_currentRadius, 0.0f,
-		-PlayerBasics::PLAYER_HEIGHT));
+	this->skeletalMesh->SetRelativeLocation(FVector(FPlayerBasics::PLAYER_RADIUS - this->m_basics.m_currentRadius, 0.0f,
+		-FPlayerBasics::PLAYER_HEIGHT));
 
 // END RADIUS UPDATE
 
 	cameraUpdate();
-
-	
-	/*
-	FVector groundVelocity = this->GetVelocity();
-	groundVelocity.Z = 0;
-	float currentSpeed = groundVelocity.Size();
-	FVector idleRunBlendParams(currentSpeed, 0.0f, 0.0f);
-	this->skeletalMesh->GetSingleNodeInstance()->SetBlendSpaceInput(idleRunBlendParams);*/
 	
 	this->m_basics.m_movement.resetInputVelocity();
 
@@ -167,8 +160,8 @@ void ACB_PlayerCharacter::playerUpdate(float deltaTime)
 {
 	if (Controller != nullptr)
 	{
-		this->SetActorLocation(this->m_basics.checkPlayerBounds(this->GetActorLocation()));
-		this->m_basics.m_movement.setInputRotation(Controller->GetControlRotation().Yaw);
+		//this->SetActorLocation(this->m_basics.checkPlayerBounds(this->GetActorLocation()));
+		//this->m_basics.m_movement.setInputRotation(Controller->GetControlRotation().Yaw);
 
 		UCharacterMovementComponent* characterMovement = GetCharacterMovement();
 
@@ -192,13 +185,15 @@ void ACB_PlayerCharacter::playerUpdate(float deltaTime)
 
 		this->m_basics.m_movement.updateVelocity(this->m_basics.m_currentMobility);
 
-		GetCharacterMovement()->Velocity = this->m_basics.m_movement.getMovementVelocity(GetCharacterMovement()->Velocity.Z);
+		//GetCharacterMovement()->Velocity = this->m_basics.m_movement.getMovementVelocity(GetCharacterMovement()->Velocity.Z);
+		
+		//AddMovementInput(this->m_basics.m_movement.getMovementVelocity(GetCharacterMovement()->Velocity.Z), 1.0);
 
 		if (this->m_resetCollisionFrame >= 0)
 		{
-			if (this->m_resetCollisionFrame < PlayerBasics::RESET_COLLISION_FRAMES)
+			if (this->m_resetCollisionFrame < FPlayerBasics::RESET_COLLISION_FRAMES)
 				this->m_resetCollisionFrame++;
-			else if (this->m_resetCollisionFrame == PlayerBasics::RESET_COLLISION_FRAMES)
+			else if (this->m_resetCollisionFrame == FPlayerBasics::RESET_COLLISION_FRAMES)
 			{
 				this->SetActorEnableCollision(true);
 				this->m_resetCollisionFrame++;
@@ -216,8 +211,8 @@ void ACB_PlayerCharacter::cameraUpdate()
 	this->GetCapsuleComponent()->SetRelativeRotation(playerRotation);
 	this->cameraArm->SetRelativeRotation(this->m_basics.m_cameraMovement.getCameraRotation() - playerRotation);
 
-	this->m_basics.m_currentWorldLocationZ = ((1 - PlayerBasics::WORLD_LOCATION_PROPORTION_Z) * this->GetActorLocation().Z)
-		+ (PlayerBasics::WORLD_LOCATION_PROPORTION_Z * PlayerBasics::PLAYER_START_WORLD_LOCATION_Z);
+	this->m_basics.m_currentWorldLocationZ = ((1 - FPlayerBasics::WORLD_LOCATION_PROPORTION_Z) * this->GetActorLocation().Z)
+		+ (FPlayerBasics::WORLD_LOCATION_PROPORTION_Z * FPlayerBasics::PLAYER_START_WORLD_LOCATION_Z);
 
 	this->cameraArm->SetWorldLocation(FVector(currentLocation.X, currentLocation.Y, this->m_basics.m_currentWorldLocationZ));
 
@@ -230,9 +225,9 @@ void ACB_PlayerCharacter::cameraUpdate()
 void ACB_PlayerCharacter::adjustGravity(UCharacterMovementComponent* characterMovement)
 {
 	if (characterMovement->Velocity.Z <= 0)
-		characterMovement->GravityScale = PlayerBasics::PLAYER_FAST_GRAVITY;
+		characterMovement->GravityScale = FPlayerBasics::PLAYER_FAST_GRAVITY;
 	else
-		characterMovement->GravityScale = PlayerBasics::PLAYER_BASE_GRAVITY;
+		characterMovement->GravityScale = FPlayerBasics::PLAYER_BASE_GRAVITY;
 }
 
 // Called to bind functionality to input
@@ -243,6 +238,7 @@ void ACB_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 void ACB_PlayerCharacter::MoveVertical(float amount)
 {
+	this->m_basics.m_currentScaleAmountX = amount;
 	if ((Controller != NULL) && (amount != 0.0f))
 	{
 		const FRotator controlRotation = Controller->GetControlRotation();
@@ -250,12 +246,13 @@ void ACB_PlayerCharacter::MoveVertical(float amount)
 
 		const FVector movementDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		this->m_basics.m_movement.addInputVector(amount * movementDirection);
-		
+		this->AddMovementInput(movementDirection, amount);
 	}
 }
 
 void ACB_PlayerCharacter::MoveHorizontal(float amount)
 {
+	this->m_basics.m_currentScaleAmountY = amount;
 	if ((Controller != NULL) && (amount != 0.0f))
 	{
 		const FRotator controlRotation = Controller->GetControlRotation();
@@ -263,12 +260,14 @@ void ACB_PlayerCharacter::MoveHorizontal(float amount)
 
 		const FVector movementDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		this->m_basics.m_movement.addInputVector(amount * movementDirection);
+		this->AddMovementInput(movementDirection, amount);
 	}
 }
 
 void ACB_PlayerCharacter::RotateCamera(float amount)
 {
 	this->m_basics.m_cameraMovement.updateCamera(amount);
+	
 }
 
 void ACB_PlayerCharacter::JumpAction()
@@ -316,14 +315,26 @@ void ACB_PlayerCharacter::OnLeaveGrabBox(UPrimitiveComponent* overlappedComponen
 	this->m_throw.m_grabbableList.remove(Cast<IGrabbable>(otherActor));
 }
 
+//Networked Moves
+bool ACB_PlayerCharacter::SendLocalClientRotationToServer_Validate()
+{
+	return true;
+}
+
+void ACB_PlayerCharacter::SendLocalClientRotationToServer_Implementation()
+{
+	//Todo send rotation to server
+	bool test = true;
+}
+
 float ACB_PlayerCharacter::getRadius()
 {
-	return PlayerBasics::PLAYER_RADIUS;
+	return FPlayerBasics::PLAYER_RADIUS;
 }
 
 bool ACB_PlayerCharacter::isGrabbable()
 {
-	return this->m_basics.getPlayerState() == PlayerBasics::PLAYER_ALIVE;
+	return this->m_basics.getPlayerState() == FPlayerBasics::PLAYER_ALIVE;
 }
 
 void ACB_PlayerCharacter::makeGrabbed()

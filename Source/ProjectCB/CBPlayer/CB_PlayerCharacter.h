@@ -17,8 +17,9 @@ class PROJECTCB_API ACB_PlayerCharacter : public ACharacter, public IGrabbable, 
 
 public:
 	// Sets default values for this character's properties
-
-	PlayerBasics m_basics;
+	
+	UPROPERTY(Replicated)
+	FPlayerBasics m_basics;
 
 	ACB_PlayerCharacter();
 
@@ -101,6 +102,10 @@ public:
 	void StopShootAction();
 
 	void AliveAction();
+
+	//Networked Moves
+	UFUNCTION(Server, Reliable, WithValidation)
+	void SendLocalClientRotationToServer();
 
 	float getRadius() override;
 	bool isGrabbable() override;

@@ -9,5 +9,9 @@ void ACB_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ACB_PlayerState, Team);
+
+	DOREPLIFETIME(ACB_PlayerState, bIsAlive);
+
+	DOREPLIFETIME(ACB_PlayerState, HitScore);
 }
 

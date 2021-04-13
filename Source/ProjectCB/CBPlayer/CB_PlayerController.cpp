@@ -4,6 +4,7 @@
 ACB_PlayerController::ACB_PlayerController() 
 {
 	//this->bRespawnImmediately = false;
+	this->SetReplicates(true);
 }
 
 void ACB_PlayerController::BeginPlay()

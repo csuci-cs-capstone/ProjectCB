@@ -3,6 +3,7 @@
 #include "CB_DodgeballProjectile.h"
 #include <math.h>
 #include "../CBPlayer/CB_PlayerCharacter.h"
+#include "Net/UnrealNetwork.h"
 
 const float AGoalTriggerBox::DIFF_Y = 50.0f;
 const float AGoalTriggerBox::DIFF_X = -sqrt(3.0f) * DIFF_Y / 2.0f;
@@ -156,6 +157,8 @@ AGoalTriggerBox::AGoalTriggerBox()
 void AGoalTriggerBox::BeginPlay()
 {
 	Super::BeginPlay();
+
+	this->SetReplicates(true);
 
 	DrawDebugBox(GetWorld(), GetActorLocation(), GetComponentsBoundingBox().GetExtent(), FColor::Green, true, -1, 0, 5);
 }

@@ -3,14 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameStateBase.h"
+#include "GameFramework/GameState.h"
+#include "Delegates/Delegate.h"
 #include "CB_GameStateBase.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHasTeamWon);
 /**
  * 
  */
 UCLASS()
-class PROJECTCB_API ACB_GameStateBase : public AGameStateBase
+class PROJECTCB_API ACB_GameStateBase : public AGameState
 {
 	GENERATED_BODY()
 	
@@ -21,4 +23,28 @@ public:
 
 	UPROPERTY(Replicated)
 		FString WinningTeam;
+
+	UPROPERTY(Replicated)
+		bool bTeamHasWon = false;
+
+	UPROPERTY(Replicated)
+		int BlueTeamSize;
+
+	UPROPERTY(Replicated)
+		int BlueTeamSizeAliveCount;
+
+	UPROPERTY(Replicated)
+		int YellowTeamSize;
+
+	UPROPERTY(Replicated)
+		int YellowTeamSizeAliveCount;
+
+	void AssignPlayerToTeam(FString TeamName);
+
+	void UpdateTeamSizeAliveCount(FString TeamName);
+
+	//How to call:
+//YourDelegateName.Broadcast(YourParameters);
+	UPROPERTY(BlueprintAssignable, Category = "EventDispatchers")
+		FHasTeamWon HasTeamWon;
 };
