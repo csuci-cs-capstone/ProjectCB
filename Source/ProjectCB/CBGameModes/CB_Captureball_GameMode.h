@@ -90,6 +90,9 @@ public:
 		FTimerHandle CountDownUntilGameOverHandle;
 
 	UPROPERTY()
+		FTimerHandle MatchStartCountDownHandle;
+
+	UPROPERTY()
 		FTimerHandle EndGameHandle;
 
 	UPROPERTY()
@@ -101,11 +104,21 @@ public:
 	UPROPERTY()
 		FTimerHandle HandleGameSessionUpdateHandle;
 
+	//For Testing Only
+	int BlueTeamAmount = 0;
+
+	int YellowTeamAmount = 0;
+
 protected:
 
 	virtual void BeginPlay() override;
 
 	virtual FString InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal) override;
+
+	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
+
+	//For Testing Only
+	FString MockTeamAssign();
 
 private:
 
@@ -134,6 +147,9 @@ private:
 
 	UPROPERTY()
 		bool GameSessionActivated;
+
+	UFUNCTION()
+		void BeginMatch();
 
 	UFUNCTION()
 		void CountDownUntilGameOver();

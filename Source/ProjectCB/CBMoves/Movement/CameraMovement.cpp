@@ -48,3 +48,15 @@ const FRotator& CameraMovement::getCameraRotation()
 {
 	return this->m_cameraRotation;
 }
+
+void CameraMovement::SetRotationBasedOnTeam(FString TeamName)
+{
+	if (TeamName == "yellow")
+	{
+		this->m_cameraStart = FRotator(-20.0f, 0.0f, 108.0f);
+	}
+	else
+	{
+		this->m_cameraStart = FRotator(-20.0f, 0.0f, 0.0f);
+	}
+}

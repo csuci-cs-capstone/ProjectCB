@@ -2,6 +2,8 @@
 
 
 #include "CB_PlayerState.h"
+#include "ProjectCB/CBUI/CB_PlayerUIHUD.h"
+#include "ProjectCB/CBUI/CB_PlayerUIWidget.h"
 #include "Net/UnrealNetwork.h"
 
 void ACB_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const 

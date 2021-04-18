@@ -1,5 +1,7 @@
 #include "CB_PlayerController.h"
 #include "CB_PlayerCharacter.h"
+#include "ProjectCB/CBUI/CB_PlayerUIHUD.h"
+#include "ProjectCB/CBUI/CB_PlayerUIWidget.h"
 
 ACB_PlayerController::ACB_PlayerController() 
 {
@@ -10,6 +12,14 @@ ACB_PlayerController::ACB_PlayerController()
 void ACB_PlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	ACB_PlayerUIHUD* PlayerHUD = Cast<ACB_PlayerUIHUD>(GetHUD());
+
+	if (PlayerHUD != nullptr)
+	{
+		FString Test = "12";
+		PlayerHUD->SetTeamAlive(Test);
+	}
 }
 
 void ACB_PlayerController::SetupInputComponent()

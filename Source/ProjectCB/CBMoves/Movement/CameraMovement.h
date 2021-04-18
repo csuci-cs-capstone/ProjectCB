@@ -20,4 +20,10 @@ public:
 	void updateCamera(const float amount);
 
 	const FRotator& getCameraRotation();
+
+	void SetRotationBasedOnTeam(FString TeamName);
+
+public:
+
+	FRotator m_cameraStart;
 };

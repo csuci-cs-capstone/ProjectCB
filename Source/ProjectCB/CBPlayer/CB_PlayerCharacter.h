@@ -10,6 +10,8 @@
 #include "Animation/BlendSpace1D.h"
 #include "CB_PlayerCharacter.generated.h"
 
+class UMaterialInstanceDynamic;
+
 UCLASS()
 class PROJECTCB_API ACB_PlayerCharacter : public ACharacter, public IGrabbable, public IGrabbableObject
 {
@@ -22,6 +24,10 @@ public:
 	FPlayerBasics m_basics;
 
 	ACB_PlayerCharacter();
+
+	//Art Anim Extra
+	UPROPERTY(Replicated)
+	UMaterialInstanceDynamic* DynamicMaterial;
 
 private:
 
@@ -45,10 +51,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(Replicated, EditAnywhere)
 		USceneComponent* grabRoot;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Components")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Components")
 		UBoxComponent* grabBox;
 
 	UFUNCTION()
@@ -106,6 +112,12 @@ public:
 	//Networked Moves
 	UFUNCTION(Server, Reliable, WithValidation)
 	void SendLocalClientRotationToServer();
+
+	UFUNCTION(Client, Reliable, WithValidation)
+	void SetPlayerMaterialColor();
+
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+	void SetPlayerStartRotation();
 
 	float getRadius() override;
 	bool isGrabbable() override;

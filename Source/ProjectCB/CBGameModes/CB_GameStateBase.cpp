@@ -21,6 +21,8 @@ void ACB_GameStateBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(ACB_GameStateBase, YellowTeamSize);
 
 	DOREPLIFETIME(ACB_GameStateBase, YellowTeamSizeAliveCount);
+
+	DOREPLIFETIME(ACB_GameStateBase, CurrentGameplayMode);
 }
 
 void ACB_GameStateBase::AssignPlayerToTeam(FString TeamName)
@@ -48,3 +50,26 @@ void ACB_GameStateBase::UpdateTeamSizeAliveCount(FString TeamName)
 		YellowTeamSizeAliveCount--;
 	}
 }
+
+//For Testing Only - Flexmatch will handle this for us
+FString ACB_GameStateBase::GetNextTeamToAssign()
+{
+	FString NextTeamName;
+
+	if (BlueTeamSize > YellowTeamSize || BlueTeamSize == 5)
+	{
+		NextTeamName = "yellow";
+	}
+
+	if (BlueTeamSize < YellowTeamSize || YellowTeamSize == 5)
+	{
+		NextTeamName = "blue";
+	}
+
+	if (BlueTeamSize == YellowTeamSize)
+	{
+		NextTeamName = "blue";
+	}
+	return NextTeamName;
+}
+

@@ -11,6 +11,8 @@
 #include <Animation/AnimSingleNodeInstance.h>
 #include "GameFramework/CharacterMovementComponent.h"
 #include "ProjectCB/CBPlayer/CB_PlayerState.h"
+#include "Materials/MaterialInterface.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -22,6 +24,7 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 {
 	this->SetReplicates(true);
 	this->SetReplicateMovement(true);
+	this->bAlwaysRelevant = true;
 	
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -116,8 +119,15 @@ void ACB_PlayerCharacter::BeginPlay()
 
 	this->m_basics.m_gameWorldRef = GetWorld();
 	this->m_basics.dodgeballClassRef = DodgeballProjectileClass;
-	this->m_basics.m_movement.setStartRotation(this->cameraArm->GetComponentRotation());
+	//SetPlayerStartRotation();
+	//this->m_basics.m_movement.setStartRotation(this->cameraArm->GetComponentRotation());
+	//this->cameraArm->SetWorldRotation(FRotator(-20.0f, 0.0f, 180.0f));
+	//this->m_basics.m_movement.setStartRotation(this->GetActorRotation());
 
+	if (HasAuthority() == false)
+	{
+		SetPlayerMaterialColor();
+	}
 }
 
 void ACB_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -125,6 +135,8 @@ void ACB_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ACB_PlayerCharacter, m_basics);
+
+	DOREPLIFETIME(ACB_PlayerCharacter, DynamicMaterial);
 }
 
 // Called every frame
@@ -150,7 +162,7 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 
 // END RADIUS UPDATE
 
-	cameraUpdate();
+	//cameraUpdate();
 	
 	this->m_basics.m_movement.resetInputVelocity();
 
@@ -315,7 +327,7 @@ void ACB_PlayerCharacter::OnLeaveGrabBox(UPrimitiveComponent* overlappedComponen
 	this->m_throw.m_grabbableList.remove(Cast<IGrabbable>(otherActor));
 }
 
-//Networked Moves
+//Networked Moves//
 bool ACB_PlayerCharacter::SendLocalClientRotationToServer_Validate()
 {
 	return true;
@@ -325,6 +337,55 @@ void ACB_PlayerCharacter::SendLocalClientRotationToServer_Implementation()
 {
 	//Todo send rotation to server
 	bool test = true;
+}
+
+void ACB_PlayerCharacter::SetPlayerMaterialColor_Implementation()
+{
+	auto Material = skeletalMesh->GetMaterial(0);
+
+	DynamicMaterial = UMaterialInstanceDynamic::Create(Material, NULL);
+	skeletalMesh->SetMaterial(0, DynamicMaterial);
+
+	float TeamColor = 0.0f;
+	ACB_PlayerState* CBPlayerState = Cast<ACB_PlayerState>(GetPlayerState());
+	if (CBPlayerState != nullptr)
+	{
+		if (CBPlayerState->Team == "yellow")
+		{
+			TeamColor = 1.0f;
+		}
+	}
+
+	DynamicMaterial->SetScalarParameterValue(TEXT("Blend"), TeamColor);
+}
+
+bool ACB_PlayerCharacter::SetPlayerMaterialColor_Validate()
+{
+	return true;
+}
+
+void ACB_PlayerCharacter::SetPlayerStartRotation_Implementation()
+{
+	ACB_PlayerState* CBPlayerState = Cast<ACB_PlayerState>(GetPlayerState());
+
+	if (CBPlayerState != nullptr)
+	{
+		if (CBPlayerState->Team == "yellow")
+		{
+			this->SetActorRotation(FRotator(0.0f, 0.0f, 108.0f));
+			this->cameraArm->SetRelativeRotation(FRotator(-20.0f, 0.0f, 180.0f));
+		}
+		else
+		{
+			this->SetActorRotation(FRotator(0.0f, 0.0f, 0.0f));
+			this->cameraArm->SetRelativeRotation(FRotator(-20.0f, 0.0f, 0.0f));
+		}
+	}
+}
+
+bool ACB_PlayerCharacter::SetPlayerStartRotation_Validate()
+{
+	return true;
 }
 
 float ACB_PlayerCharacter::getRadius()

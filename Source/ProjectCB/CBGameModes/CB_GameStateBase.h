@@ -23,25 +23,36 @@ public:
 
 	UPROPERTY(Replicated)
 		FString WinningTeam;
+		
+	UPROPERTY(Replicated)
+		int CurrentGameplayMode;
 
 	UPROPERTY(Replicated)
 		bool bTeamHasWon = false;
 
 	UPROPERTY(Replicated)
-		int BlueTeamSize;
+		int BlueTeamSize = 0;
 
 	UPROPERTY(Replicated)
 		int BlueTeamSizeAliveCount;
 
 	UPROPERTY(Replicated)
-		int YellowTeamSize;
+		int YellowTeamSize = 0;
 
 	UPROPERTY(Replicated)
 		int YellowTeamSizeAliveCount;
 
+	UPROPERTY(Replicated)
+		int BlueTeamBallsCaptured = 0;
+
+	UPROPERTY(Replicated)
+		int YellowTeamBallsCaptured = 0;
+
 	void AssignPlayerToTeam(FString TeamName);
 
 	void UpdateTeamSizeAliveCount(FString TeamName);
+
+	FString GetNextTeamToAssign();
 
 	//How to call:
 //YourDelegateName.Broadcast(YourParameters);

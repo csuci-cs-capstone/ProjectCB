@@ -61,8 +61,10 @@ public:
 	float getRadius() override;
 	bool isGrabbable() override;
 	void makeGrabbed() override;
-	void launchRelease(FVector direction, FRotator rotation) override;
-	void setGrabbed(FVector position, FRotator rotation) override;
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+		void launchRelease(FVector direction, FRotator rotation) override;
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+		void setGrabbed(FVector position, FRotator rotation) override;
 
 	bool hasGrabbableObject() override;
 	IGrabbableObject* getGrabbableObject() override;
