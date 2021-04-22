@@ -192,7 +192,7 @@ void ACB_PlayerCharacter::playerUpdate(float deltaTime)
 	if (Controller != nullptr)
 	{
 		//this->SetActorLocation(this->m_basics.checkPlayerBounds(this->GetActorLocation()));
-		//this->m_basics.m_movement.setInputRotation(Controller->GetControlRotation().Yaw);
+		this->m_basics.m_movement.setInputRotation(Controller->GetControlRotation().Yaw);
 
 		UCharacterMovementComponent* characterMovement = GetCharacterMovement();
 
@@ -217,6 +217,8 @@ void ACB_PlayerCharacter::playerUpdate(float deltaTime)
 		this->m_basics.m_movement.updateVelocity(this->m_basics.m_currentMobility);
 
 		//GetCharacterMovement()->Velocity = this->m_basics.m_movement.getMovementVelocity(GetCharacterMovement()->Velocity.Z);
+		//this->MoveVelocity = this->m_basics.m_movement.getMovementVelocity(GetCharacterMovement()->Velocity.Z);
+		//this->UpdateVelocity(this->MoveVelocity);
 		
 		//AddMovementInput(this->m_basics.m_movement.getMovementVelocity(GetCharacterMovement()->Velocity.Z), 1.0);
 
@@ -276,7 +278,7 @@ void ACB_PlayerCharacter::MoveVertical(float amount)
 		const FRotator YawRotation(0, controlRotation.Yaw + this->m_basics.m_cameraMovement.getCameraRotation().Yaw, 0);
 
 		const FVector movementDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		this->m_basics.m_movement.addInputVector(amount * movementDirection);
+		this->m_basics.m_movement.addInputVector(movementDirection * amount);
 		this->AddMovementInput(movementDirection, amount);
 	}
 }
@@ -290,7 +292,7 @@ void ACB_PlayerCharacter::MoveHorizontal(float amount)
 		const FRotator YawRotation(0, controlRotation.Yaw + this->m_basics.m_cameraMovement.getCameraRotation().Yaw, 0);
 
 		const FVector movementDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		this->m_basics.m_movement.addInputVector(amount * movementDirection);
+		this->m_basics.m_movement.addInputVector(movementDirection * amount);
 		this->AddMovementInput(movementDirection, amount);
 	}
 }
@@ -357,6 +359,12 @@ void ACB_PlayerCharacter::SendLocalClientRotationToServer_Implementation()
 {
 	//Todo send rotation to server
 	bool test = true;
+}
+
+//NETWORK RPCs
+void ACB_PlayerCharacter::UpdateVelocity_Implementation(FVector newVelocityVector) 
+{
+	GetCharacterMovement()->Velocity = newVelocityVector;
 }
 
 void ACB_PlayerCharacter::SetPlayerMaterialColor_Implementation()

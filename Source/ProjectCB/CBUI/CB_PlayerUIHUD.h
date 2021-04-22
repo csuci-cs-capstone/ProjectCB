@@ -28,6 +28,8 @@ public:
 		UCB_PlayerUIWidget* CBPlayerUIWidget;
 
 	void SetTeamAlive(FString IncomingTextValue);
+	void SetEnemyAlive(FString IncomingTextValue);
+	void SetBallsCaptured(FString IncomingTextValue);
 
 protected:
 

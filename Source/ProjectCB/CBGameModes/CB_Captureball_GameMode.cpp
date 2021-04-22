@@ -289,9 +289,10 @@ FString ACB_Captureball_GameMode::InitNewPlayer(APlayerController* NewPlayerCont
 #if WITH_GAMELIFT
 #else
 	//Only for testing, clients never will be using this in the real deal
-	CurrentNewPlayerTeam = MockTeamAssign();
+	
 	if (HasAuthority())
 	{
+		CurrentNewPlayerTeam = MockTeamAssign();
 		ACB_PlayerState* CBPlayerState = Cast<ACB_PlayerState>(NewPlayerController->PlayerState);
 
 		if (CBPlayerState != nullptr)
@@ -327,9 +328,13 @@ FString ACB_Captureball_GameMode::InitNewPlayer(APlayerController* NewPlayerCont
 						auto PlayerObj = StartGameSessionState.PlayerIdToPlayer.Find(PlayerId);
 						FString Team = PlayerObj->GetTeam();
 						CurrentNewPlayerTeam = Team;
-						CBPlayerState->Team = *Team;
+						CBPlayerState->Team = Team;
 						ACB_GameStateBase* CBGameState = Cast<ACB_GameStateBase>(this->GameState);
-						CBGameState->AssignPlayerToTeam(CurrentNewPlayerTeam);
+						if (CBGameState != nullptr)
+						{
+							CBGameState->AssignPlayerToTeam(CurrentNewPlayerTeam);
+						}
+						
 					}
 				}
 			}
@@ -421,7 +426,20 @@ void ACB_Captureball_GameMode::BeginMatch()
 
 		if (CBGameState != nullptr)
 		{
+			UWorld* World = GetWorld();
+			for (TActorIterator<APlayerController> It(World); It; ++It)
+			{
+				APlayerController* CurrentPlayerController = *It;
+
+				if (CurrentPlayerController->IsLocalController())
+				{
+					CBGameState->m_localPlayerController = Cast<ACB_PlayerController>(CurrentPlayerController);
+					CBGameState->PlayerHUD = Cast<ACB_PlayerUIHUD>(CBGameState->m_localPlayerController->GetHUD());
+				}
+			}
+
 			CBGameState->CurrentGameplayMode = 1;
+			CBGameState->RefreshUIHUB();
 		}
 	}
 }
@@ -584,8 +602,8 @@ void ACB_Captureball_GameMode::HandleGameSessionUpdate()
 		{
 			GameSessionActivated = true;
 
-			//GetWorldTimerManager().SetTimer(PickAWinningTeamHandle, this, &ACB_Captureball_GameMode::PickAWinningTeam, 1.0f, false, (float)RemainingGameTime);
-			//GetWorldTimerManager().SetTimer(CountDownUntilGameOverHandle, this, &ACB_Captureball_GameMode::CountDownUntilGameOver, 1.0f, true, 0.0f);
+			GetWorldTimerManager().SetTimer(PickAWinningTeamHandle, this, &ACB_Captureball_GameMode::PickAWinningTeam, 1.0f, false, (float)RemainingGameTime);
+			GetWorldTimerManager().SetTimer(CountDownUntilGameOverHandle, this, &ACB_Captureball_GameMode::CountDownUntilGameOver, 1.0f, true, 0.0f);
 		}
 	}
 }

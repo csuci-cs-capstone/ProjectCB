@@ -18,6 +18,16 @@ void UCB_PlayerUIWidget::SetTeamAliveTextBlock(FString TextToSet)
 	TeamAliveText->SetText(FText::FromString(TextToSet));
 }
 
+void UCB_PlayerUIWidget::SetEnemyAliveTextBlock(FString TextToSet)
+{
+	EnemyAliveText->SetText(FText::FromString(TextToSet));
+}
+
+void UCB_PlayerUIWidget::SetBallsCaptuedTextBlock(FString TextToSet)
+{
+	BallsCapturedText->SetText(FText::FromString(TextToSet));
+}
+
 void UCB_PlayerUIWidget::NativeConstruct()
 {
 	Super::NativeConstruct();

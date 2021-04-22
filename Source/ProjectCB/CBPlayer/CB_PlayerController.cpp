@@ -15,11 +15,11 @@ void ACB_PlayerController::BeginPlay()
 
 	ACB_PlayerUIHUD* PlayerHUD = Cast<ACB_PlayerUIHUD>(GetHUD());
 
-	if (PlayerHUD != nullptr)
+	/*if (PlayerHUD != nullptr)
 	{
 		FString Test = "12";
 		PlayerHUD->SetTeamAlive(Test);
-	}
+	}*/
 }
 
 void ACB_PlayerController::Tick(float DeltaSeconds)

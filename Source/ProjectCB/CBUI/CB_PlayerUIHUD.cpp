@@ -29,6 +29,22 @@ void ACB_PlayerUIHUD::SetTeamAlive(FString IncomingTextValue)
 	}
 }
 
+void ACB_PlayerUIHUD::SetEnemyAlive(FString IncomingTextValue)
+{
+	if (CBPlayerUIWidget != nullptr)
+	{
+		CBPlayerUIWidget->SetEnemyAliveTextBlock(IncomingTextValue);
+	}
+}
+
+void ACB_PlayerUIHUD::SetBallsCaptured(FString IncomingTextValue)
+{
+	if (CBPlayerUIWidget != nullptr)
+	{
+		CBPlayerUIWidget->SetBallsCaptuedTextBlock(IncomingTextValue);
+	}
+}
+
 void ACB_PlayerUIHUD::BeginPlay()
 {
 	Super::BeginPlay();

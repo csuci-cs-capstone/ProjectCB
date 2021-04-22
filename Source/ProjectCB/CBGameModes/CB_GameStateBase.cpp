@@ -3,13 +3,34 @@
 
 #include "CB_GameStateBase.h"
 #include "ProjectCB/CBUI/CB_PlayerUIHUD.h"
+#include "ProjectCB/CBPlayer/CB_PlayerController.h"
+#include "ProjectCB/CBPlayer/CB_PlayerState.h"
 #include "Net/UnrealNetwork.h"
+#include "EngineUtils.h"
 
 
 ACB_GameStateBase::ACB_GameStateBase() 
 {
 	
 }
+
+void ACB_GameStateBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	UWorld* World = GetWorld();
+	for (TActorIterator<APlayerController> It(World); It; ++It)
+	{
+		APlayerController* CurrentPlayerController = *It;
+
+		if (CurrentPlayerController->IsLocalController())
+		{
+			this->m_localPlayerController = Cast<ACB_PlayerController>(CurrentPlayerController);
+			PlayerHUD = Cast<ACB_PlayerUIHUD>(this->m_localPlayerController->GetHUD());
+		}
+	}
+}
+
 
 void ACB_GameStateBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const 
 {
@@ -83,4 +104,35 @@ FString ACB_GameStateBase::GetNextTeamToAssign()
 	}
 	return NextTeamName;
 }
+
+void ACB_GameStateBase::UpdateTeamGoalBox(FString TeamName, int CurrentAmount)
+{
+}
+
+void ACB_GameStateBase::RefreshUIHUB_Implementation()
+{
+
+	if (PlayerHUD != nullptr)
+	{
+		//FString Test = "12";
+		//PlayerHUD->SetTeamAlive(Test);
+		ACB_PlayerState* CurrentPlayerState = Cast<ACB_PlayerState>(this->m_localPlayerController->PlayerState);
+		if (CurrentPlayerState->Team == "blue")
+		{
+			FString AliveString = FString::FromInt(BlueTeamSizeAliveCount);
+			PlayerHUD->SetTeamAlive(AliveString);
+			FString EnemyString = FString::FromInt(YellowTeamSizeAliveCount);
+			PlayerHUD->SetEnemyAlive(EnemyString);
+		}
+		else if (CurrentPlayerState->Team == "yellow")
+		{
+			FString AliveString = FString::FromInt(YellowTeamSizeAliveCount);
+			PlayerHUD->SetTeamAlive(AliveString);
+			FString EnemyString = FString::FromInt(BlueTeamSizeAliveCount);
+			PlayerHUD->SetEnemyAlive(EnemyString);
+		}
+
+	}
+}
+
 

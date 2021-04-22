@@ -3,6 +3,7 @@
 #include "CB_DodgeballProjectile.h"
 #include <math.h>
 #include "../CBPlayer/CB_PlayerCharacter.h"
+#include "ProjectCB//CBGameModes/CB_GameStateBase.h"
 #include "Net/UnrealNetwork.h"
 
 //TODO Use in Capture Mode send value to hud
@@ -135,6 +136,10 @@ void AGoalTriggerBox::updateBallPositions(bool changedLayout, bool added)
 			ACB_DodgeballProjectile* dodgeball = Cast<ACB_DodgeballProjectile>(this->m_grabbableList[index]);
 
 			dodgeball->m_goalLocation = this->getBallPosition(index);
+
+			this->m_ballsInGoal--;
+
+			//ACB_GameStateBase CBGameState
 		}
 	}
 	else if (added)
@@ -144,6 +149,8 @@ void AGoalTriggerBox::updateBallPositions(bool changedLayout, bool added)
 		ACB_DodgeballProjectile* dodgeball = Cast<ACB_DodgeballProjectile>(this->m_grabbableList[index]);
 
 		dodgeball->m_goalLocation = this->getBallPosition(index);
+
+		this->m_ballsInGoal++;
 	}
 }
 
@@ -213,4 +220,9 @@ IGrabbableObject* AGoalTriggerBox::getGrabbableObject()
 unsigned char AGoalTriggerBox::getGrabPriority()
 {
 	return UGrabbable::GOAL_PRIORITY;
+}
+
+void AGoalTriggerBox::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const 
+{
+	DOREPLIFETIME(AGoalTriggerBox, m_ballsInGoal);
 }

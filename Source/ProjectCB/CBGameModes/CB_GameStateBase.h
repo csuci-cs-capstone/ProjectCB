@@ -8,6 +8,7 @@
 #include "CB_GameStateBase.generated.h"
 
 class ACB_PlayerUIHUD;
+class ACB_PlayerController;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHasTeamWon);
 /**
@@ -61,8 +62,20 @@ public:
 
 	FString GetNextTeamToAssign();
 
+	void UpdateTeamGoalBox(FString TeamName, int CurrentAmount);
+
+	/// @brief Used to set initial values or force a ui update
+	UFUNCTION(NetMulticast, Reliable)
+	void RefreshUIHUB();
+
 	//How to call:
 //YourDelegateName.Broadcast(YourParameters);
 	UPROPERTY(BlueprintAssignable, Category = "EventDispatchers")
 		FHasTeamWon HasTeamWon;
+
+	ACB_PlayerController* m_localPlayerController;
+
+protected:
+
+	void BeginPlay() override;
 };

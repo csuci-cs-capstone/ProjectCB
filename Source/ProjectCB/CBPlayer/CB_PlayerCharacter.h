@@ -48,6 +48,9 @@ private:
 	UPROPERTY(Replicated)
 		UThrow* m_throw;
 
+	UPROPERTY(Replicated)
+		FVector MoveVelocity;
+
 	// Network Replication Player State
 	virtual void OnRep_PlayerState() override;
 	
@@ -115,6 +118,11 @@ public:
 	void AliveAction();
 
 	//Networked Moves
+	//TESTING RPC FOR VELOCITY
+	//TODO Make countdown and check head band to orange, set up UI values and players status
+	UFUNCTION(Client, Reliable)
+	void UpdateVelocity(FVector newVelocityVector);
+
 	UFUNCTION(Server, Reliable, WithValidation)
 	void SendLocalClientRotationToServer();
 
