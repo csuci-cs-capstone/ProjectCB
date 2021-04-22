@@ -2,7 +2,14 @@
 
 
 #include "CB_GameStateBase.h"
+#include "ProjectCB/CBUI/CB_PlayerUIHUD.h"
 #include "Net/UnrealNetwork.h"
+
+
+ACB_GameStateBase::ACB_GameStateBase() 
+{
+	
+}
 
 void ACB_GameStateBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const 
 {
@@ -23,6 +30,10 @@ void ACB_GameStateBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(ACB_GameStateBase, YellowTeamSizeAliveCount);
 
 	DOREPLIFETIME(ACB_GameStateBase, CurrentGameplayMode);
+
+	DOREPLIFETIME(ACB_GameStateBase, BlueTeamBallsCaptured);
+
+	DOREPLIFETIME(ACB_GameStateBase, YellowTeamBallsCaptured);
 }
 
 void ACB_GameStateBase::AssignPlayerToTeam(FString TeamName)

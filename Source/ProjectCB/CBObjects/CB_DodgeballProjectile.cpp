@@ -18,6 +18,8 @@ ACB_DodgeballProjectile::ACB_DodgeballProjectile()
 {
 	this->bReplicates = true;
 	this->SetReplicateMovement(true);
+	this->bNetLoadOnClient = true;
+	
 
  	this->m_ballState = ACB_DodgeballProjectile::BALL_GROUNDED;
 
@@ -142,7 +144,7 @@ bool ACB_DodgeballProjectile::isGrabbable()
 		|| this->m_ballState == ACB_DodgeballProjectile::BALL_PROJECTILE;
 }
 
-void ACB_DodgeballProjectile::makeGrabbed()
+void ACB_DodgeballProjectile::makeGrabbed_Implementation()
 {
 	this->m_ballState = ACB_DodgeballProjectile::BALL_GRABBED;
 
@@ -177,15 +179,20 @@ bool ACB_DodgeballProjectile::launchRelease_Validate(FVector direction, FRotator
 
 void ACB_DodgeballProjectile::setGrabbed_Implementation(FVector position, FRotator rotation)
 {
-	this->m_resetCollisionFrame = -1;
+	if (this->m_isIgnoreSet == false)
+	{
+		this->m_resetCollisionFrame = -1;
+		this->m_isIgnoreSet = true;
+	}
+	
 	this->SetActorEnableCollision(false);
+
 	this->SetActorLocation(position);
 	this->SetActorRotation(rotation);
-}
-
-bool ACB_DodgeballProjectile::setGrabbed_Validate(FVector position, FRotator rotation)
-{
-	return true;
+	this->m_ballState = ACB_DodgeballProjectile::BALL_GRABBED;
+	this->DodgeballMesh->SetPhysicsAngularVelocityInDegrees(FVector(0.0f, 0.0f, 0.0f));
+	this->DodgeballMesh->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, 0.0f));
+	this->DodgeballMesh->SetEnableGravity(false);
 }
 
 bool ACB_DodgeballProjectile::hasGrabbableObject()
@@ -203,6 +210,7 @@ unsigned char ACB_DodgeballProjectile::getGrabPriority()
 	return UGrabbable::BALL_PRIORITY;
 }
 
+
 void ACB_DodgeballProjectile::OnHit(AActor* selfActor, AActor* otherActor, FVector normalImpulse, const FHitResult& hit)
 {
 	if (this->inAir() && otherActor->IsA(ACB_PlayerCharacter::StaticClass()))
@@ -216,4 +224,5 @@ void ACB_DodgeballProjectile::OnHit(AActor* selfActor, AActor* otherActor, FVect
 		if (GEngine)
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("PlayerHit"));
 	}
+
 }

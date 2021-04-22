@@ -7,6 +7,8 @@
 #include "Delegates/Delegate.h"
 #include "CB_GameStateBase.generated.h"
 
+class ACB_PlayerUIHUD;
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHasTeamWon);
 /**
  * 
@@ -17,6 +19,8 @@ class PROJECTCB_API ACB_GameStateBase : public AGameState
 	GENERATED_BODY()
 	
 public:
+
+	ACB_GameStateBase();
 
 	UPROPERTY(Replicated)
 		FString LatestEvent;
@@ -47,6 +51,9 @@ public:
 
 	UPROPERTY(Replicated)
 		int YellowTeamBallsCaptured = 0;
+
+	UPROPERTY()
+		ACB_PlayerUIHUD* PlayerHUD;
 
 	void AssignPlayerToTeam(FString TeamName);
 

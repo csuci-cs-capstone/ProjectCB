@@ -1,19 +1,19 @@
 #include "Throw_Hold.h"
 #include "Throw.h"
 
-void Throw::catchStartUpdate(float deltaTime)
+void UThrow::catchStartUpdate(float deltaTime)
 {
 	this->m_playerBasics->m_throwState = FPlayerBasics::CATCH_AIM; // TODO implement startup
 }
 
-void Throw::throwStartUpdate(float deltaTime)
+void UThrow::throwStartUpdate(float deltaTime)
 {
 	this->m_playerBasics->m_throwState = FPlayerBasics::THROW_AIM; // TODO implement startup
 }
 
 // TODO add to release
 
-void Throw::catchAimUpdate(float deltaTime)
+void UThrow::catchAimUpdate(float deltaTime)
 {
 	if (!this->m_grabbedObject)
 	{
@@ -28,10 +28,10 @@ void Throw::catchAimUpdate(float deltaTime)
 	}
 	else
 		this->m_playerBasics->m_currentRadius = FPlayerBasics::PLAYER_RADIUS + this->m_grabbedObject->getRadius()
-			+ (Throw::GRAB_OFFSET / 2.0f);
+			+ (UThrow::GRAB_OFFSET / 2.0f);
 }
 
-void Throw::throwAimUpdate(float deltaTime)
+void UThrow::throwAimUpdate(float deltaTime)
 {
 	// TODO implement aim
 }

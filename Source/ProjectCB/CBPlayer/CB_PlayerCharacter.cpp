@@ -31,6 +31,9 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 
 	this->m_basics.m_playerRef = this;
 
+	//Move States Classes
+	
+
 	GetCapsuleComponent()->InitCapsuleSize(25.0f, 50.0f); // TODO create default size
 
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
@@ -52,8 +55,8 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	//Customize the character movement component here!
 	GetCharacterMovement()->MaxWalkSpeed = Movement::PLAYER_GROUND_SPEED;
 	GetCharacterMovement()->GravityScale = FPlayerBasics::PLAYER_BASE_GRAVITY;
-	//GetCharacterMovement()->JumpZVelocity = this->m_jumpVelocity;
-	//GetCharacterMovement()->AirControl = this->m_jumpControl;
+	GetCharacterMovement()->JumpZVelocity = 1000.0f;
+	GetCharacterMovement()->AirControl = 1.0f;
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
@@ -115,6 +118,9 @@ void ACB_PlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	this->m_throw = NewObject<UThrow>();
+	this->m_throw->setPlayerBasics(this->m_basics);
+
 	this->m_resetCollisionFrame = FPlayerBasics::RESET_COLLISION_FRAMES + 1;
 
 	this->m_basics.m_gameWorldRef = GetWorld();
@@ -137,6 +143,12 @@ void ACB_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(ACB_PlayerCharacter, m_basics);
 
 	DOREPLIFETIME(ACB_PlayerCharacter, DynamicMaterial);
+
+	DOREPLIFETIME(ACB_PlayerCharacter, m_throw);
+
+	DOREPLIFETIME(ACB_PlayerCharacter, grabRoot);
+
+	DOREPLIFETIME(ACB_PlayerCharacter, bIsOnGroundAnimate)
 }
 
 // Called every frame
@@ -151,14 +163,21 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 	adjustGravity(characterMovement);
 
 	this->m_dodge.update(DeltaTime);
-	this->m_throw.update(this->GetActorLocation(), this->GetActorRotation(), DeltaTime);
+	if (this->m_throw != nullptr)
+	{
+		this->m_throw->update(this->GetActorLocation(), this->GetActorRotation(), DeltaTime);
+	}
+	
 
 // START RADIUS UPDATE
 
 	UCapsuleComponent* capsuleComponent = GetCapsuleComponent();
+	
 	capsuleComponent->SetCapsuleSize(this->m_basics.m_currentRadius, this->m_basics.m_currentHeight);
 	this->skeletalMesh->SetRelativeLocation(FVector(FPlayerBasics::PLAYER_RADIUS - this->m_basics.m_currentRadius, 0.0f,
 		-FPlayerBasics::PLAYER_HEIGHT));
+	
+	
 
 // END RADIUS UPDATE
 
@@ -190,7 +209,7 @@ void ACB_PlayerCharacter::playerUpdate(float deltaTime)
 
 		if (this->m_basics.m_fellOff)
 		{
-			this->m_throw.drop();
+			this->m_throw->drop();
 
 			this->m_basics.m_fellOff = false;
 		}
@@ -279,27 +298,28 @@ void ACB_PlayerCharacter::MoveHorizontal(float amount)
 void ACB_PlayerCharacter::RotateCamera(float amount)
 {
 	this->m_basics.m_cameraMovement.updateCamera(amount);
-	
 }
 
 void ACB_PlayerCharacter::JumpAction()
 {
-	this->m_dodge.onPress();
+	Crouch();
+	//this->m_dodge.onPress();
 }
 
 void ACB_PlayerCharacter::StopJumpAction()
 {
-	this->m_dodge.onRelease();
+	Jump();
+	//this->m_dodge.onRelease();
 }
 
 void ACB_PlayerCharacter::ShootAction() // TODO create a Dodgeball Generator
 {
-	this->m_throw.onPress();
+	this->m_throw->onPress();
 }
 
 void ACB_PlayerCharacter::StopShootAction()
 {
-	this->m_throw.onRelease(this->GetActorRotation());
+	this->m_throw->onRelease(this->GetActorRotation());
 }
 
 void ACB_PlayerCharacter::AliveAction()
@@ -315,7 +335,7 @@ void ACB_PlayerCharacter::OnEnterGrabBox(UPrimitiveComponent* overlappedComponen
 	if (this == otherActor)
 		return;	
 
-	this->m_throw.m_grabbableList.add(Cast<IGrabbable>(otherActor));
+	this->m_throw->m_grabbableList.add(Cast<IGrabbable>(otherActor));
 }
 
 void ACB_PlayerCharacter::OnLeaveGrabBox(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
@@ -324,7 +344,7 @@ void ACB_PlayerCharacter::OnLeaveGrabBox(UPrimitiveComponent* overlappedComponen
 	if (this == otherActor)
 		return;
 
-	this->m_throw.m_grabbableList.remove(Cast<IGrabbable>(otherActor));
+	this->m_throw->m_grabbableList.remove(Cast<IGrabbable>(otherActor));
 }
 
 //Networked Moves//
@@ -404,6 +424,69 @@ void ACB_PlayerCharacter::makeGrabbed()
 	this->m_basics.makeGrabbed();
 }
 
+
+//NETWORKED TRHOW CLASS FUNCTIONS
+void ACB_PlayerCharacter::LaunchBall_Implementation()
+{
+	FActorSpawnParameters spawnParameters;
+
+	spawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	spawnParameters.bNoFail = true;
+	spawnParameters.Owner = NULL;
+	spawnParameters.Instigator = this;
+	spawnParameters.bDeferConstruction = false;
+
+	//FTransform spawnTransform = this->m_throw->m_grabTransform;
+	FTransform spawnTransform;
+
+	FVector spawnLocation = GetActorForwardVector() * 125.0f
+				+ FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z);
+
+	spawnTransform.SetLocation(spawnLocation);
+	spawnTransform.SetScale3D(FVector(0.5f));
+
+	auto dodgeball = GetWorld()->SpawnActor<ACB_DodgeballProjectile>(DodgeballProjectileClass,
+		spawnTransform, spawnParameters);
+
+	this->m_basics.m_throwing = true;
+
+	dodgeball->m_playerRef = this;
+	this->ignoreCollisionsOnThrownObject(dodgeball);
+
+	//dodgeball->launchRelease(this->m_playerBasics->m_movement.getPlayerRotation().RotateVector(FVector(1.0f, 0.0f, 0.0f)), playerRotation);
+	dodgeball->launchRelease(this->GetActorForwardVector(), GetActorRotation());
+
+	dodgeball->SetReplicates(true);
+	dodgeball->SetReplicateMovement(true);
+}
+
+void ACB_PlayerCharacter::RemoveBall_Implementation(ACB_DodgeballProjectile* currentBall)
+{
+	currentBall->Destroy();
+}
+
+void ACB_PlayerCharacter::UpdateGrabbedObjectPosition_Implementation(UObject* currentGrabbedObject)
+{
+	FVector currentLocation = GetActorLocation();
+	FRotator currentRotation = GetActorRotation();
+
+	AActor* GrabbedActor = Cast<AActor>(currentGrabbedObject);
+	IGrabbableObject* GrabbedObjectInfo = Cast<IGrabbableObject>(currentGrabbedObject);
+
+	if (GrabbedActor != nullptr)
+	{
+		//currentGrabbedObject->setGrabbed(currentLocation + currentRotation.RotateVector(FVector(UThrow::GRAB_OFFSET
+		//	+ currentGrabbedObject->getRadius(), 0.0f, 0.0f)), currentRotation);
+
+		FVector rotatedVector = currentRotation.RotateVector(FVector(UThrow::GRAB_OFFSET + GrabbedObjectInfo->getRadius(), 0.0f, 0.0f));
+		//GrabbedObjectInfo->makeGrabbed();
+		GrabbedObjectInfo->setGrabbed(currentLocation + rotatedVector, currentRotation);
+		//TODO switch collision channel at runtime for grabbed
+	}
+}
+
+
+
 void ACB_PlayerCharacter::launchRelease(FVector direction, FRotator rotation)
 {
 	this->m_resetCollisionFrame = 0;
@@ -439,7 +522,8 @@ unsigned char ACB_PlayerCharacter::getGrabPriority()
 //ANIM HELPERS
 bool ACB_PlayerCharacter::onGround()
 {
-	return this->m_basics.isGrounded();
+	this->bIsOnGroundAnimate = this->GetMovementComponent()->CanEverMoveOnGround();
+	return this->bIsOnGroundAnimate;
 }
 
 bool ACB_PlayerCharacter::onDuck()
@@ -469,7 +553,19 @@ float ACB_PlayerCharacter::groundMoveSpeed()
 
 bool ACB_PlayerCharacter::onCatch()
 {
-	bool objectCatched = (this->m_throw.m_grabbableList.length() == 0) ? false : true;
+	//bool objectCatched = (this->m_throw->m_grabbableList.length() == 0) ? false : true;
+	bool objectCatched = false;
+	if (this->m_throw != nullptr && this->m_throw->m_grabbableList.isValidList())
+	{
+		if (this->m_throw->m_grabbableList.length() == 0)
+		{
+			objectCatched = false;
+		}
+		else
+		{
+			objectCatched = true;
+		}
+	}
 	return objectCatched;
 }
 
@@ -477,3 +573,5 @@ void ACB_PlayerCharacter::ignoreCollisionsOnThrownObject(AActor* spawnedActor)
 {
 	this->MoveIgnoreActorAdd(spawnedActor);
 }
+
+

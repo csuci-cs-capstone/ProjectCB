@@ -1,12 +1,12 @@
 #include "Throw_Release.h"
 #include "Throw.h"
 
-void Throw::catchCooldownUpdate(float deltaTime)
+void UThrow::catchCooldownUpdate(float deltaTime)
 {
 	this->m_playerBasics->m_throwState = FPlayerBasics::THROW_OFF; // TODO implement cooldown
 }
 
-void Throw::throwCooldownUpdate(float deltaTime)
+void UThrow::throwCooldownUpdate(float deltaTime)
 {
 	this->m_playerBasics->m_throwState = FPlayerBasics::THROW_OFF; // TODO implement cooldown
 }

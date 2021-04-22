@@ -29,6 +29,10 @@ public:
 	UPROPERTY(Replicated)
 	UMaterialInstanceDynamic* DynamicMaterial;
 
+	//Networked Anim Properties
+	UPROPERTY(Replicated)
+	bool bIsOnGroundAnimate;
+
 private:
 
 	// General
@@ -41,7 +45,8 @@ private:
 	void adjustGravity(UCharacterMovementComponent* characterMovement);
 
 	Dodge m_dodge = Dodge(this->m_basics);
-	Throw m_throw = Throw(this->m_basics);
+	UPROPERTY(Replicated)
+		UThrow* m_throw;
 
 	// Network Replication Player State
 	virtual void OnRep_PlayerState() override;
@@ -118,6 +123,15 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable, WithValidation)
 	void SetPlayerStartRotation();
+
+	UFUNCTION(Server, Reliable)
+	void LaunchBall();
+
+	UFUNCTION(Server, Reliable)
+	void RemoveBall(ACB_DodgeballProjectile* currentBall);
+
+	UFUNCTION(Server, Reliable)
+	void UpdateGrabbedObjectPosition(UObject* currentGrabbedObject);
 
 	float getRadius() override;
 	bool isGrabbable() override;

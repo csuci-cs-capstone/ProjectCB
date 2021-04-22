@@ -132,3 +132,14 @@ IGrabbable* GrabbableList::get(size_t index)
 {
 	return this->m_grabbableList[index];
 }
+
+bool GrabbableList::isValidList()
+{
+	bool listStatus = false;
+	if (this->m_grabbableList != nullptr)
+	{
+		listStatus = true;
+	}
+	
+	return listStatus;
+}

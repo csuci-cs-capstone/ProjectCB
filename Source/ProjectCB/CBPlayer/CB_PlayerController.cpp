@@ -22,6 +22,15 @@ void ACB_PlayerController::BeginPlay()
 	}
 }
 
+void ACB_PlayerController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	//if (GEngine)
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Some debug message!"));
+	
+}
+
 void ACB_PlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
@@ -101,6 +110,8 @@ void ACB_PlayerController::ShootAction()
 	}
 }
 
+
+
 void ACB_PlayerController::StopShootAction()
 {
 	auto playerBody = Cast<ACB_PlayerCharacter>(this->GetCharacter());
@@ -110,6 +121,8 @@ void ACB_PlayerController::StopShootAction()
 		playerBody->StopShootAction();
 	}
 }
+
+
 
 void ACB_PlayerController::AliveAction()
 {

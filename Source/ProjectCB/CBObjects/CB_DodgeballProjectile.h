@@ -32,6 +32,8 @@ public:
 	bool m_inGoal;
 	FVector m_goalLocation;
 
+	bool m_isIgnoreSet = false;
+
 	AActor* m_playerRef;
 
 	// Sets default values for this actor's properties
@@ -60,11 +62,12 @@ public:
 
 	float getRadius() override;
 	bool isGrabbable() override;
+	UFUNCTION(Server, Reliable)
 	void makeGrabbed() override;
-	UFUNCTION(NetMulticast, Reliable, WithValidation)
+	UFUNCTION(Server, Reliable, WithValidation)
 		void launchRelease(FVector direction, FRotator rotation) override;
-	UFUNCTION(NetMulticast, Reliable, WithValidation)
-		void setGrabbed(FVector position, FRotator rotation) override;
+	UFUNCTION(NetMulticast, Reliable)
+	void setGrabbed(FVector position, FRotator rotation) override;
 
 	bool hasGrabbableObject() override;
 	IGrabbableObject* getGrabbableObject() override;

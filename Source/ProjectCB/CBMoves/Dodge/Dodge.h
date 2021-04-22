@@ -5,6 +5,7 @@
 #include "../../CBMath/Proportion.h"
 #include "Dodge_Hold.h"
 #include "Dodge_Release.h"
+#include "Net/UnrealNetwork.h"
 
 class PROJECTCB_API Dodge // Dodge Dip Duck Dive Dodge
 {
