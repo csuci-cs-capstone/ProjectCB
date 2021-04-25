@@ -111,11 +111,14 @@ public:
 
 protected:
 
-	virtual void BeginPlay() override;
+	void BeginPlay() override;
 
-	virtual FString InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal) override;
+	FString InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal) override;
 
-	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
+	AActor* ChoosePlayerStart_Implementation(AController* Player) override;
+
+	AActor* FindPlayerStart_Implementation(AController* Player, const FString& IncomingName) override;
+
 
 	//For Testing Only
 	FString MockTeamAssign();

@@ -25,6 +25,7 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	this->SetReplicates(true);
 	this->SetReplicateMovement(true);
 	this->bAlwaysRelevant = true;
+	this->SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -133,6 +134,26 @@ void ACB_PlayerCharacter::BeginPlay()
 	if (HasAuthority() == false)
 	{
 		SetPlayerMaterialColor();
+	}
+
+	if (this->IsPlayerControlled() == false)
+	{
+		if (this)
+		{
+			if (GEngine)
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Need to posses player"));
+			APlayerController* CurrentPlayerController = Cast<APlayerController>(this->Controller);
+			if (CurrentPlayerController != nullptr)
+			{
+				if (HasAuthority())
+				{
+					CurrentPlayerController->Possess(this);
+					//CurrentPlayerController->EnableInput(CurrentPlayerController);
+					this->EnableInput(CurrentPlayerController);
+				}
+				
+			}
+		}
 	}
 }
 

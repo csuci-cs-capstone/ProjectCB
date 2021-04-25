@@ -196,8 +196,9 @@ void ACB_Captureball_GameMode::BeginPlay()
 			CBGameState->CurrentGameplayMode = 0;
 		}
 	}
+	this->BeginMatch();
 	//TODO set up countdown start timer here
-	GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::BeginMatch, 3.0f, false, 3.0f);
+	//GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::BeginMatch, 3.0f, false, 10.0f);
 }
 
 void ACB_Captureball_GameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) 
@@ -349,7 +350,9 @@ FString ACB_Captureball_GameMode::InitNewPlayer(APlayerController* NewPlayerCont
 
 AActor* ACB_Captureball_GameMode::ChoosePlayerStart_Implementation(AController* Player)
 {
+
 	// Choose a player start
+	
 	APlayerStart* FoundPlayerStart = nullptr;
 	UClass* PawnClass = GetDefaultPawnClassForController(Player);
 	APawn* PawnToFit = PawnClass ? PawnClass->GetDefaultObject<APawn>() : nullptr;
@@ -372,46 +375,103 @@ AActor* ACB_Captureball_GameMode::ChoosePlayerStart_Implementation(AController* 
 	TArray<APlayerStart*> UnOccupiedStartPoints;
 	TArray<APlayerStart*> OccupiedStartPoints;
 	UWorld* World = GetWorld();
-	for (TActorIterator<APlayerStart> It(World); It; ++It)
+	if (World != nullptr)
 	{
-		APlayerStart* PlayerStart = *It;
-
-		FString CurrentTag = PlayerStart->PlayerStartTag.ToString();
-		
-		if( CurrentTag == CurrentPlayerTeam)
+		for (TActorIterator<APlayerStart> It(World); It; ++It)
 		{
-			FoundPlayerStart = PlayerStart;
-			FoundPlayerStart->PlayerStartTag = "Taken";
-			break;
+			APlayerStart* PlayerStart = *It;
+
+			FString CurrentTag = PlayerStart->PlayerStartTag.ToString();
+
+			if (CurrentTag == CurrentPlayerTeam)
+			{
+				FoundPlayerStart = PlayerStart;
+				FoundPlayerStart->PlayerStartTag = "Taken";
+				if (GEngine)
+					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, TEXT("PlayerStart Tag Set"));
+				break;
+			}
 		}
 	}
+	
+	if (FoundPlayerStart != nullptr)
+	{
+		FVector ActorLocation = FoundPlayerStart->GetActorLocation();
+		FRotator ActorRotation = FoundPlayerStart->GetActorRotation();
 
-	FVector ActorLocation = FoundPlayerStart->GetActorLocation();
-	const FRotator ActorRotation = FoundPlayerStart->GetActorRotation();
+		if (Player != nullptr)
+		{
+			Player->ClientSetRotation(ActorRotation, false);
+			Player->ClientSetLocation(ActorLocation, ActorRotation);
 
-	Player->ClientSetRotation(ActorRotation, false);
+			if (GEngine)
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("Player Found Start"));
+		}
+	}
+	else
+	{
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("PlayerStart Not Found!"));
+	}
+
 	if (Player->GetPawn() != nullptr)
 	{
 		//Player->GetPawn()->SetActorRelativeRotation(ActorRotation);
 		ACB_PlayerCharacter* CBPlayerCharacterIncoming = Cast<ACB_PlayerCharacter>(Player->GetPawn());
 		if (CBPlayerCharacterIncoming != nullptr)
 		{
+			FVector ActorLocation = FoundPlayerStart->GetActorLocation();
+			FRotator ActorRotation = FoundPlayerStart->GetActorRotation();
 			CBPlayerCharacterIncoming->SetPlayerStartRotation();
+			CBPlayerCharacterIncoming->SetActorLocation(ActorLocation);
+			Player->Possess(PawnToFit);
+			APlayerController* CurrentPlayerController = Cast<APlayerController>(Player);
+			if (CurrentPlayerController != nullptr)
+			{
+				CurrentPlayerController->EnableInput(CurrentPlayerController);
+			}
 		}
 	}
-	
 
 	return FoundPlayerStart;
 }
 
+AActor* ACB_Captureball_GameMode::FindPlayerStart_Implementation(AController* Player, const FString& IncomingName)
+{
+	UWorld* World = GetWorld();
+	AActor* BestStart = ChoosePlayerStart(Player);
+	if (BestStart == nullptr)
+	{
+		// No player start found
+		UE_LOG(LogGameMode, Log, TEXT("FindPlayerStart: PATHS NOT DEFINED or NO PLAYERSTART with positive rating"));
+
+		// This is a bit odd, but there was a complex chunk of code that in the end always resulted in this, so we may as well just 
+		// short cut it down to this.  Basically we are saying spawn at 0,0,0 if we didn't find a proper player start
+		//BestStart = World->GetWorldSettings();
+		
+		while(BestStart != nullptr) 
+		{
+			BestStart = ChoosePlayerStart(Player);
+		}
+	}
+
+	return BestStart;
+}
+
 FString ACB_Captureball_GameMode::MockTeamAssign()
 {
-	FString TeamToAssign;
-
-	ACB_GameStateBase* CBGameState = Cast<ACB_GameStateBase>(this->GameState);
+	FString TeamToAssign = "blue";
 	
-	TeamToAssign = CBGameState->GetNextTeamToAssign();
+	if (this->GameState != nullptr)
+	{
+		ACB_GameStateBase* CBGameState = Cast<ACB_GameStateBase>(this->GameState);
 
+		if (CBGameState != nullptr)
+		{
+			TeamToAssign = CBGameState->GetNextTeamToAssign();
+		}
+	}
+	
 	return TeamToAssign;
 }
 
@@ -435,6 +495,7 @@ void ACB_Captureball_GameMode::BeginMatch()
 				{
 					CBGameState->m_localPlayerController = Cast<ACB_PlayerController>(CurrentPlayerController);
 					CBGameState->PlayerHUD = Cast<ACB_PlayerUIHUD>(CBGameState->m_localPlayerController->GetHUD());
+					break;
 				}
 			}
 

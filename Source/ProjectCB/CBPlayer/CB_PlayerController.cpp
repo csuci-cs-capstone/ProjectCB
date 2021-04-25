@@ -28,7 +28,18 @@ void ACB_PlayerController::Tick(float DeltaSeconds)
 
 	//if (GEngine)
 		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Some debug message!"));
-	
+	/*if (IsLocalController())
+	{
+		ACB_PlayerCharacter* playerBody = Cast<ACB_PlayerCharacter>(this->GetCharacter());
+
+		if (playerBody != nullptr)
+		{	
+			if (playerBody->GetController() == NULL)
+			{
+				this->Possess(playerBody);
+			}
+		}
+	}*/
 }
 
 void ACB_PlayerController::SetupInputComponent()
