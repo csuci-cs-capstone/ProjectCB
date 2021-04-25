@@ -136,25 +136,6 @@ void ACB_PlayerCharacter::BeginPlay()
 		SetPlayerMaterialColor();
 	}
 
-	if (this->IsPlayerControlled() == false)
-	{
-		if (this)
-		{
-			if (GEngine)
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Need to posses player"));
-			APlayerController* CurrentPlayerController = Cast<APlayerController>(this->Controller);
-			if (CurrentPlayerController != nullptr)
-			{
-				if (HasAuthority())
-				{
-					CurrentPlayerController->Possess(this);
-					//CurrentPlayerController->EnableInput(CurrentPlayerController);
-					this->EnableInput(CurrentPlayerController);
-				}
-				
-			}
-		}
-	}
 }
 
 void ACB_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
