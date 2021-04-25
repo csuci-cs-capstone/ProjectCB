@@ -4,6 +4,11 @@
 #include "ProjectCB/CBPlayer/CB_PlayerState.h"
 #include "ProjectCB/CBGameModes/CB_GameStateBase.h"
 #include "ProjectCB/CBUI/CB_TextReaderComponent.h"
+#include "ProjectCB/CBUI/CB_PlayerUIHUD.h"
+#include "GameFramework/PlayerStart.h"
+#include "Engine/PlayerStartPIE.h"
+#include "Engine/World.h"
+#include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
 #include "Json.h"
 #include "JsonUtilities.h"
@@ -12,9 +17,9 @@
 
 ACB_Captureball_GameMode::ACB_Captureball_GameMode() 
 {
-	//Set the game mode controller and character to the intended player classes
-	
+	this->bDelayedStart = true;
 
+	//Set the game mode controller and character to the intended player classes
 	static ConstructorHelpers::FClassFinder<ACB_PlayerCharacter> PlayerCharacterBPClass(TEXT("/Game/PlayerBP/BP_CB_PlayerCharacter"));
 
 	if (PlayerCharacterBPClass.Class != NULL) 
@@ -23,6 +28,7 @@ ACB_Captureball_GameMode::ACB_Captureball_GameMode()
 		GameStateClass = ACB_GameStateBase::StaticClass();
 		PlayerControllerClass = ACB_PlayerController::StaticClass();
 		DefaultPawnClass = PlayerCharacterBPClass.Class;
+		HUDClass = ACB_PlayerUIHUD::StaticClass();
 	}
 
 	UCB_TextReaderComponent* TextReader = CreateAbstractDefaultSubobject<UCB_TextReaderComponent>(TEXT("TextReaderComp"));
@@ -32,7 +38,9 @@ ACB_Captureball_GameMode::ACB_Captureball_GameMode()
 	
 	RemainingGameTime = 240;
 	GameSessionActivated = false;
+
 }
+
 
 void ACB_Captureball_GameMode::BeginPlay()
 {
@@ -185,13 +193,12 @@ void ACB_Captureball_GameMode::BeginPlay()
 		if (CBGameState != nullptr)
 		{
 			CBGameState->HasTeamWon.AddDynamic(this, &ACB_Captureball_GameMode::IsMatchOver);
+			CBGameState->CurrentGameplayMode = 0;
 		}
 	}
-
-	if (this->HasMatchStarted())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Match Started"));
-	}
+	this->BeginMatch();
+	//TODO set up countdown start timer here
+	//GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::BeginMatch, 3.0f, false, 10.0f);
 }
 
 void ACB_Captureball_GameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) 
@@ -279,10 +286,26 @@ void ACB_Captureball_GameMode::Logout(AController* Exiting)
 
 FString ACB_Captureball_GameMode::InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal)
 {
+	FString CurrentNewPlayerTeam;
+#if WITH_GAMELIFT
+#else
+	//Only for testing, clients never will be using this in the real deal
+	
+	if (HasAuthority())
+	{
+		CurrentNewPlayerTeam = MockTeamAssign();
+		ACB_PlayerState* CBPlayerState = Cast<ACB_PlayerState>(NewPlayerController->PlayerState);
+
+		if (CBPlayerState != nullptr)
+		{
+			CBPlayerState->Team = CurrentNewPlayerTeam;
+			ACB_GameStateBase* CBGameState = Cast<ACB_GameStateBase>(this->GameState);
+			CBGameState->AssignPlayerToTeam(CurrentNewPlayerTeam);
+		}
+	}
+#endif
 	
 	FString InitializedString = Super::InitNewPlayer(NewPlayerController, UniqueId, Options, Portal);
-
-	FString CurrentNewPlayerTeam;
 
 #if WITH_GAMELIFT
 	const FString& PlayerSessionId = UGameplayStatics::ParseOption(Options, "PlayerSessionId");
@@ -306,18 +329,180 @@ FString ACB_Captureball_GameMode::InitNewPlayer(APlayerController* NewPlayerCont
 						auto PlayerObj = StartGameSessionState.PlayerIdToPlayer.Find(PlayerId);
 						FString Team = PlayerObj->GetTeam();
 						CurrentNewPlayerTeam = Team;
-						CBPlayerState->Team = *Team;
+						CBPlayerState->Team = Team;
+						ACB_GameStateBase* CBGameState = Cast<ACB_GameStateBase>(this->GameState);
+						if (CBGameState != nullptr)
+						{
+							CBGameState->AssignPlayerToTeam(CurrentNewPlayerTeam);
+						}
+						
 					}
 				}
 			}
 		}
 	}
+#else
+	//Post Finding Start and initializing
 #endif
 
-	ACB_GameStateBase* CBGameState = Cast<ACB_GameStateBase>(this->GameState);
-	CBGameState->AssignPlayerToTeam(CurrentNewPlayerTeam);
-
 	return InitializedString;
+}
+
+AActor* ACB_Captureball_GameMode::ChoosePlayerStart_Implementation(AController* Player)
+{
+
+	// Choose a player start
+	
+	APlayerStart* FoundPlayerStart = nullptr;
+	UClass* PawnClass = GetDefaultPawnClassForController(Player);
+	APawn* PawnToFit = PawnClass ? PawnClass->GetDefaultObject<APawn>() : nullptr;
+	
+	ACB_PlayerCharacter* CBPlayerCharacter = Cast<ACB_PlayerCharacter>(PawnToFit);
+	FString CurrentPlayerTeam;
+
+	if (CBPlayerCharacter != nullptr)
+	{
+		FString::Printf(TEXT("FindingPlayerStart"));
+		ACB_PlayerState* CBCurrentPlayerState = Cast<ACB_PlayerState>(Player->PlayerState);
+
+		if (CBCurrentPlayerState != nullptr)
+		{
+			FString::Printf(TEXT("Current PlayerState Valid"));
+			CurrentPlayerTeam = CBCurrentPlayerState->Team;
+		}
+	}
+	
+	TArray<APlayerStart*> UnOccupiedStartPoints;
+	TArray<APlayerStart*> OccupiedStartPoints;
+	UWorld* World = GetWorld();
+	if (World != nullptr)
+	{
+		for (TActorIterator<APlayerStart> It(World); It; ++It)
+		{
+			APlayerStart* PlayerStart = *It;
+
+			FString CurrentTag = PlayerStart->PlayerStartTag.ToString();
+
+			if (CurrentTag == CurrentPlayerTeam)
+			{
+				FoundPlayerStart = PlayerStart;
+				FoundPlayerStart->PlayerStartTag = "Taken";
+				if (GEngine)
+					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, TEXT("PlayerStart Tag Set"));
+				break;
+			}
+		}
+	}
+	
+	if (FoundPlayerStart != nullptr)
+	{
+		FVector ActorLocation = FoundPlayerStart->GetActorLocation();
+		FRotator ActorRotation = FoundPlayerStart->GetActorRotation();
+
+		if (Player != nullptr)
+		{
+			Player->ClientSetRotation(ActorRotation, false);
+			Player->ClientSetLocation(ActorLocation, ActorRotation);
+
+			if (GEngine)
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("Player Found Start"));
+		}
+	}
+	else
+	{
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("PlayerStart Not Found!"));
+	}
+
+	if (Player->GetPawn() != nullptr)
+	{
+		//Player->GetPawn()->SetActorRelativeRotation(ActorRotation);
+		ACB_PlayerCharacter* CBPlayerCharacterIncoming = Cast<ACB_PlayerCharacter>(Player->GetPawn());
+		if (CBPlayerCharacterIncoming != nullptr)
+		{
+			FVector ActorLocation = FoundPlayerStart->GetActorLocation();
+			FRotator ActorRotation = FoundPlayerStart->GetActorRotation();
+			CBPlayerCharacterIncoming->SetPlayerStartRotation();
+			CBPlayerCharacterIncoming->SetActorLocation(ActorLocation);
+			Player->Possess(PawnToFit);
+			APlayerController* CurrentPlayerController = Cast<APlayerController>(Player);
+			if (CurrentPlayerController != nullptr)
+			{
+				CurrentPlayerController->EnableInput(CurrentPlayerController);
+			}
+		}
+	}
+
+	return FoundPlayerStart;
+}
+
+AActor* ACB_Captureball_GameMode::FindPlayerStart_Implementation(AController* Player, const FString& IncomingName)
+{
+	UWorld* World = GetWorld();
+	AActor* BestStart = ChoosePlayerStart(Player);
+	if (BestStart == nullptr)
+	{
+		// No player start found
+		UE_LOG(LogGameMode, Log, TEXT("FindPlayerStart: PATHS NOT DEFINED or NO PLAYERSTART with positive rating"));
+
+		// This is a bit odd, but there was a complex chunk of code that in the end always resulted in this, so we may as well just 
+		// short cut it down to this.  Basically we are saying spawn at 0,0,0 if we didn't find a proper player start
+		//BestStart = World->GetWorldSettings();
+		
+		while(BestStart != nullptr) 
+		{
+			BestStart = ChoosePlayerStart(Player);
+		}
+	}
+
+	return BestStart;
+}
+
+FString ACB_Captureball_GameMode::MockTeamAssign()
+{
+	FString TeamToAssign = "blue";
+	
+	if (this->GameState != nullptr)
+	{
+		ACB_GameStateBase* CBGameState = Cast<ACB_GameStateBase>(this->GameState);
+
+		if (CBGameState != nullptr)
+		{
+			TeamToAssign = CBGameState->GetNextTeamToAssign();
+		}
+	}
+	
+	return TeamToAssign;
+}
+
+//Load in and start match
+void ACB_Captureball_GameMode::BeginMatch()
+{
+	this->StartMatch();
+
+	if (GameState != nullptr)
+	{
+		ACB_GameStateBase* CBGameState = Cast<ACB_GameStateBase>(GameState);
+
+		if (CBGameState != nullptr)
+		{
+			UWorld* World = GetWorld();
+			for (TActorIterator<APlayerController> It(World); It; ++It)
+			{
+				APlayerController* CurrentPlayerController = *It;
+
+				if (CurrentPlayerController->IsLocalController())
+				{
+					CBGameState->m_localPlayerController = Cast<ACB_PlayerController>(CurrentPlayerController);
+					CBGameState->PlayerHUD = Cast<ACB_PlayerUIHUD>(CBGameState->m_localPlayerController->GetHUD());
+					break;
+				}
+			}
+
+			CBGameState->CurrentGameplayMode = 1;
+			CBGameState->RefreshUIHUB();
+		}
+	}
 }
 
 void ACB_Captureball_GameMode::CountDownUntilGameOver()
@@ -478,8 +663,8 @@ void ACB_Captureball_GameMode::HandleGameSessionUpdate()
 		{
 			GameSessionActivated = true;
 
-			//GetWorldTimerManager().SetTimer(PickAWinningTeamHandle, this, &ACB_Captureball_GameMode::PickAWinningTeam, 1.0f, false, (float)RemainingGameTime);
-			//GetWorldTimerManager().SetTimer(CountDownUntilGameOverHandle, this, &ACB_Captureball_GameMode::CountDownUntilGameOver, 1.0f, true, 0.0f);
+			GetWorldTimerManager().SetTimer(PickAWinningTeamHandle, this, &ACB_Captureball_GameMode::PickAWinningTeam, 1.0f, false, (float)RemainingGameTime);
+			GetWorldTimerManager().SetTimer(CountDownUntilGameOverHandle, this, &ACB_Captureball_GameMode::CountDownUntilGameOver, 1.0f, true, 0.0f);
 		}
 	}
 }

@@ -36,4 +36,6 @@ public:
 	IGrabbable* operator[](size_t index);
 
 	IGrabbable* get(size_t index);
+
+	bool isValidList();
 };

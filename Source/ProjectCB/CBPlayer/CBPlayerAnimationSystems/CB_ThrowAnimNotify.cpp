@@ -2,6 +2,7 @@
 
 #include "CB_ThrowAnimNotify.h"
 #include "ProjectCB/CBPlayer/CB_PlayerCharacter.h"
+#include "Net/UnrealNetwork.h"
 
 void UCB_ThrowAnimNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) 
 {

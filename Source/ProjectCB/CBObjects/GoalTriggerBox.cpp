@@ -3,8 +3,10 @@
 #include "CB_DodgeballProjectile.h"
 #include <math.h>
 #include "../CBPlayer/CB_PlayerCharacter.h"
+#include "ProjectCB//CBGameModes/CB_GameStateBase.h"
 #include "Net/UnrealNetwork.h"
 
+//TODO Use in Capture Mode send value to hud
 const float AGoalTriggerBox::DIFF_Y = 50.0f;
 const float AGoalTriggerBox::DIFF_X = -sqrt(3.0f) * DIFF_Y / 2.0f;
 const float AGoalTriggerBox::DIFF_Z = 1.5f * DIFF_Y / 2.0f;
@@ -134,6 +136,10 @@ void AGoalTriggerBox::updateBallPositions(bool changedLayout, bool added)
 			ACB_DodgeballProjectile* dodgeball = Cast<ACB_DodgeballProjectile>(this->m_grabbableList[index]);
 
 			dodgeball->m_goalLocation = this->getBallPosition(index);
+
+			this->m_ballsInGoal--;
+
+			//ACB_GameStateBase CBGameState
 		}
 	}
 	else if (added)
@@ -143,11 +149,15 @@ void AGoalTriggerBox::updateBallPositions(bool changedLayout, bool added)
 		ACB_DodgeballProjectile* dodgeball = Cast<ACB_DodgeballProjectile>(this->m_grabbableList[index]);
 
 		dodgeball->m_goalLocation = this->getBallPosition(index);
+
+		this->m_ballsInGoal++;
 	}
 }
 
 AGoalTriggerBox::AGoalTriggerBox()
 {
+	this->bReplicates = true;
+	//this->SetReplicateMovement(true);
 	OnActorBeginOverlap.AddDynamic(this, &AGoalTriggerBox::OnOverlapBegin);
 	OnActorEndOverlap.AddDynamic(this, &AGoalTriggerBox::OnOverlapEnd);
 
@@ -157,8 +167,6 @@ AGoalTriggerBox::AGoalTriggerBox()
 void AGoalTriggerBox::BeginPlay()
 {
 	Super::BeginPlay();
-
-	this->SetReplicates(true);
 
 	DrawDebugBox(GetWorld(), GetActorLocation(), GetComponentsBoundingBox().GetExtent(), FColor::Green, true, -1, 0, 5);
 }
@@ -212,4 +220,9 @@ IGrabbableObject* AGoalTriggerBox::getGrabbableObject()
 unsigned char AGoalTriggerBox::getGrabPriority()
 {
 	return UGrabbable::GOAL_PRIORITY;
+}
+
+void AGoalTriggerBox::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const 
+{
+	DOREPLIFETIME(AGoalTriggerBox, m_ballsInGoal);
 }

@@ -7,6 +7,9 @@
 #include "Delegates/Delegate.h"
 #include "CB_GameStateBase.generated.h"
 
+class ACB_PlayerUIHUD;
+class ACB_PlayerController;
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHasTeamWon);
 /**
  * 
@@ -18,33 +21,61 @@ class PROJECTCB_API ACB_GameStateBase : public AGameState
 	
 public:
 
+	ACB_GameStateBase();
+
 	UPROPERTY(Replicated)
 		FString LatestEvent;
 
 	UPROPERTY(Replicated)
 		FString WinningTeam;
+		
+	UPROPERTY(Replicated)
+		int CurrentGameplayMode;
 
 	UPROPERTY(Replicated)
 		bool bTeamHasWon = false;
 
 	UPROPERTY(Replicated)
-		int BlueTeamSize;
+		int BlueTeamSize = 0;
 
 	UPROPERTY(Replicated)
 		int BlueTeamSizeAliveCount;
 
 	UPROPERTY(Replicated)
-		int YellowTeamSize;
+		int YellowTeamSize = 0;
 
 	UPROPERTY(Replicated)
 		int YellowTeamSizeAliveCount;
+
+	UPROPERTY(Replicated)
+		int BlueTeamBallsCaptured = 0;
+
+	UPROPERTY(Replicated)
+		int YellowTeamBallsCaptured = 0;
+
+	UPROPERTY()
+		ACB_PlayerUIHUD* PlayerHUD;
 
 	void AssignPlayerToTeam(FString TeamName);
 
 	void UpdateTeamSizeAliveCount(FString TeamName);
 
+	FString GetNextTeamToAssign();
+
+	void UpdateTeamGoalBox(FString TeamName, int CurrentAmount);
+
+	/// @brief Used to set initial values or force a ui update
+	UFUNCTION(NetMulticast, Reliable)
+	void RefreshUIHUB();
+
 	//How to call:
 //YourDelegateName.Broadcast(YourParameters);
 	UPROPERTY(BlueprintAssignable, Category = "EventDispatchers")
 		FHasTeamWon HasTeamWon;
+
+	ACB_PlayerController* m_localPlayerController;
+
+protected:
+
+	void BeginPlay() override;
 };

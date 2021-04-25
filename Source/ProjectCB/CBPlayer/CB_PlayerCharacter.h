@@ -10,6 +10,8 @@
 #include "Animation/BlendSpace1D.h"
 #include "CB_PlayerCharacter.generated.h"
 
+class UMaterialInstanceDynamic;
+
 UCLASS()
 class PROJECTCB_API ACB_PlayerCharacter : public ACharacter, public IGrabbable, public IGrabbableObject
 {
@@ -23,6 +25,14 @@ public:
 
 	ACB_PlayerCharacter();
 
+	//Art Anim Extra
+	UPROPERTY(Replicated)
+	UMaterialInstanceDynamic* DynamicMaterial;
+
+	//Networked Anim Properties
+	UPROPERTY(Replicated)
+	bool bIsOnGroundAnimate;
+
 private:
 
 	// General
@@ -35,7 +45,11 @@ private:
 	void adjustGravity(UCharacterMovementComponent* characterMovement);
 
 	Dodge m_dodge = Dodge(this->m_basics);
-	Throw m_throw = Throw(this->m_basics);
+	UPROPERTY(Replicated)
+		UThrow* m_throw;
+
+	UPROPERTY(Replicated)
+		FVector MoveVelocity;
 
 	// Network Replication Player State
 	virtual void OnRep_PlayerState() override;
@@ -45,10 +59,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(Replicated, EditAnywhere)
 		USceneComponent* grabRoot;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Components")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Components")
 		UBoxComponent* grabBox;
 
 	UFUNCTION()
@@ -104,8 +118,28 @@ public:
 	void AliveAction();
 
 	//Networked Moves
+	//TESTING RPC FOR VELOCITY
+	//TODO Make countdown and check head band to orange, set up UI values and players status
+	UFUNCTION(Client, Reliable)
+	void UpdateVelocity(FVector newVelocityVector);
+
 	UFUNCTION(Server, Reliable, WithValidation)
 	void SendLocalClientRotationToServer();
+
+	UFUNCTION(Client, Reliable, WithValidation)
+	void SetPlayerMaterialColor();
+
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+	void SetPlayerStartRotation();
+
+	UFUNCTION(Server, Reliable)
+	void LaunchBall();
+
+	UFUNCTION(Server, Reliable)
+	void RemoveBall(ACB_DodgeballProjectile* currentBall);
+
+	UFUNCTION(Server, Reliable)
+	void UpdateGrabbedObjectPosition(UObject* currentGrabbedObject);
 
 	float getRadius() override;
 	bool isGrabbable() override;
