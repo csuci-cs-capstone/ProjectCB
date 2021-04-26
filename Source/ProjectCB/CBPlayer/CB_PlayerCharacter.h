@@ -98,6 +98,9 @@ protected:
 
 public:
 
+	UFUNCTION(BlueprintCallable,Category="Options")
+		void updateCameraSensitivity(float cameraSensitivity);
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

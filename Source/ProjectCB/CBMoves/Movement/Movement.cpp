@@ -64,9 +64,17 @@ void Movement::updateVelocity(float mobility)
 	updateVelocity(this->m_currentMovementVelocity, mobility);
 	updateVelocity(this->m_currentRotationVelocity, 1);
 
-	if (!this->m_currentRotationVelocity.IsNearlyZero())
+	if (!this->m_currentRotationVelocity.IsNearlyZero() && !this->m_useCamera)
 		this->m_playerRotation.Yaw = MathConstants::RAD_TO_DEG
 		* atan2f(this->m_currentRotationVelocity.Y, this->m_currentRotationVelocity.X);
+}
+
+void Movement::setCameraRotation(FRotator& cameraRotation, bool useCamera)
+{
+	this->m_useCamera = useCamera;
+	
+	if (this->m_useCamera)
+		this->m_playerRotation.Yaw = cameraRotation.Yaw;
 }
 
 void Movement::setStartRotation(FRotator startRotation)

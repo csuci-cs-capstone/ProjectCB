@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Movement.h"
 
 struct PROJECTCB_API CameraMovement
 {
@@ -12,12 +13,15 @@ private:
 
 	FRotator m_cameraRotation;
 	float m_velocity;
+	float m_sensitivity;
 
 public:
 
 	CameraMovement();
 
-	void updateCamera(const float amount);
+	void updateCamera(Movement& movement, const float amount);
+
+	void setCameraSensitivity(float cameraSensitivity);
 
 	const FRotator& getCameraRotation();
 
