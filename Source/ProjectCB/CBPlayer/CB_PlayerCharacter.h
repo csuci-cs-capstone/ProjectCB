@@ -25,9 +25,12 @@ public:
 
 	ACB_PlayerCharacter();
 
-	//Art Anim Extra
+	//Art Model Anim Extra
 	UPROPERTY(Replicated)
 	UMaterialInstanceDynamic* DynamicMaterial;
+
+	UPROPERTY(Replicated)
+	UMaterialInstanceDynamic* DynamicHeadMaterial;
 
 	//Networked Anim Properties
 	UPROPERTY(Replicated)

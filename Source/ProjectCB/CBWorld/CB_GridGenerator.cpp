@@ -1,5 +1,5 @@
 #include "CB_GridGenerator.h"
-
+#include "Net/UnrealNetwork.h"
 
 const float ACB_GridGenerator::START_SECONDS = 9.0f;
 const float ACB_GridGenerator::UPDATE_INTERVAL = 16.0f;
@@ -43,7 +43,7 @@ ACB_GridBox* ACB_GridGenerator::spawnBox(size_t lengthPos, size_t widthPos)
     return GetWorld()->SpawnActor<ACB_GridBox>(this->BoxClass, location, rotation, spawnParams);
 }
 
-void ACB_GridGenerator::spawnBall(size_t lengthPos, size_t widthPos)
+void ACB_GridGenerator::spawnBall_Implementation(int lengthPos, int widthPos)
 {
     FActorSpawnParameters spawnParams;
 
@@ -57,7 +57,7 @@ void ACB_GridGenerator::spawnBall(size_t lengthPos, size_t widthPos)
     ball->SetActorScale3D(FVector(0.5f, 0.5f, 0.5f));
 }
 
-void ACB_GridGenerator::spawnBalls()
+void ACB_GridGenerator::spawnBalls_Implementation()
 {
     if (this->m_numOfBoxes > 0)
     {
@@ -158,17 +158,17 @@ void ACB_GridGenerator::BeginPlay()
 
     //Had to temporarily disable this since it seemed like it was causing some issues
 
-    //generateGrid();
+    generateGrid();
     /*
     GetWorldTimerManager().SetTimer(this->m_timerHandle, this, &ACB_GridGenerator::updateGrid,
         ACB_GridGenerator::UPDATE_INTERVAL, true, ACB_GridGenerator::START_SECONDS);
 
     GetWorldTimerManager().SetTimer(this->m_fallHandle, this, &ACB_GridGenerator::deleteBoxes,
-        ACB_GridGenerator::FALL_TIME, true, ACB_GridGenerator::START_SECONDS);
+        ACB_GridGenerator::FALL_TIME, true, ACB_GridGenerator::START_SECONDS);*/
 
     GetWorldTimerManager().SetTimer(this->m_ballHandle, this, &ACB_GridGenerator::spawnBalls,
         ACB_GridGenerator::BALL_SPAWN_UPDATE_INTERVAL, true, ACB_GridGenerator::BALL_SPAWN_START_SECONDS);
-    */
+    
     size_t centerLength = ACB_GridGenerator::STAGE_LENGTH / 2.0f;
     size_t centerWidth = ACB_GridGenerator::STAGE_WIDTH / 2.0f;
 

@@ -196,9 +196,9 @@ void ACB_Captureball_GameMode::BeginPlay()
 			CBGameState->CurrentGameplayMode = 0;
 		}
 	}
-	this->BeginMatch();
+	//this->BeginMatch();
 	//TODO set up countdown start timer here
-	//GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::BeginMatch, 3.0f, false, 10.0f);
+	GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::BeginMatch, 3.0f, false, 3.0f);
 }
 
 void ACB_Captureball_GameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) 

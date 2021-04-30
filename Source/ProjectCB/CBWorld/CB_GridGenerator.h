@@ -5,7 +5,6 @@
 #include "CB_GridBox.h"
 #include "../CBObjects/CB_DodgeballProjectile.h"
 #include "Math/UnrealMathUtility.h"
-#include "Net/UnrealNetwork.h"
 #include "CB_GridGenerator.generated.h"
 
 UCLASS()
@@ -41,10 +40,10 @@ private:
 	FTimerHandle m_ballHandle;
 
 	ACB_GridBox* spawnBox(size_t lengthPos, size_t widthPos);
-
-	void spawnBall(size_t lengthPos, size_t widthPos);
-
-	void spawnBalls();
+	UFUNCTION(Server, Reliable)
+		void spawnBall(int lengthPos, int widthPos);
+	UFUNCTION(Server, Reliable)
+		void spawnBalls();
 
 	void deleteBoxes();
 
