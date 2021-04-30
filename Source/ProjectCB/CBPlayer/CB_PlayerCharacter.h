@@ -126,7 +126,7 @@ public:
 	//Networked Moves
 	//TESTING RPC FOR VELOCITY
 	//TODO Make countdown and check head band to orange, set up UI values and players status
-	UFUNCTION(Client, Reliable)
+	UFUNCTION(Server, Reliable)
 	void UpdateVelocity(FVector newVelocityVector);
 
 	UFUNCTION(Server, Reliable, WithValidation)

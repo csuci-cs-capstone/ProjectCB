@@ -28,7 +28,11 @@ public:
 
 	UPROPERTY(Replicated)
 		FString WinningTeam;
-		
+	
+	//Current Modes are as follows
+	// 0 - Initialization Mode
+	// 1 - Capture Mode
+	// 2 - Elimination Mode
 	UPROPERTY(Replicated)
 		int CurrentGameplayMode;
 

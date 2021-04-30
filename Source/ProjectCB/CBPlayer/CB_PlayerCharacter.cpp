@@ -371,7 +371,15 @@ void ACB_PlayerCharacter::SendLocalClientRotationToServer_Implementation()
 //NETWORK RPCs
 void ACB_PlayerCharacter::UpdateVelocity_Implementation(FVector newVelocityVector) 
 {
-	GetCharacterMovement()->Velocity = newVelocityVector;
+	FVector CurrentLocation = this->GetActorLocation();
+
+	CurrentLocation = CurrentLocation + newVelocityVector;
+
+	//GetCharacterMovement()->Velocity = newVelocityVector;
+
+	//SetActorLocation(CurrentLocation);
+
+	this->OnRep_ReplicateMovement();
 }
 
 void ACB_PlayerCharacter::SetPlayerMaterialColor_Implementation()

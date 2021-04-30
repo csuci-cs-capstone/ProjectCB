@@ -9,7 +9,7 @@
 USTRUCT()
 struct PROJECTCB_API FPlayerBasics
 {
-	GENERATED_BODY();
+	GENERATED_BODY()
 
 public:
 
@@ -51,9 +51,12 @@ public:
 	DodgeState m_dodgeState; // TODO make private
 	ThrowState m_throwState; // TODO make private
 
+	UPROPERTY()
 	float m_currentWorldLocationZ;
-
+	
+	UPROPERTY()
 	float m_currentMobility;
+	UPROPERTY()
 	float m_previousMobility;
 
 	float m_currentRadius;
@@ -68,7 +71,9 @@ public:
 
 //////
 
+	
 	Movement m_movement;
+	
 	CameraMovement m_cameraMovement;
 	
 	//a reference to the current level so we can spawn objects from code
