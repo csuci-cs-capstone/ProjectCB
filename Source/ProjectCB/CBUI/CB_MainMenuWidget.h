@@ -57,6 +57,12 @@ private:
 		UButton* MatchmakingButton;
 
 	UPROPERTY()
+		UButton* PracticeButton;
+
+	UPROPERTY()
+		UButton* ExitButton;
+
+	UPROPERTY()
 		UTextBlock* WinsTextBlock;
 
 	UPROPERTY()
@@ -79,6 +85,12 @@ private:
 
 	UFUNCTION()
 		void PollMatchmaking();
+
+	UFUNCTION()
+		void OnPracticeButtonClicked();
+
+	UFUNCTION()
+		void OnExitButtonClicked();
 
 	//Response handler functions
 	void OnExchangeCodeForTokensResponseRecieved(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);

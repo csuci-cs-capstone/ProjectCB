@@ -496,13 +496,14 @@ void ACB_Captureball_GameMode::BeginMatch()
 					CBGameState->m_localPlayerController = Cast<ACB_PlayerController>(CurrentPlayerController);
 					CBGameState->PlayerHUD = Cast<ACB_PlayerUIHUD>(CBGameState->m_localPlayerController->GetHUD());
 					CBGameState->m_localPlayerController->SetPlayerControlEnabled(false);
+					//CBGameState->m_localPlayerController->SetPlayerControlEnabled(true);
 					break;
 				}
 			}
 
 			CBGameState->CurrentGameplayMode = 1;
 			CBGameState->RefreshUIHUB();
-			GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::StartCaptureMode, 3.0f, false, 10.0f);
+			GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::StartCaptureMode, 3.0f, false, 1.0f);
 		}
 	}
 }
@@ -530,7 +531,7 @@ void ACB_Captureball_GameMode::StartCaptureMode()
 
 			//CBGameState->CurrentGameplayMode = 1;
 			//CBGameState->RefreshUIHUB();
-			GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::EndCaptureMode, 3.0f, false, 5.0f);
+			//GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::EndCaptureMode, 3.0f, false, 5.0f);
 		}
 	}
 

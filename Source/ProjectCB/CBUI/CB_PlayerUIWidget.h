@@ -30,9 +30,13 @@ public:
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 		class UTextBlock* BallsCapturedText;
 
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		class UTextBlock* CountdownText;
+
 	void SetTeamAliveTextBlock(FString TextToSet);
 	void SetEnemyAliveTextBlock(FString TextToSet);
 	void SetBallsCaptuedTextBlock(FString TextToSet);
+	void SetCountdownTextBlock(FString TextToSet);
 
 protected:
 

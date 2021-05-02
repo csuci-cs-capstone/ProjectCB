@@ -47,6 +47,16 @@ void UCB_MainMenuWidget::NativeConstruct()
 	MatchmakingDelegate.BindUFunction(this, "OnPlayButtonClicked");
 	MatchmakingButton->OnClicked.Add(MatchmakingDelegate);
 
+	PracticeButton = (UButton*)GetWidgetFromName(TEXT("Practice"));
+	FScriptDelegate PracticeDelegate;
+	PracticeDelegate.BindUFunction(this, "OnPracticeButtonClicked");
+	PracticeButton->OnClicked.Add(PracticeDelegate);
+
+	ExitButton = (UButton*)GetWidgetFromName(TEXT("Exit"));
+	FScriptDelegate ExitDelegate;
+	ExitDelegate.BindUFunction(this, "OnExitButtonClicked");
+	ExitButton->OnClicked.Add(ExitDelegate);
+
 	MatchmakingEventTextBlock = (UTextBlock*)GetWidgetFromName(TEXT("GameStatusText"));
 
 	FString AccessToken;
@@ -274,6 +284,24 @@ void UCB_MainMenuWidget::PollMatchmaking()
 			PollMatchmakingRequest->SetHeader("Authorization", AccessToken);
 			PollMatchmakingRequest->SetContentAsString(RequestBody);
 			PollMatchmakingRequest->ProcessRequest();
+		}
+	}
+}
+
+void UCB_MainMenuWidget::OnPracticeButtonClicked()
+{
+}
+
+void UCB_MainMenuWidget::OnExitButtonClicked()
+{
+	UWorld* World = GetWorld();
+	if (World != nullptr)
+	{
+		APlayerController* PlayerController = World->GetFirstPlayerController();
+
+		if (PlayerController != nullptr)
+		{
+			PlayerController->ConsoleCommand("quit");
 		}
 	}
 }

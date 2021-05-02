@@ -30,6 +30,7 @@ public:
 	void SetTeamAlive(FString IncomingTextValue);
 	void SetEnemyAlive(FString IncomingTextValue);
 	void SetBallsCaptured(FString IncomingTextValue);
+	void SetCountdownValue(FString IncomingTextValue);
 
 protected:
 
