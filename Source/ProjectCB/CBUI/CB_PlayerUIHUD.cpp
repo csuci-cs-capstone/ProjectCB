@@ -45,6 +45,14 @@ void ACB_PlayerUIHUD::SetBallsCaptured(FString IncomingTextValue)
 	}
 }
 
+void ACB_PlayerUIHUD::SetCountdownValue(FString IncomingTextValue)
+{
+	if (CBPlayerUIWidget != nullptr)
+	{
+		CBPlayerUIWidget->SetCountdownTextBlock(IncomingTextValue);
+	}
+}
+
 void ACB_PlayerUIHUD::BeginPlay()
 {
 	Super::BeginPlay();

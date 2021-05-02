@@ -28,6 +28,11 @@ void UCB_PlayerUIWidget::SetBallsCaptuedTextBlock(FString TextToSet)
 	BallsCapturedText->SetText(FText::FromString(TextToSet));
 }
 
+void UCB_PlayerUIWidget::SetCountdownTextBlock(FString TextToSet)
+{
+	CountdownText->SetText(FText::FromString(TextToSet));
+}
+
 void UCB_PlayerUIWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -48,5 +53,6 @@ void UCB_PlayerUIWidget::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 	DOREPLIFETIME(UCB_PlayerUIWidget, TeamAliveText);
 	DOREPLIFETIME(UCB_PlayerUIWidget, EnemyAliveText);
 	DOREPLIFETIME(UCB_PlayerUIWidget, BallsCapturedText);
+	DOREPLIFETIME(UCB_PlayerUIWidget, CountdownText);
 }
 

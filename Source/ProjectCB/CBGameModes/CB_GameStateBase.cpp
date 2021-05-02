@@ -131,7 +131,8 @@ void ACB_GameStateBase::RefreshUIHUB_Implementation()
 			FString EnemyString = FString::FromInt(BlueTeamSizeAliveCount);
 			PlayerHUD->SetEnemyAlive(EnemyString);
 		}
-
+		FString NewCount = FString::FromInt(15);
+		PlayerHUD->SetCountdownValue(NewCount);
 	}
 }
 

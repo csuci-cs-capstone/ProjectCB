@@ -93,6 +93,12 @@ public:
 		FTimerHandle MatchStartCountDownHandle;
 
 	UPROPERTY()
+		FTimerHandle CaptureModeCountDownHandle;
+
+	UPROPERTY()
+		FTimerHandle EliminationCountDownHandle;
+
+	UPROPERTY()
 		FTimerHandle EndGameHandle;
 
 	UPROPERTY()
@@ -153,6 +159,18 @@ private:
 
 	UFUNCTION()
 		void BeginMatch();
+	
+	UFUNCTION()
+		void StartCaptureMode();
+
+	UFUNCTION()
+		void EndCaptureMode();
+
+	UFUNCTION()
+		void StartEliminationMode();
+
+	UFUNCTION()
+		void EndEliminationMode();
 
 	UFUNCTION()
 		void CountDownUntilGameOver();

@@ -35,6 +35,12 @@ public:
 	void StopShootAction();
 	
 	void AliveAction();
+	
+	//For Gamemode use
+	bool m_bIsPlayerControlEnabled = false;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void SetPlayerControlEnabled(bool isEnabled);
 
 
 };

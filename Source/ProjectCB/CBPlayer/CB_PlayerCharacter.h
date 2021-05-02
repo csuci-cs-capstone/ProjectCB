@@ -25,9 +25,12 @@ public:
 
 	ACB_PlayerCharacter();
 
-	//Art Anim Extra
+	//Art Model Anim Extra
 	UPROPERTY(Replicated)
 	UMaterialInstanceDynamic* DynamicMaterial;
+
+	UPROPERTY(Replicated)
+	UMaterialInstanceDynamic* DynamicHeadMaterial;
 
 	//Networked Anim Properties
 	UPROPERTY(Replicated)
@@ -123,7 +126,7 @@ public:
 	//Networked Moves
 	//TESTING RPC FOR VELOCITY
 	//TODO Make countdown and check head band to orange, set up UI values and players status
-	UFUNCTION(Client, Reliable)
+	UFUNCTION(Server, Reliable)
 	void UpdateVelocity(FVector newVelocityVector);
 
 	UFUNCTION(Server, Reliable, WithValidation)

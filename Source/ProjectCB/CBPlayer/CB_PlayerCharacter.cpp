@@ -311,14 +311,14 @@ void ACB_PlayerCharacter::RotateCamera(float amount)
 
 void ACB_PlayerCharacter::JumpAction()
 {
-	Crouch();
-	//this->m_dodge.onPress();
+	//Crouch();
+	this->m_dodge.onPress();
 }
 
 void ACB_PlayerCharacter::StopJumpAction()
 {
 	Jump();
-	//this->m_dodge.onRelease();
+	this->m_dodge.onRelease();
 }
 
 void ACB_PlayerCharacter::ShootAction() // TODO create a Dodgeball Generator
@@ -371,15 +371,27 @@ void ACB_PlayerCharacter::SendLocalClientRotationToServer_Implementation()
 //NETWORK RPCs
 void ACB_PlayerCharacter::UpdateVelocity_Implementation(FVector newVelocityVector) 
 {
-	GetCharacterMovement()->Velocity = newVelocityVector;
+	FVector CurrentLocation = this->GetActorLocation();
+
+	CurrentLocation = CurrentLocation + newVelocityVector;
+
+	//GetCharacterMovement()->Velocity = newVelocityVector;
+
+	//SetActorLocation(CurrentLocation);
+
+	this->OnRep_ReplicateMovement();
 }
 
 void ACB_PlayerCharacter::SetPlayerMaterialColor_Implementation()
 {
 	auto Material = skeletalMesh->GetMaterial(0);
+	auto HeadMaterial = skeletalMesh->GetMaterial(3);
 
 	DynamicMaterial = UMaterialInstanceDynamic::Create(Material, NULL);
 	skeletalMesh->SetMaterial(0, DynamicMaterial);
+
+	DynamicHeadMaterial = UMaterialInstanceDynamic::Create(HeadMaterial, NULL);
+	skeletalMesh->SetMaterial(3, DynamicHeadMaterial);
 
 	float TeamColor = 0.0f;
 	ACB_PlayerState* CBPlayerState = Cast<ACB_PlayerState>(GetPlayerState());
@@ -392,6 +404,7 @@ void ACB_PlayerCharacter::SetPlayerMaterialColor_Implementation()
 	}
 
 	DynamicMaterial->SetScalarParameterValue(TEXT("Blend"), TeamColor);
+	DynamicHeadMaterial->SetScalarParameterValue(TEXT("Blend"), TeamColor);
 }
 
 bool ACB_PlayerCharacter::SetPlayerMaterialColor_Validate()
