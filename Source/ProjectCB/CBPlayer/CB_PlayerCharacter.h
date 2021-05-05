@@ -36,6 +36,12 @@ public:
 	UPROPERTY(Replicated)
 	bool bIsOnGroundAnimate;
 
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "PlayerValues")
+	bool bIsMultiplayer = true;
+
+	UPROPERTY(Replicated)
+	bool bIsGhost = false;
+
 private:
 
 	// General
@@ -53,6 +59,9 @@ private:
 
 	UPROPERTY(Replicated)
 		FVector MoveVelocity;
+
+	UPROPERTY(Replicated)
+		FTransform StartTransform;
 
 	// Network Replication Player State
 	virtual void OnRep_PlayerState() override;
@@ -96,6 +105,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Anims")
 		UBlendSpace1D* blendspace;
 
+	USkeletalMesh* m_PlayerGhostModel;
+
 	//Networking
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -128,6 +139,21 @@ public:
 	//TODO Make countdown and check head band to orange, set up UI values and players status
 	UFUNCTION(Server, Reliable)
 	void UpdateVelocity(FVector newVelocityVector);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void KnockBackPlayer(FVector HitNormal);
+
+	UFUNCTION(Server, Reliable)
+	void CheckIfPlayerIsAlive();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MakePlayerIntoGhost();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MakePlayerAlive();
+
+	UFUNCTION(Server, Reliable)
+	void SetPlayerStartPosition(FVector incomingPosition, FRotator incomingRotation);
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void SendLocalClientRotationToServer();

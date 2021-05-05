@@ -53,6 +53,14 @@ void ACB_PlayerUIHUD::SetCountdownValue(FString IncomingTextValue)
 	}
 }
 
+void ACB_PlayerUIHUD::SetUITeamColor(FString TeamName)
+{
+	if (CBPlayerUIWidget != nullptr)
+	{
+		CBPlayerUIWidget->SetImageColors(TeamName);
+	}
+}
+
 void ACB_PlayerUIHUD::BeginPlay()
 {
 	Super::BeginPlay();

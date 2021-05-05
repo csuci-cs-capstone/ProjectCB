@@ -57,6 +57,12 @@ public:
 	UPROPERTY(Replicated)
 		int YellowTeamBallsCaptured = 0;
 
+	UPROPERTY(Replicated)
+		bool bShouldCount = false;
+
+	UPROPERTY(Replicated)
+		FTimerHandle CountDownHandle;
+
 	UPROPERTY()
 		ACB_PlayerUIHUD* PlayerHUD;
 
@@ -68,9 +74,16 @@ public:
 
 	void UpdateTeamGoalBox(FString TeamName, int CurrentAmount);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void UpdateCountDownTime(int currentTime);
+
 	/// @brief Used to set initial values or force a ui update
 	UFUNCTION(NetMulticast, Reliable)
 	void RefreshUIHUB();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void EnableCount(bool enabled);
+
 
 	//How to call:
 //YourDelegateName.Broadcast(YourParameters);
@@ -82,4 +95,6 @@ public:
 protected:
 
 	void BeginPlay() override;
+
+	void Tick(float DeltaSeconds) override;
 };

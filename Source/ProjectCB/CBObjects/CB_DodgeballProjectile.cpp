@@ -213,16 +213,27 @@ unsigned char ACB_DodgeballProjectile::getGrabPriority()
 
 void ACB_DodgeballProjectile::OnHit(AActor* selfActor, AActor* otherActor, FVector normalImpulse, const FHitResult& hit)
 {
-	if (this->inAir() && otherActor->IsA(ACB_PlayerCharacter::StaticClass()))
+	if (otherActor != nullptr && this->inAir() && otherActor->IsA(ACB_PlayerCharacter::StaticClass()))
 	{
 		FVector velocity = this->DodgeballMovement->Velocity;
 		velocity.Z = 0.0f;
 
 		ACB_PlayerCharacter* player = Cast<ACB_PlayerCharacter>(otherActor);
-		player->m_basics.launchPlayer(velocity, velocity.Rotation());
+		if (player->bIsMultiplayer == false)
+		{
+			player->m_basics.launchPlayer(velocity, velocity.Rotation());
+		}
+		else
+		{
+			if (player->bIsGhost == false)
+			{
+				player->KnockBackPlayer(hit.ImpactNormal);
+			}
+		}
+		
 
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("PlayerHit"));
+		//if (GEngine)
+			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("PlayerHit"));
 	}
 
 }

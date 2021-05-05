@@ -25,6 +25,9 @@ public:
 
 	UPROPERTY()
 		FTimerHandle PollMatchmakingHandle;
+
+	UPROPERTY()
+		bool bIsLoggedIn = false;
 	
 protected:
 

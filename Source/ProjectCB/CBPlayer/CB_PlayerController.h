@@ -39,8 +39,13 @@ public:
 	//For Gamemode use
 	bool m_bIsPlayerControlEnabled = false;
 
+	FVector PlayerStartLocation;
+	FVector PlayerStartRotation;
+
 	UFUNCTION(NetMulticast, Reliable)
 	void SetPlayerControlEnabled(bool isEnabled);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void RespawnPlayer();
 
 };
