@@ -32,6 +32,8 @@ public:
 	void SetBallsCaptured(FString IncomingTextValue);
 	void SetCountdownValue(FString IncomingTextValue);
 
+	void SetUITeamColor(FString TeamName);
+
 protected:
 
 	virtual void BeginPlay() override;

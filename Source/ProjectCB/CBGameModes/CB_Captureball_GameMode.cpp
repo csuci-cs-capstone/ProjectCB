@@ -5,6 +5,7 @@
 #include "ProjectCB/CBGameModes/CB_GameStateBase.h"
 #include "ProjectCB/CBUI/CB_TextReaderComponent.h"
 #include "ProjectCB/CBUI/CB_PlayerUIHUD.h"
+#include "ProjectCB/CBWorld/CB_GridGenerator.h"
 #include "GameFramework/PlayerStart.h"
 #include "Engine/PlayerStartPIE.h"
 #include "Engine/World.h"
@@ -387,8 +388,6 @@ AActor* ACB_Captureball_GameMode::ChoosePlayerStart_Implementation(AController* 
 			{
 				FoundPlayerStart = PlayerStart;
 				FoundPlayerStart->PlayerStartTag = "Taken";
-				if (GEngine)
-					GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, TEXT("PlayerStart Tag Set"));
 				break;
 			}
 		}
@@ -403,9 +402,6 @@ AActor* ACB_Captureball_GameMode::ChoosePlayerStart_Implementation(AController* 
 		{
 			Player->ClientSetRotation(ActorRotation, false);
 			Player->ClientSetLocation(ActorLocation, ActorRotation);
-
-			if (GEngine)
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("Player Found Start"));
 		}
 	}
 	else
@@ -429,6 +425,7 @@ AActor* ACB_Captureball_GameMode::ChoosePlayerStart_Implementation(AController* 
 			if (CurrentPlayerController != nullptr)
 			{
 				CurrentPlayerController->EnableInput(CurrentPlayerController);
+				
 			}
 		}
 	}
@@ -453,6 +450,13 @@ AActor* ACB_Captureball_GameMode::FindPlayerStart_Implementation(AController* Pl
 		{
 			BestStart = ChoosePlayerStart(Player);
 		}
+	}
+
+	ACB_PlayerController* CBController = Cast<ACB_PlayerController>(Player);
+
+	if (CBController != nullptr)
+	{
+		CBController->PlayerStartLocation = BestStart->GetActorLocation();
 	}
 
 	return BestStart;
@@ -531,7 +535,37 @@ void ACB_Captureball_GameMode::StartCaptureMode()
 
 			//CBGameState->CurrentGameplayMode = 1;
 			//CBGameState->RefreshUIHUB();
-			//GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::EndCaptureMode, 3.0f, false, 5.0f);
+			CBGameState->EnableCount(true);
+			CBGameState->UpdateCountDownTime(CountDownTime);
+			//this->CountDownTime = 60;
+			//this->EliminationTime = 60;
+			GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::UpdateCaptureMode, 1.0f, true, 2.0f);
+			
+		}
+	}
+
+}
+
+void ACB_Captureball_GameMode::UpdateCaptureMode()
+{
+
+	if (GameState != nullptr)
+	{
+		ACB_GameStateBase* CBGameState = Cast<ACB_GameStateBase>(GameState);
+
+		if (CBGameState != nullptr)
+		{
+			--CountDownTime;
+			if (CountDownTime <= 0)
+			{
+				CBGameState->UpdateCountDownTime(0);
+				GetWorldTimerManager().ClearTimer(MatchStartCountDownHandle);
+				GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::EndCaptureMode, 1.0f, false, 1.0f);
+			}
+			else
+			{
+				CBGameState->UpdateCountDownTime(CountDownTime);
+			}
 		}
 	}
 
@@ -559,6 +593,8 @@ void ACB_Captureball_GameMode::EndCaptureMode()
 
 			//CBGameState->CurrentGameplayMode = 1;
 			//CBGameState->RefreshUIHUB();
+			CBGameState->EnableCount(true);
+			CBGameState->UpdateCountDownTime(EliminationTime);
 			GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::StartEliminationMode, 3.0f, false, 5.0f);
 		}
 	}
@@ -581,12 +617,52 @@ void ACB_Captureball_GameMode::StartEliminationMode()
 				{
 					ACB_PlayerController* CBLocalPLayerController = Cast<ACB_PlayerController>(CurrentPlayerController);
 					CBLocalPLayerController->SetPlayerControlEnabled(true);
+					
+					
 				}
 			}
 
-			//CBGameState->CurrentGameplayMode = 1;
+			for (TActorIterator<ACB_GridGenerator> It(World); It; ++It)
+			{
+				ACB_GridGenerator* CBGenerator = *It;
+
+				if (CBGenerator != nullptr)
+				{
+					CBGenerator->DisableBallGeneration();
+					CBGenerator->EnableStageRemoval();
+					break;
+				}
+			}
+
+			CBGameState->CurrentGameplayMode = 2;
+			CountDownTime = 60;
 			//CBGameState->RefreshUIHUB();
-			GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::EndEliminationMode, 3.0f, false, 5.0f);
+			CBGameState->EnableCount(true);
+			CBGameState->UpdateCountDownTime(CountDownTime);
+			GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::UpdateEliminationMode, 1.0f, true, 2.0f);
+		}
+	}
+}
+
+void ACB_Captureball_GameMode::UpdateEliminationMode()
+{
+	if (GameState != nullptr)
+	{
+		ACB_GameStateBase* CBGameState = Cast<ACB_GameStateBase>(GameState);
+
+		if (CBGameState != nullptr)
+		{
+			--EliminationTime;
+			if (EliminationTime <= 0)
+			{
+				CBGameState->UpdateCountDownTime(0);
+				GetWorldTimerManager().ClearTimer(MatchStartCountDownHandle);
+				GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::EndEliminationMode, 1.0f, false, 1.0f);
+			}
+			else
+			{
+				CBGameState->UpdateCountDownTime(EliminationTime);
+			}
 		}
 	}
 }
@@ -611,9 +687,23 @@ void ACB_Captureball_GameMode::EndEliminationMode()
 				}
 			}
 
+			for (TActorIterator<ACB_GridGenerator> It(World); It; ++It)
+			{
+				ACB_GridGenerator* CBGenerator = *It;
+
+				if (CBGenerator != nullptr)
+				{
+					CBGenerator->DisableStageRemoval();
+					CBGenerator->DisableBallGeneration();
+					break;
+				}
+			}
+
 			//CBGameState->CurrentGameplayMode = 1;
 			//CBGameState->RefreshUIHUB();
-			GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::EndGame, 3.0f, false, 10.0f);
+			CBGameState->EnableCount(true);
+			CBGameState->UpdateCountDownTime(0);
+			GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::PickAWinningTeam, 3.0f, false, 10.0f);
 		}
 	}
 }

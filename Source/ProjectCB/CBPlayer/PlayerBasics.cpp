@@ -1,5 +1,6 @@
 #include "PlayerBasics.h"
 #include "Net/UnrealNetwork.h"
+#include "ProjectCB/CBPlayer/CB_PlayerCharacter.h"
 
 const FVector2D FPlayerBasics::MAX_MAP_POSITION(1475.0f, 975.0f);
 const float FPlayerBasics::MAP_RESPAWN_POSITION_OFFSET = 50.0f;
@@ -94,13 +95,13 @@ void FPlayerBasics::makeGhost()
 	// DROP GRABBED ITEM
 
 	//Model/Anims
-	m_playerSkeletalMeshComponent->SetSkeletalMesh(m_ghostModel);
+	//m_playerSkeletalMeshComponent->SetSkeletalMesh(m_ghostModel);
 
 	updateAttributes();
 
 	// TODO update other attributes for ghost such as GHOST_SPEED
 }
-
+//Send this position to server
 FVector FPlayerBasics::checkPlayerBounds(FVector playerPosition)
 {
 	switch (getPlayerState())
@@ -130,7 +131,19 @@ FVector FPlayerBasics::checkAliveBounds(FVector playerPosition)
 
 		playerPosition.Z = FPlayerBasics::PLAYER_SPAWN_POSITION_Z;
 
-		this->makeGhost();
+		
+		ACB_PlayerCharacter* player = Cast<ACB_PlayerCharacter>(this->m_playerRef);
+		if (player != nullptr)
+		{
+			if (player->bIsMultiplayer)
+			{
+				player->MakePlayerIntoGhost();
+			}
+			else
+			{//Make player alive
+				this->makeGhost();
+			}
+		}
 
 		this->m_fellOff = true;
 	}

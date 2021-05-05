@@ -5,6 +5,7 @@
 #include "Components/Button.h"
 #include "Components/PanelWidget.h"
 #include "Components/TextBlock.h"
+#include "Components/Image.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
@@ -31,6 +32,43 @@ void UCB_PlayerUIWidget::SetBallsCaptuedTextBlock(FString TextToSet)
 void UCB_PlayerUIWidget::SetCountdownTextBlock(FString TextToSet)
 {
 	CountdownText->SetText(FText::FromString(TextToSet));
+}
+
+void UCB_PlayerUIWidget::SetImageColors(FString TeamName)
+{
+	if (TeamName == "yellow")
+	{
+		FLinearColor TeamColor;
+		TeamColor.R = 1;
+		TeamColor.G = 1;
+		TeamColor.B = 0.45f;
+		TeamColor.A = 1;
+		TeamImage->SetColorAndOpacity(TeamColor);
+
+		FLinearColor EnemyColor;
+		EnemyColor.R = 0.2f;
+		EnemyColor.G = 0.5f;
+		EnemyColor.B = 1;
+		EnemyColor.A = 1;
+		EnemyImage->SetColorAndOpacity(EnemyColor);
+	}
+	
+	if(TeamName == "blue")
+	{
+		FLinearColor TeamColor;
+		TeamColor.R = 0.2f;
+		TeamColor.G = 0.5f;
+		TeamColor.B = 1;
+		TeamColor.A = 1;
+		TeamImage->SetColorAndOpacity(TeamColor);
+
+		FLinearColor EnemyColor;
+		EnemyColor.R = 1;
+		EnemyColor.G = 1;
+		EnemyColor.B = 0.45f;
+		EnemyColor.A = 1;
+		EnemyImage->SetColorAndOpacity(EnemyColor);
+	}
 }
 
 void UCB_PlayerUIWidget::NativeConstruct()

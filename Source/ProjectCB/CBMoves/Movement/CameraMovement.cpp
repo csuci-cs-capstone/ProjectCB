@@ -61,7 +61,7 @@ void CameraMovement::SetRotationBasedOnTeam(FString TeamName)
 {
 	if (TeamName == "yellow")
 	{
-		this->m_cameraStart = FRotator(-20.0f, 0.0f, 108.0f);
+		this->m_cameraStart = FRotator(-20.0f, 0.0f, 180.0f);
 	}
 	else
 	{

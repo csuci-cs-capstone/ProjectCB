@@ -152,3 +152,13 @@ void ACB_PlayerController::SetPlayerControlEnabled_Implementation(bool isEnabled
 	this->m_bIsPlayerControlEnabled = isEnabled;
 }
 
+void ACB_PlayerController::RespawnPlayer_Implementation()
+{
+	auto playerBody = Cast<ACB_PlayerCharacter>(this->GetCharacter());
+
+	if (playerBody != NULL)
+	{
+		playerBody->MakePlayerAlive();
+	}
+}
+

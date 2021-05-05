@@ -28,6 +28,8 @@ private:
 	static const float BALL_SPAWN_START_SECONDS;
 	static const float BALL_SPAWN_UPDATE_INTERVAL;
 
+	int m_CurrentState = 0;
+
 	TArray<size_t> m_deletableBoxes;
 	size_t m_numOfBoxes;
 	TArray<TArray<ACB_GridBox*>> m_grid;
@@ -35,8 +37,11 @@ private:
 	size_t m_numOfFallingBoxes;
 	UPROPERTY(Replicated)
 	TArray<ACB_GridBox*> m_fallingBoxes;
+	UPROPERTY(Replicated)
 	FTimerHandle m_timerHandle;
+	UPROPERTY(Replicated)
 	FTimerHandle m_fallHandle;
+	UPROPERTY(Replicated)
 	FTimerHandle m_ballHandle;
 
 	ACB_GridBox* spawnBox(size_t lengthPos, size_t widthPos);
@@ -44,11 +49,11 @@ private:
 		void spawnBall(int lengthPos, int widthPos);
 	UFUNCTION(Server, Reliable)
 		void spawnBalls();
-
+	UFUNCTION(Server, Reliable)
 	void deleteBoxes();
-
+	UFUNCTION(Server, Reliable)
 	void generateGrid();
-
+	UFUNCTION(Server, Reliable)
 	void updateGrid();
 	
 public:
@@ -68,5 +73,13 @@ protected:
 public:
 
 	virtual void Tick(float DeltaTime) override;
+	UFUNCTION(Server, Reliable)
+		void EnableStageRemoval();
+
+	UFUNCTION(Server, Reliable)
+		void DisableStageRemoval();
+
+	UFUNCTION(Server, Reliable)
+		void DisableBallGeneration();
 
 };

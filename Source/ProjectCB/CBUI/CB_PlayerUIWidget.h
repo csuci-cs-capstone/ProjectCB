@@ -9,6 +9,7 @@
 class UButton;
 class UTextBlock;
 class UPanelWidget;
+class UImage;
 /**
  * 
  */
@@ -33,10 +34,18 @@ public:
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 		class UTextBlock* CountdownText;
 
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		class UImage* TeamImage;
+
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		class UImage* EnemyImage;
+
 	void SetTeamAliveTextBlock(FString TextToSet);
 	void SetEnemyAliveTextBlock(FString TextToSet);
 	void SetBallsCaptuedTextBlock(FString TextToSet);
 	void SetCountdownTextBlock(FString TextToSet);
+
+	void SetImageColors(FString TeamName);
 
 protected:
 

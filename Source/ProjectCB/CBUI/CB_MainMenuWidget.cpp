@@ -38,9 +38,10 @@ void UCB_MainMenuWidget::NativeConstruct()
 	bIsFocusable = true;
 
 	WebBrowser = (UWebBrowser*) GetWidgetFromName(TEXT("WebLogin"));
+	WebBrowser->SetVisibility(ESlateVisibility::Hidden);
 
 	MainMenuPanel = (UPanelWidget*)GetWidgetFromName(TEXT("MainMenuPanel"));
-	MainMenuPanel->SetVisibility(ESlateVisibility::Hidden);
+	//MainMenuPanel->SetVisibility(ESlateVisibility::Hidden);
 
 	MatchmakingButton = (UButton*) GetWidgetFromName(TEXT("Play"));
 	FScriptDelegate MatchmakingDelegate;
@@ -160,6 +161,15 @@ void UCB_MainMenuWidget::HandleLoginUrlChange()
 
 void UCB_MainMenuWidget::OnPlayButtonClicked()
 {
+
+	if (bIsLoggedIn == false)
+	{
+		MainMenuPanel->SetVisibility(ESlateVisibility::Hidden);
+		WebBrowser->SetVisibility(ESlateVisibility::Visible);
+		WebBrowser->SetFocus();
+		return;
+	}
+
 	MatchmakingButton->SetIsEnabled(false);
 
 	FString AccessToken;
@@ -290,6 +300,7 @@ void UCB_MainMenuWidget::PollMatchmaking()
 
 void UCB_MainMenuWidget::OnPracticeButtonClicked()
 {
+	UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("Practice")));
 }
 
 void UCB_MainMenuWidget::OnExitButtonClicked()
@@ -331,6 +342,11 @@ void UCB_MainMenuWidget::OnExchangeCodeForTokensResponseRecieved(FHttpRequestPtr
 
 						WebBrowser->SetVisibility(ESlateVisibility::Hidden);
 						MainMenuPanel->SetVisibility(ESlateVisibility::Visible);
+
+						UTextBlock* ButtonTextBlock = (UTextBlock*)MatchmakingButton->GetChildAt(0);
+						ButtonTextBlock->SetText(FText::FromString("PLAY"));
+
+						this->bIsLoggedIn = true;
 
 						TSharedRef<IHttpRequest> GetPlayerDataRequest = HttpModule->CreateRequest();
 						//TODO Look up BindUObject vs delegate cast

@@ -11,7 +11,7 @@
 
 ACB_GameStateBase::ACB_GameStateBase() 
 {
-	
+	this->PrimaryActorTick.bCanEverTick = true;
 }
 
 void ACB_GameStateBase::BeginPlay()
@@ -29,6 +29,11 @@ void ACB_GameStateBase::BeginPlay()
 			PlayerHUD = Cast<ACB_PlayerUIHUD>(this->m_localPlayerController->GetHUD());
 		}
 	}
+}
+
+void ACB_GameStateBase::Tick(float DeltaSeconds)
+{
+	
 }
 
 
@@ -55,6 +60,10 @@ void ACB_GameStateBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(ACB_GameStateBase, BlueTeamBallsCaptured);
 
 	DOREPLIFETIME(ACB_GameStateBase, YellowTeamBallsCaptured);
+
+	DOREPLIFETIME(ACB_GameStateBase, bShouldCount);
+
+	DOREPLIFETIME(ACB_GameStateBase, CountDownHandle);
 }
 
 void ACB_GameStateBase::AssignPlayerToTeam(FString TeamName)
@@ -109,6 +118,22 @@ void ACB_GameStateBase::UpdateTeamGoalBox(FString TeamName, int CurrentAmount)
 {
 }
 
+void ACB_GameStateBase::EnableCount_Implementation(bool enabled)
+{
+	bShouldCount = enabled;
+}
+
+
+void ACB_GameStateBase::UpdateCountDownTime_Implementation(int currentTime)
+{
+	if (PlayerHUD != nullptr)
+	{
+		FString NewValue = FString::FromInt(currentTime);
+
+		PlayerHUD->SetCountdownValue(NewValue);
+	}
+}
+
 void ACB_GameStateBase::RefreshUIHUB_Implementation()
 {
 
@@ -123,6 +148,7 @@ void ACB_GameStateBase::RefreshUIHUB_Implementation()
 			PlayerHUD->SetTeamAlive(AliveString);
 			FString EnemyString = FString::FromInt(YellowTeamSizeAliveCount);
 			PlayerHUD->SetEnemyAlive(EnemyString);
+			PlayerHUD->SetUITeamColor("blue");
 		}
 		else if (CurrentPlayerState->Team == "yellow")
 		{
@@ -130,8 +156,9 @@ void ACB_GameStateBase::RefreshUIHUB_Implementation()
 			PlayerHUD->SetTeamAlive(AliveString);
 			FString EnemyString = FString::FromInt(BlueTeamSizeAliveCount);
 			PlayerHUD->SetEnemyAlive(EnemyString);
+			PlayerHUD->SetUITeamColor("yellow");
 		}
-		FString NewCount = FString::FromInt(15);
+		FString NewCount = FString::FromInt(30);
 		PlayerHUD->SetCountdownValue(NewCount);
 	}
 }

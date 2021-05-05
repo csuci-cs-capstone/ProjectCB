@@ -11,6 +11,7 @@
 #include <Animation/AnimSingleNodeInstance.h>
 #include "GameFramework/CharacterMovementComponent.h"
 #include "ProjectCB/CBPlayer/CB_PlayerState.h"
+#include "ProjectCB/CBPlayer/CB_PlayerController.h"
 #include "Materials/MaterialInterface.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Net/UnrealNetwork.h"
@@ -48,6 +49,7 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	
 	this->m_basics.m_playerModel = playerMeshAsset.Object;
 	this->m_basics.m_ghostModel = ghostMeshAsset.Object;
+	this->m_PlayerGhostModel = ghostMeshAsset.Object;
 	this->m_basics.m_playerSkeletalMeshComponent = skeletalMesh;
 	
 
@@ -56,9 +58,13 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 	//Customize the character movement component here!
 	GetCharacterMovement()->MaxWalkSpeed = Movement::PLAYER_GROUND_SPEED;
 	GetCharacterMovement()->GravityScale = FPlayerBasics::PLAYER_BASE_GRAVITY;
-	GetCharacterMovement()->JumpZVelocity = 1000.0f;
-	GetCharacterMovement()->AirControl = 1.0f;
-
+	
+	if (this->bIsMultiplayer)
+	{
+		GetCharacterMovement()->JumpZVelocity = 1375.0f;
+		GetCharacterMovement()->AirControl = 1.0f;
+	}
+	
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
@@ -81,7 +87,7 @@ ACB_PlayerCharacter::ACB_PlayerCharacter()
 
 	//Set Locations and Rotations after attachments have been set
 	this->cameraArm->SetRelativeLocation(FVector(0.0f, 0.0f, 110.0f));
-	//this->cameraArm->SetRelativeRotation(FRotator(-20.0f, 0.0f, 0.0f));
+	this->cameraArm->SetRelativeRotation(FRotator(-20.0f, 0.0f, 0.0f));
 	this->camera->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 
 	/*      *\
@@ -136,6 +142,16 @@ void ACB_PlayerCharacter::BeginPlay()
 		SetPlayerMaterialColor();
 	}
 
+	if (this->bIsMultiplayer == false)
+	{
+		ACB_PlayerController* CBController = Cast<ACB_PlayerController>(GetController());
+
+		if (CBController != nullptr)
+		{
+			CBController->SetPlayerControlEnabled(true);
+		}
+	}
+
 }
 
 void ACB_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -150,7 +166,13 @@ void ACB_PlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 
 	DOREPLIFETIME(ACB_PlayerCharacter, grabRoot);
 
-	DOREPLIFETIME(ACB_PlayerCharacter, bIsOnGroundAnimate)
+	DOREPLIFETIME(ACB_PlayerCharacter, bIsOnGroundAnimate);
+
+	DOREPLIFETIME(ACB_PlayerCharacter, StartTransform);
+
+	DOREPLIFETIME(ACB_PlayerCharacter, bIsMultiplayer);
+
+	DOREPLIFETIME(ACB_PlayerCharacter, bIsGhost);
 }
 
 // Called every frame
@@ -183,7 +205,10 @@ void ACB_PlayerCharacter::Tick(float DeltaTime)
 
 // END RADIUS UPDATE
 
-	//cameraUpdate();
+	if (this->bIsMultiplayer == false)
+	{
+		cameraUpdate();
+	}
 	
 	this->m_basics.m_movement.resetInputVelocity();
 
@@ -218,11 +243,12 @@ void ACB_PlayerCharacter::playerUpdate(float deltaTime)
 
 		this->m_basics.m_movement.updateVelocity(this->m_basics.m_currentMobility);
 
-		//GetCharacterMovement()->Velocity = this->m_basics.m_movement.getMovementVelocity(GetCharacterMovement()->Velocity.Z);
-		//this->MoveVelocity = this->m_basics.m_movement.getMovementVelocity(GetCharacterMovement()->Velocity.Z);
-		//this->UpdateVelocity(this->MoveVelocity);
-		
-		//AddMovementInput(this->m_basics.m_movement.getMovementVelocity(GetCharacterMovement()->Velocity.Z), 1.0);
+		if (this->bIsMultiplayer == false)
+		{
+			GetCharacterMovement()->Velocity = this->m_basics.m_movement.getMovementVelocity(GetCharacterMovement()->Velocity.Z);
+		}
+
+		CheckIfPlayerIsAlive();
 
 		if (this->m_resetCollisionFrame >= 0)
 		{
@@ -243,16 +269,17 @@ void ACB_PlayerCharacter::cameraUpdate()
 
 	const FRotator& playerRotation = this->m_basics.m_movement.getPlayerRotation();
 
+	//Send to server either through player 
 	this->GetCapsuleComponent()->SetRelativeRotation(playerRotation);
 	this->cameraArm->SetRelativeRotation(this->m_basics.m_cameraMovement.getCameraRotation() - playerRotation);
 
 	this->m_basics.m_currentWorldLocationZ = ((1 - FPlayerBasics::WORLD_LOCATION_PROPORTION_Z) * this->GetActorLocation().Z)
 		+ (FPlayerBasics::WORLD_LOCATION_PROPORTION_Z * FPlayerBasics::PLAYER_START_WORLD_LOCATION_Z);
-
+	//Send to server
 	this->cameraArm->SetWorldLocation(FVector(currentLocation.X, currentLocation.Y, this->m_basics.m_currentWorldLocationZ));
 
 	
-	//this->grabBox->SetRelativeRotation(playerRotation);
+	this->grabBox->SetRelativeRotation(playerRotation);
 	//Quick way to make sure grabBox follows model orientation
 	this->grabBox->SetRelativeRotation(this->skeletalMesh->GetRelativeRotation());
 }
@@ -281,7 +308,11 @@ void ACB_PlayerCharacter::MoveVertical(float amount)
 
 		const FVector movementDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		this->m_basics.m_movement.addInputVector(movementDirection * amount);
-		this->AddMovementInput(movementDirection, amount);
+		if (bIsMultiplayer)
+		{
+			this->AddMovementInput(movementDirection, amount);
+		}
+		
 	}
 }
 
@@ -295,7 +326,11 @@ void ACB_PlayerCharacter::MoveHorizontal(float amount)
 
 		const FVector movementDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		this->m_basics.m_movement.addInputVector(movementDirection * amount);
-		this->AddMovementInput(movementDirection, amount);
+		if (this->bIsMultiplayer)
+		{
+			this->AddMovementInput(movementDirection, amount);
+		}
+		
 	}
 }
 
@@ -306,18 +341,27 @@ void ACB_PlayerCharacter::updateCameraSensitivity(float cameraSensitivity)
 
 void ACB_PlayerCharacter::RotateCamera(float amount)
 {
-	this->m_basics.m_cameraMovement.updateCamera(this->m_basics.m_movement, amount);
+	if (this->bIsMultiplayer)
+	{
+		AddControllerYawInput(amount * 75.0f * GetWorld()->GetDeltaSeconds());
+	}
+	else 
+	{
+		this->m_basics.m_cameraMovement.updateCamera(this->m_basics.m_movement, amount);
+	}
 }
 
 void ACB_PlayerCharacter::JumpAction()
 {
-	//Crouch();
 	this->m_dodge.onPress();
 }
 
 void ACB_PlayerCharacter::StopJumpAction()
 {
-	Jump();
+	if (this->bIsMultiplayer)
+	{
+		Jump();
+	}
 	this->m_dodge.onRelease();
 }
 
@@ -333,7 +377,7 @@ void ACB_PlayerCharacter::StopShootAction()
 
 void ACB_PlayerCharacter::AliveAction()
 {
-	this->m_basics.makeAlive();
+	//this->m_basics.makeAlive();
 }
 
 // Grab
@@ -368,7 +412,7 @@ void ACB_PlayerCharacter::SendLocalClientRotationToServer_Implementation()
 	bool test = true;
 }
 
-//NETWORK RPCs
+//NETWORK RPCs//
 void ACB_PlayerCharacter::UpdateVelocity_Implementation(FVector newVelocityVector) 
 {
 	FVector CurrentLocation = this->GetActorLocation();
@@ -380,6 +424,63 @@ void ACB_PlayerCharacter::UpdateVelocity_Implementation(FVector newVelocityVecto
 	//SetActorLocation(CurrentLocation);
 
 	this->OnRep_ReplicateMovement();
+}
+
+void ACB_PlayerCharacter::KnockBackPlayer_Implementation(FVector HitNormal)
+{
+	FVector KnockBackVector = -HitNormal;
+	FVector LaunchForce = KnockBackVector * 1000;
+	LaunchForce.Z = 1000;
+	this->LaunchCharacter(LaunchForce, true, true);
+}
+
+
+void ACB_PlayerCharacter::CheckIfPlayerIsAlive_Implementation()
+{
+	this->m_basics.checkPlayerBounds(this->GetActorLocation());
+}
+
+void ACB_PlayerCharacter::MakePlayerIntoGhost_Implementation()
+{
+	this->skeletalMesh->SetSkeletalMesh(this->m_basics.m_ghostModel);
+	this->bIsGhost = true;
+
+	ACB_PlayerController* CBController = Cast<ACB_PlayerController>(this->GetController());
+
+	if (CBController != nullptr)
+	{
+		FVector NewSpawnLocation = FVector(CBController->PlayerStartLocation.X, CBController->PlayerStartLocation.Y, 150.0f);
+		this->SetActorLocation(NewSpawnLocation);
+		this->SetActorRotation(CBController->PlayerStartRotation.Rotation());
+	}
+
+	this->GetCharacterMovement()->SetMovementMode(MOVE_Flying);
+	this->GetCharacterMovement()->StopActiveMovement();
+	this->GetCharacterMovement()->StopMovementImmediately();
+
+	//this->SetActorLocation(StartTransform.GetLocation());
+	//this->SetActorLocation(StartTransform.GetRotation().Rotator().Vector());
+}
+
+void ACB_PlayerCharacter::MakePlayerAlive_Implementation() 
+{
+	this->skeletalMesh->SetSkeletalMesh(this->m_basics.m_playerModel);
+
+	ACB_PlayerController* CBController = Cast<ACB_PlayerController>(this->GetController());
+
+	if (CBController != nullptr)
+	{
+		this->SetActorLocation(CBController->PlayerStartLocation);
+		this->SetActorRotation(CBController->PlayerStartRotation.Rotation());
+	}
+
+	this->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+}
+
+void ACB_PlayerCharacter::SetPlayerStartPosition_Implementation(FVector incomingPosition, FRotator incomingRotation)
+{
+	StartTransform.SetLocation(incomingPosition);
+	StartTransform.SetRotation(incomingRotation.Quaternion());
 }
 
 void ACB_PlayerCharacter::SetPlayerMaterialColor_Implementation()
@@ -420,7 +521,7 @@ void ACB_PlayerCharacter::SetPlayerStartRotation_Implementation()
 	{
 		if (CBPlayerState->Team == "yellow")
 		{
-			this->SetActorRotation(FRotator(0.0f, 0.0f, 108.0f));
+			this->SetActorRotation(FRotator(0.0f, 0.0f, 180.0f));
 			this->cameraArm->SetRelativeRotation(FRotator(-20.0f, 0.0f, 180.0f));
 		}
 		else
@@ -482,7 +583,22 @@ void ACB_PlayerCharacter::LaunchBall_Implementation()
 	this->ignoreCollisionsOnThrownObject(dodgeball);
 
 	//dodgeball->launchRelease(this->m_playerBasics->m_movement.getPlayerRotation().RotateVector(FVector(1.0f, 0.0f, 0.0f)), playerRotation);
-	dodgeball->launchRelease(this->GetActorForwardVector(), GetActorRotation());
+	if (this->bIsMultiplayer)
+	{
+		if (this->bIsGhost)
+		{
+
+		}
+		else
+		{
+			dodgeball->launchRelease(this->GetActorForwardVector(), GetActorRotation());
+		}
+	}
+	else
+	{
+		dodgeball->launchRelease(this->GetActorForwardVector(), GetActorRotation());
+	}
+	
 
 	dodgeball->SetReplicates(true);
 	dodgeball->SetReplicateMovement(true);

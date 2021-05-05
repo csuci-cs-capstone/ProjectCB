@@ -1,9 +1,9 @@
 #include "CB_GridGenerator.h"
 #include "Net/UnrealNetwork.h"
 
-const float ACB_GridGenerator::START_SECONDS = 9.0f;
-const float ACB_GridGenerator::UPDATE_INTERVAL = 16.0f;
-const float ACB_GridGenerator::FALL_TIME = 3.0f;
+const float ACB_GridGenerator::START_SECONDS = 1.0f;
+const float ACB_GridGenerator::UPDATE_INTERVAL = 7.0f;
+const float ACB_GridGenerator::FALL_TIME = 2.0f;
 
 const size_t ACB_GridGenerator::STAGE_WIDTH = 4;
 const size_t ACB_GridGenerator::STAGE_LENGTH = 6;
@@ -15,15 +15,15 @@ const float ACB_GridGenerator::LENGTH_OFFSET = -ACB_GridGenerator::BOX_SIZE * (A
 const float ACB_GridGenerator::BALL_SPAWN_START_SECONDS = ACB_GridGenerator::START_SECONDS / 2.0f;
 const float ACB_GridGenerator::BALL_SPAWN_UPDATE_INTERVAL = ACB_GridGenerator::UPDATE_INTERVAL / 2.0f;
 
-void ACB_GridGenerator::deleteBoxes()
+void ACB_GridGenerator::deleteBoxes_Implementation()
 {
     for (size_t index = 0; index < this->m_numOfFallingBoxes; index++) 
     {
-        if (IsValid(m_fallingBoxes[index]))
+        if (this->m_fallingBoxes.IsValidIndex(index) && (m_fallingBoxes[index]))
         {
-            //this->m_fallingBoxes[index]->Destroy();
-            this->m_fallingBoxes[index]->SetActorEnableCollision(false);
-            this->m_fallingBoxes[index]->BoxMesh->SetVisibility(false);
+            this->m_fallingBoxes[index]->Destroy();
+            //this->m_fallingBoxes[index]->SetActorEnableCollision(false);
+            //this->m_fallingBoxes[index]->BoxMesh->SetVisibility(false);
         }
     }
         
@@ -84,7 +84,7 @@ void ACB_GridGenerator::spawnBalls_Implementation()
     }
 }
 
-void ACB_GridGenerator::generateGrid()
+void ACB_GridGenerator::generateGrid_Implementation()
 {
     for (size_t length = 0; length < ACB_GridGenerator::STAGE_LENGTH; length++)
     {
@@ -105,7 +105,7 @@ void ACB_GridGenerator::generateGrid()
     }
 }
 
-void ACB_GridGenerator::updateGrid()
+void ACB_GridGenerator::updateGrid_Implementation()
 {
     if (this->m_numOfBoxes > 0)
     {
@@ -159,12 +159,6 @@ void ACB_GridGenerator::BeginPlay()
     //Had to temporarily disable this since it seemed like it was causing some issues
 
     generateGrid();
-    /*
-    GetWorldTimerManager().SetTimer(this->m_timerHandle, this, &ACB_GridGenerator::updateGrid,
-        ACB_GridGenerator::UPDATE_INTERVAL, true, ACB_GridGenerator::START_SECONDS);
-
-    GetWorldTimerManager().SetTimer(this->m_fallHandle, this, &ACB_GridGenerator::deleteBoxes,
-        ACB_GridGenerator::FALL_TIME, true, ACB_GridGenerator::START_SECONDS);*/
 
     GetWorldTimerManager().SetTimer(this->m_ballHandle, this, &ACB_GridGenerator::spawnBalls,
         ACB_GridGenerator::BALL_SPAWN_UPDATE_INTERVAL, true, ACB_GridGenerator::BALL_SPAWN_START_SECONDS);
@@ -183,10 +177,36 @@ void ACB_GridGenerator::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void ACB_GridGenerator::EnableStageRemoval_Implementation()
+{
+	GetWorldTimerManager().SetTimer(this->m_timerHandle, this, &ACB_GridGenerator::updateGrid,
+		ACB_GridGenerator::UPDATE_INTERVAL, true, ACB_GridGenerator::START_SECONDS);
+
+	GetWorldTimerManager().SetTimer(this->m_fallHandle, this, &ACB_GridGenerator::deleteBoxes,
+		ACB_GridGenerator::FALL_TIME, true, ACB_GridGenerator::START_SECONDS);
+}
+
+void ACB_GridGenerator::DisableStageRemoval_Implementation()
+{
+    GetWorldTimerManager().ClearTimer(this->m_timerHandle);
+    GetWorldTimerManager().ClearTimer(this->m_fallHandle);
+}
+
+void ACB_GridGenerator::DisableBallGeneration_Implementation()
+{
+	GetWorldTimerManager().ClearTimer(this->m_ballHandle);
+}
+
 void ACB_GridGenerator::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
     DOREPLIFETIME(ACB_GridGenerator, m_fallingBoxes);
+
+    DOREPLIFETIME(ACB_GridGenerator, m_timerHandle);
+
+    DOREPLIFETIME(ACB_GridGenerator, m_fallHandle);
+
+    DOREPLIFETIME(ACB_GridGenerator, m_ballHandle);
 }
 
