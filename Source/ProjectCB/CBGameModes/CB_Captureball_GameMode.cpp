@@ -18,7 +18,7 @@
 
 ACB_Captureball_GameMode::ACB_Captureball_GameMode() 
 {
-	this->bDelayedStart = true;
+	//this->bDelayedStart = true;
 
 	//Set the game mode controller and character to the intended player classes
 	static ConstructorHelpers::FClassFinder<ACB_PlayerCharacter> PlayerCharacterBPClass(TEXT("/Game/PlayerBP/BP_CB_PlayerCharacter"));
@@ -197,9 +197,9 @@ void ACB_Captureball_GameMode::BeginPlay()
 			CBGameState->CurrentGameplayMode = 0;
 		}
 	}
-	//this->BeginMatch();
+	this->BeginMatch();
 	//TODO set up countdown start timer here
-	GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::BeginMatch, 3.0f, false, 3.0f);
+	//GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::BeginMatch, 3.0f, false, 10.0f);
 }
 
 void ACB_Captureball_GameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) 
@@ -453,11 +453,37 @@ AActor* ACB_Captureball_GameMode::FindPlayerStart_Implementation(AController* Pl
 	}
 
 	ACB_PlayerController* CBController = Cast<ACB_PlayerController>(Player);
-
+	
 	if (CBController != nullptr)
 	{
-		CBController->PlayerStartLocation = BestStart->GetActorLocation();
+		if (BestStart != nullptr)
+		{
+			CBController->PlayerStartLocation = BestStart->GetActorLocation();
+		}
+		else
+		{
+			ACB_PlayerState* CBCurrentPlayerState = Cast<ACB_PlayerState>(Player->PlayerState);
+			FString CurrentPlayerTeam;
+
+			if (CBCurrentPlayerState != nullptr)
+			{
+				CurrentPlayerTeam = CBCurrentPlayerState->Team;
+
+				if (CurrentPlayerTeam == "yellow")
+				{
+					CBController->PlayerStartLocation = FVector(700.0f, 0.0f, 320.0f);
+					CBController->PlayerStartRotation = FVector(0.0f, 0.0f, 180.0f);
+				}
+				else
+				{
+					CBController->PlayerStartLocation = FVector(-700.0f, 0.0f, 320.0f);
+					CBController->PlayerStartRotation = FVector(0.0f, 0.0f, 0.0f);
+				}
+			}
+		}
+
 	}
+	
 
 	return BestStart;
 }
@@ -482,7 +508,7 @@ FString ACB_Captureball_GameMode::MockTeamAssign()
 //Load in and start match
 void ACB_Captureball_GameMode::BeginMatch()
 {
-	this->StartMatch();
+	//this->StartMatch();
 
 	if (GameState != nullptr)
 	{
@@ -498,7 +524,10 @@ void ACB_Captureball_GameMode::BeginMatch()
 				if (CurrentPlayerController->IsLocalController())
 				{
 					CBGameState->m_localPlayerController = Cast<ACB_PlayerController>(CurrentPlayerController);
-					CBGameState->PlayerHUD = Cast<ACB_PlayerUIHUD>(CBGameState->m_localPlayerController->GetHUD());
+					if (CBGameState->m_localPlayerController != nullptr)
+					{
+						CBGameState->PlayerHUD = Cast<ACB_PlayerUIHUD>(CBGameState->m_localPlayerController->GetHUD());
+					}
 					CBGameState->m_localPlayerController->SetPlayerControlEnabled(false);
 					//CBGameState->m_localPlayerController->SetPlayerControlEnabled(true);
 					break;
@@ -507,7 +536,8 @@ void ACB_Captureball_GameMode::BeginMatch()
 
 			CBGameState->CurrentGameplayMode = 1;
 			CBGameState->RefreshUIHUB();
-			GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::StartCaptureMode, 3.0f, false, 1.0f);
+			CBGameState->UpdateGameMessage("Capture Round!");
+			GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::StartCaptureMode, 3.0f, false, 3.0f);
 		}
 	}
 }
@@ -530,15 +560,21 @@ void ACB_Captureball_GameMode::StartCaptureMode()
 				{
 					ACB_PlayerController* CBLocalPLayerController = Cast<ACB_PlayerController>(CurrentPlayerController);
 					CBLocalPLayerController->SetPlayerControlEnabled(true);
+					ACB_PlayerCharacter* CBCharacter = Cast<ACB_PlayerCharacter>(CurrentPlayerController->GetPawn());
+					if (CBCharacter != nullptr)
+					{
+						CBCharacter->SetPlayerMaterialColor();
+					}
 				}
 			}
-
+			CBGameState->RefreshUIHUB();
 			//CBGameState->CurrentGameplayMode = 1;
 			//CBGameState->RefreshUIHUB();
 			CBGameState->EnableCount(true);
 			CBGameState->UpdateCountDownTime(CountDownTime);
 			//this->CountDownTime = 60;
 			//this->EliminationTime = 60;
+			CBGameState->UpdateGameMessage("");
 			GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::UpdateCaptureMode, 1.0f, true, 2.0f);
 			
 		}
@@ -595,6 +631,7 @@ void ACB_Captureball_GameMode::EndCaptureMode()
 			//CBGameState->RefreshUIHUB();
 			CBGameState->EnableCount(true);
 			CBGameState->UpdateCountDownTime(EliminationTime);
+			CBGameState->UpdateGameMessage("Elimination Round!");
 			GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::StartEliminationMode, 3.0f, false, 5.0f);
 		}
 	}
@@ -635,10 +672,11 @@ void ACB_Captureball_GameMode::StartEliminationMode()
 			}
 
 			CBGameState->CurrentGameplayMode = 2;
-			CountDownTime = 60;
+			//CountDownTime = 60;
 			//CBGameState->RefreshUIHUB();
 			CBGameState->EnableCount(true);
 			CBGameState->UpdateCountDownTime(CountDownTime);
+			CBGameState->UpdateGameMessage("");
 			GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::UpdateEliminationMode, 1.0f, true, 2.0f);
 		}
 	}
@@ -704,6 +742,24 @@ void ACB_Captureball_GameMode::EndEliminationMode()
 			CBGameState->EnableCount(true);
 			CBGameState->UpdateCountDownTime(0);
 			GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::PickAWinningTeam, 3.0f, false, 10.0f);
+			
+			ACB_GameStateBase* CBGameStatePicker = Cast<ACB_GameStateBase>(GameState);
+			if (CBGameStatePicker != nullptr)
+			{
+				if (CBGameStatePicker->BlueTeamSizeAliveCount < CBGameStatePicker->YellowTeamSizeAliveCount)
+				{
+					CBGameStatePicker->WinningTeam = "Yellow Wins!";
+				}
+				else if (CBGameStatePicker->YellowTeamSizeAliveCount < CBGameStatePicker->BlueTeamSizeAliveCount)
+				{
+					CBGameStatePicker->WinningTeam = "Blue Wins!";
+				}
+				else if (CBGameStatePicker->YellowTeamSizeAliveCount == CBGameStatePicker->BlueTeamSizeAliveCount)
+				{
+					CBGameStatePicker->WinningTeam = "Tie!";
+				}
+				CBGameStatePicker->UpdateGameMessage(CBGameStatePicker->WinningTeam);
+			}
 		}
 	}
 }

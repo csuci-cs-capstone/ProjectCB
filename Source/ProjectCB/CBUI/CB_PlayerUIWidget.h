@@ -22,6 +22,7 @@ public:
 
 	UCB_PlayerUIWidget(const FObjectInitializer& ObjectInitializer);
 
+
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 		class UTextBlock* TeamAliveText;
 
@@ -29,7 +30,10 @@ public:
 		class UTextBlock* EnemyAliveText;
 
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-		class UTextBlock* BallsCapturedText;
+		class UTextBlock* TeamBallsCapturedText;
+
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		class UTextBlock* EnemyBallsCapturedText;
 
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 		class UTextBlock* CountdownText;
@@ -40,10 +44,15 @@ public:
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 		class UImage* EnemyImage;
 
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		class UTextBlock* MessageText;
+
 	void SetTeamAliveTextBlock(FString TextToSet);
 	void SetEnemyAliveTextBlock(FString TextToSet);
-	void SetBallsCaptuedTextBlock(FString TextToSet);
+	void SetTeamBallsCaptuedTextBlock(FString TextToSet);
+	void SetEnemyBallsCaptuedTextBlock(FString TextToSet);
 	void SetCountdownTextBlock(FString TextToSet);
+	void SetMessageTextBlock(FString TextToSet);
 
 	void SetImageColors(FString TeamName);
 

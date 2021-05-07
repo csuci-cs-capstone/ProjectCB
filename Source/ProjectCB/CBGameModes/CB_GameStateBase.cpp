@@ -14,6 +14,7 @@ ACB_GameStateBase::ACB_GameStateBase()
 	this->PrimaryActorTick.bCanEverTick = true;
 }
 
+
 void ACB_GameStateBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -114,8 +115,43 @@ FString ACB_GameStateBase::GetNextTeamToAssign()
 	return NextTeamName;
 }
 
-void ACB_GameStateBase::UpdateTeamGoalBox(FString TeamName, int CurrentAmount)
+void ACB_GameStateBase::UpdateTeamGoalBox_Implementation(const FString& TeamName, int CurrentAmount)
 {
+	if (HasAuthority())
+	{
+	}
+	if (TeamName == "yellow")
+	{
+		YellowTeamBallsCaptured = CurrentAmount;
+	}
+	else if(TeamName == "blue")
+	{
+		BlueTeamBallsCaptured = CurrentAmount;
+	}
+
+	if (PlayerHUD != nullptr)
+	{
+		
+		ACB_PlayerState* CurrentPlayerState = Cast<ACB_PlayerState>(this->m_localPlayerController->PlayerState);
+		if (CurrentPlayerState->Team == "blue")
+		{
+			FString TeamAmount = FString::FromInt(BlueTeamBallsCaptured);
+			FString EnemyAmount = FString::FromInt(YellowTeamBallsCaptured);
+
+			PlayerHUD->SetTeamBallsCaptured(TeamAmount);
+			PlayerHUD->SetEnemyBallsCaptured(EnemyAmount);
+
+		}
+		else if (CurrentPlayerState->Team == "yellow")
+		{
+			FString TeamAmount = FString::FromInt(YellowTeamBallsCaptured);
+			FString EnemyAmount = FString::FromInt(BlueTeamBallsCaptured);
+
+			PlayerHUD->SetTeamBallsCaptured(TeamAmount);
+			PlayerHUD->SetEnemyBallsCaptured(EnemyAmount);
+		}
+		
+	}
 }
 
 void ACB_GameStateBase::EnableCount_Implementation(bool enabled)
@@ -158,9 +194,16 @@ void ACB_GameStateBase::RefreshUIHUB_Implementation()
 			PlayerHUD->SetEnemyAlive(EnemyString);
 			PlayerHUD->SetUITeamColor("yellow");
 		}
-		FString NewCount = FString::FromInt(30);
-		PlayerHUD->SetCountdownValue(NewCount);
+		//FString NewCount = FString::FromInt(30);
+		//PlayerHUD->SetCountdownValue(NewCount);
 	}
 }
 
+void ACB_GameStateBase::UpdateGameMessage_Implementation(const FString& GameMessageText) 
+{
+	if (PlayerHUD != nullptr)
+	{
+		PlayerHUD->SetGameMessage(GameMessageText);
+	}
+}
 

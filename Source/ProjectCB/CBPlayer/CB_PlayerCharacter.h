@@ -158,7 +158,7 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation)
 	void SendLocalClientRotationToServer();
 
-	UFUNCTION(Client, Reliable, WithValidation)
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
 	void SetPlayerMaterialColor();
 
 	UFUNCTION(NetMulticast, Reliable, WithValidation)

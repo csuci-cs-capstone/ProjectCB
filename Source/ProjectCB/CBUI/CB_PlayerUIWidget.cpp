@@ -24,14 +24,24 @@ void UCB_PlayerUIWidget::SetEnemyAliveTextBlock(FString TextToSet)
 	EnemyAliveText->SetText(FText::FromString(TextToSet));
 }
 
-void UCB_PlayerUIWidget::SetBallsCaptuedTextBlock(FString TextToSet)
+void UCB_PlayerUIWidget::SetTeamBallsCaptuedTextBlock(FString TextToSet)
 {
-	BallsCapturedText->SetText(FText::FromString(TextToSet));
+	TeamBallsCapturedText->SetText(FText::FromString(TextToSet));
+}
+
+void UCB_PlayerUIWidget::SetEnemyBallsCaptuedTextBlock(FString TextToSet)
+{
+	EnemyBallsCapturedText->SetText(FText::FromString(TextToSet));
 }
 
 void UCB_PlayerUIWidget::SetCountdownTextBlock(FString TextToSet)
 {
 	CountdownText->SetText(FText::FromString(TextToSet));
+}
+
+void UCB_PlayerUIWidget::SetMessageTextBlock(FString TextToSet)
+{
+	MessageText->SetText(FText::FromString(TextToSet));
 }
 
 void UCB_PlayerUIWidget::SetImageColors(FString TeamName)
@@ -90,7 +100,9 @@ void UCB_PlayerUIWidget::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 
 	DOREPLIFETIME(UCB_PlayerUIWidget, TeamAliveText);
 	DOREPLIFETIME(UCB_PlayerUIWidget, EnemyAliveText);
-	DOREPLIFETIME(UCB_PlayerUIWidget, BallsCapturedText);
+	DOREPLIFETIME(UCB_PlayerUIWidget, TeamBallsCapturedText);
+	DOREPLIFETIME(UCB_PlayerUIWidget, EnemyBallsCapturedText);
 	DOREPLIFETIME(UCB_PlayerUIWidget, CountdownText);
+	DOREPLIFETIME(UCB_PlayerUIWidget, MessageText);
 }
 

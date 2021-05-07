@@ -37,11 +37,19 @@ void ACB_PlayerUIHUD::SetEnemyAlive(FString IncomingTextValue)
 	}
 }
 
-void ACB_PlayerUIHUD::SetBallsCaptured(FString IncomingTextValue)
+void ACB_PlayerUIHUD::SetTeamBallsCaptured(FString IncomingTextValue)
 {
 	if (CBPlayerUIWidget != nullptr)
 	{
-		CBPlayerUIWidget->SetBallsCaptuedTextBlock(IncomingTextValue);
+		CBPlayerUIWidget->SetTeamBallsCaptuedTextBlock(IncomingTextValue);
+	}
+}
+
+void ACB_PlayerUIHUD::SetEnemyBallsCaptured(FString IncomingTextValue)
+{
+	if (CBPlayerUIWidget != nullptr)
+	{
+		CBPlayerUIWidget->SetEnemyBallsCaptuedTextBlock(IncomingTextValue);
 	}
 }
 
@@ -50,6 +58,14 @@ void ACB_PlayerUIHUD::SetCountdownValue(FString IncomingTextValue)
 	if (CBPlayerUIWidget != nullptr)
 	{
 		CBPlayerUIWidget->SetCountdownTextBlock(IncomingTextValue);
+	}
+}
+
+void ACB_PlayerUIHUD::SetGameMessage(FString IncomingTextValue)
+{
+	if (CBPlayerUIWidget != nullptr)
+	{
+		CBPlayerUIWidget->SetMessageTextBlock(IncomingTextValue);
 	}
 }
 

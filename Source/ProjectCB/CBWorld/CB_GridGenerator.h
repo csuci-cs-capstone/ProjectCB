@@ -18,8 +18,8 @@ private:
 	static const float UPDATE_INTERVAL;
 	static const float FALL_TIME;
 
-	static const size_t STAGE_WIDTH;
-	static const size_t STAGE_LENGTH;
+	static const int STAGE_WIDTH;
+	static const int STAGE_LENGTH;
 
 	static const float BOX_SIZE;
 	static const float WIDTH_OFFSET;
@@ -31,10 +31,10 @@ private:
 	int m_CurrentState = 0;
 
 	TArray<size_t> m_deletableBoxes;
-	size_t m_numOfBoxes;
+	int m_numOfBoxes;
 	TArray<TArray<ACB_GridBox*>> m_grid;
 
-	size_t m_numOfFallingBoxes;
+	int m_numOfFallingBoxes;
 	UPROPERTY(Replicated)
 	TArray<ACB_GridBox*> m_fallingBoxes;
 	UPROPERTY(Replicated)
@@ -44,7 +44,7 @@ private:
 	UPROPERTY(Replicated)
 	FTimerHandle m_ballHandle;
 
-	ACB_GridBox* spawnBox(size_t lengthPos, size_t widthPos);
+	ACB_GridBox* spawnBox(int lengthPos, int widthPos);
 	UFUNCTION(Server, Reliable)
 		void spawnBall(int lengthPos, int widthPos);
 	UFUNCTION(Server, Reliable)

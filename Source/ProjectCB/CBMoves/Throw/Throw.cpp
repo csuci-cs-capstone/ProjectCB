@@ -19,10 +19,29 @@ void UThrow::onPress_Implementation()
 {
 	if (!this->m_playerBasics->m_throwState)
 	{
-		if (this->m_grabbedObject)
-			this->m_playerBasics->m_throwState = FPlayerBasics::THROW_STARTUP;
-		else
-			this->m_playerBasics->m_throwState = FPlayerBasics::CATCH_STARTUP;
+		ACB_PlayerCharacter* playerBody = Cast<ACB_PlayerCharacter>(this->m_playerBasics->m_playerRef);
+		if (playerBody != nullptr)
+		{
+			if (this->m_grabbedObject != nullptr && this->m_grabbedObject->_getUObject()->IsA(ACB_PlayerCharacter::StaticClass()))
+			{
+				ACB_PlayerCharacter* GrabbedCharacter = Cast<ACB_PlayerCharacter>(this->m_grabbedObject);
+				
+				if (GrabbedCharacter != nullptr)
+				{
+					if (playerBody->bIsMultiplayer && playerBody->bIsGhost)
+					{
+						return;
+					}
+				}
+			}
+
+			if (this->m_grabbedObject)
+				this->m_playerBasics->m_throwState = FPlayerBasics::THROW_STARTUP;
+			else
+				this->m_playerBasics->m_throwState = FPlayerBasics::CATCH_STARTUP;
+		}
+
+		
 	}
 }
 

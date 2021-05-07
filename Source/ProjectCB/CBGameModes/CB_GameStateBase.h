@@ -66,24 +66,28 @@ public:
 	UPROPERTY()
 		ACB_PlayerUIHUD* PlayerHUD;
 
+public:
+
 	void AssignPlayerToTeam(FString TeamName);
 
 	void UpdateTeamSizeAliveCount(FString TeamName);
 
 	FString GetNextTeamToAssign();
 
-	void UpdateTeamGoalBox(FString TeamName, int CurrentAmount);
+	UFUNCTION(NetMulticast, Reliable)
+	void UpdateTeamGoalBox(const FString& TeamName, int CurrentAmount);
 
 	UFUNCTION(NetMulticast, Reliable)
 	void UpdateCountDownTime(int currentTime);
 
-	/// @brief Used to set initial values or force a ui update
 	UFUNCTION(NetMulticast, Reliable)
-	void RefreshUIHUB();
+		void EnableCount(bool enabled);
 
 	UFUNCTION(NetMulticast, Reliable)
-	void EnableCount(bool enabled);
+		void RefreshUIHUB();
 
+	UFUNCTION(NetMulticast, Reliable)
+		void UpdateGameMessage(const FString& GameMessageText);
 
 	//How to call:
 //YourDelegateName.Broadcast(YourParameters);

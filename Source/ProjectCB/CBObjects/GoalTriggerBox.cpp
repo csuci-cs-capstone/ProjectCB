@@ -87,6 +87,24 @@ FVector AGoalTriggerBox::getBallPosition(size_t index)
 
 bool AGoalTriggerBox::updateBallOffsetOnAdd()
 {
+	this->m_ballsInGoal++;
+	ACB_GameStateBase* CBGameState = Cast<ACB_GameStateBase>(GetWorld()->GetGameState());
+
+	if (CBGameState != nullptr)
+	{
+		FString CurrentTeamName;
+		if (this->Tags[0].IsValid())
+		{
+			CurrentTeamName = this->Tags[0].ToString();
+		}
+		else
+		{
+			CurrentTeamName = "";
+		}
+
+
+		CBGameState->UpdateTeamGoalBox(CurrentTeamName, this->m_grabbableList.length());
+	}
 	switch (this->m_grabbableList.length())
 	{
 	case 2:
@@ -108,6 +126,24 @@ bool AGoalTriggerBox::updateBallOffsetOnAdd()
 
 bool AGoalTriggerBox::updateBallOffsetOnRemove()
 {
+	this->m_ballsInGoal--;
+	ACB_GameStateBase* CBGameState = Cast<ACB_GameStateBase>(GetWorld()->GetGameState());
+
+	if (CBGameState != nullptr)
+	{
+		FString CurrentTeamName;
+		if (this->Tags[0].IsValid())
+		{
+			CurrentTeamName = this->Tags[0].ToString();
+		}
+		else
+		{
+			CurrentTeamName = "";
+		}
+
+
+		CBGameState->UpdateTeamGoalBox(CurrentTeamName, this->m_grabbableList.length());
+	}
 	switch (this->m_grabbableList.length())
 	{
 	case 1:
@@ -136,11 +172,9 @@ void AGoalTriggerBox::updateBallPositions(bool changedLayout, bool added)
 			ACB_DodgeballProjectile* dodgeball = Cast<ACB_DodgeballProjectile>(this->m_grabbableList[index]);
 
 			dodgeball->m_goalLocation = this->getBallPosition(index);
-
-			this->m_ballsInGoal--;
-
-			//ACB_GameStateBase CBGameState
+			
 		}
+		
 	}
 	else if (added)
 	{
@@ -150,7 +184,7 @@ void AGoalTriggerBox::updateBallPositions(bool changedLayout, bool added)
 
 		dodgeball->m_goalLocation = this->getBallPosition(index);
 
-		this->m_ballsInGoal++;
+		
 	}
 }
 

@@ -116,8 +116,8 @@ public:
 	int YellowTeamAmount = 0;
 
 	//GAMELOOP
-	int CountDownTime = 30;
-	int EliminationTime = 30;
+	int CountDownTime = 60;
+	int EliminationTime = 60;
 
 protected:
 

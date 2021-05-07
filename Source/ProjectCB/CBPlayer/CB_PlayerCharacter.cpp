@@ -12,6 +12,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "ProjectCB/CBPlayer/CB_PlayerState.h"
 #include "ProjectCB/CBPlayer/CB_PlayerController.h"
+#include "ProjectCB/CBGameModes/CB_GameStateBase.h"
 #include "Materials/MaterialInterface.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Net/UnrealNetwork.h"
@@ -139,7 +140,7 @@ void ACB_PlayerCharacter::BeginPlay()
 
 	if (HasAuthority() == false)
 	{
-		SetPlayerMaterialColor();
+		//SetPlayerMaterialColor();
 	}
 
 	if (this->bIsMultiplayer == false)
@@ -343,7 +344,7 @@ void ACB_PlayerCharacter::RotateCamera(float amount)
 {
 	if (this->bIsMultiplayer)
 	{
-		AddControllerYawInput(amount * 75.0f * GetWorld()->GetDeltaSeconds());
+		AddControllerYawInput(amount * 50.0f * GetWorld()->GetDeltaSeconds());
 	}
 	else 
 	{
@@ -458,8 +459,17 @@ void ACB_PlayerCharacter::MakePlayerIntoGhost_Implementation()
 	this->GetCharacterMovement()->StopActiveMovement();
 	this->GetCharacterMovement()->StopMovementImmediately();
 
-	//this->SetActorLocation(StartTransform.GetLocation());
-	//this->SetActorLocation(StartTransform.GetRotation().Rotator().Vector());
+	ACB_GameStateBase* CBGameState = Cast<ACB_GameStateBase>(GetWorld()->GetGameState());
+
+	if (CBGameState != nullptr)
+	{
+		ACB_PlayerState* CBPlayerState = Cast<ACB_PlayerState>(GetPlayerState());
+		if (CBPlayerState != nullptr)
+		{
+			CBGameState->UpdateTeamSizeAliveCount(CBPlayerState->Team);
+			CBGameState->RefreshUIHUB();
+		}
+	}
 }
 
 void ACB_PlayerCharacter::MakePlayerAlive_Implementation() 
@@ -640,11 +650,17 @@ void ACB_PlayerCharacter::launchRelease(FVector direction, FRotator rotation)
 
 void ACB_PlayerCharacter::setGrabbed(FVector position, FRotator rotation)
 {
-	this->m_resetCollisionFrame = -1;
-	this->SetActorEnableCollision(false);
-	this->SetActorLocation(position);
-	this->GetCharacterMovement()->Velocity = FVector(0.0f, 0.0f, 0.0f);
-	this->m_basics.m_movement.setRotation(rotation);
+	if (this->bIsGhost == false)
+	{
+		this->m_resetCollisionFrame = -1;
+		this->SetActorEnableCollision(false);
+		this->SetActorLocation(position);
+		this->GetCharacterMovement()->Velocity = FVector(0.0f, 0.0f, 0.0f);
+		if (this->bIsMultiplayer == false)
+		{
+			this->m_basics.m_movement.setRotation(rotation);
+		}
+	}
 }
 
 bool ACB_PlayerCharacter::hasGrabbableObject()
