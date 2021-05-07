@@ -65,6 +65,12 @@ void ACB_GameStateBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(ACB_GameStateBase, bShouldCount);
 
 	DOREPLIFETIME(ACB_GameStateBase, CountDownHandle);
+
+	DOREPLIFETIME(ACB_GameStateBase, CountDownTime);
+
+	DOREPLIFETIME(ACB_GameStateBase, EliminationTime);
+
+	DOREPLIFETIME(ACB_GameStateBase, MatchStartCountDownHandle);
 }
 
 void ACB_GameStateBase::AssignPlayerToTeam(FString TeamName)

@@ -89,7 +89,7 @@ public:
 	UPROPERTY()
 		FTimerHandle CountDownUntilGameOverHandle;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 		FTimerHandle MatchStartCountDownHandle;
 
 	UPROPERTY()
@@ -116,7 +116,9 @@ public:
 	int YellowTeamAmount = 0;
 
 	//GAMELOOP
+	UPROPERTY(Replicated)
 	int CountDownTime = 60;
+	UPROPERTY(Replicated)
 	int EliminationTime = 60;
 
 protected:

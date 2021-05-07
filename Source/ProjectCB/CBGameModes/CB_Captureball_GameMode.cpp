@@ -18,7 +18,7 @@
 
 ACB_Captureball_GameMode::ACB_Captureball_GameMode() 
 {
-	//this->bDelayedStart = true;
+	this->bDelayedStart = true;
 
 	//Set the game mode controller and character to the intended player classes
 	static ConstructorHelpers::FClassFinder<ACB_PlayerCharacter> PlayerCharacterBPClass(TEXT("/Game/PlayerBP/BP_CB_PlayerCharacter"));
@@ -444,12 +444,8 @@ AActor* ACB_Captureball_GameMode::FindPlayerStart_Implementation(AController* Pl
 
 		// This is a bit odd, but there was a complex chunk of code that in the end always resulted in this, so we may as well just 
 		// short cut it down to this.  Basically we are saying spawn at 0,0,0 if we didn't find a proper player start
-		//BestStart = World->GetWorldSettings();
+		BestStart = World->GetWorldSettings();
 		
-		while(BestStart != nullptr) 
-		{
-			BestStart = ChoosePlayerStart(Player);
-		}
 	}
 
 	ACB_PlayerController* CBController = Cast<ACB_PlayerController>(Player);
@@ -462,7 +458,8 @@ AActor* ACB_Captureball_GameMode::FindPlayerStart_Implementation(AController* Pl
 		}
 		else
 		{
-			ACB_PlayerState* CBCurrentPlayerState = Cast<ACB_PlayerState>(Player->PlayerState);
+			BestStart = World->GetWorldSettings();
+			/*ACB_PlayerState* CBCurrentPlayerState = Cast<ACB_PlayerState>(Player->PlayerState);
 			FString CurrentPlayerTeam;
 
 			if (CBCurrentPlayerState != nullptr)
@@ -479,7 +476,7 @@ AActor* ACB_Captureball_GameMode::FindPlayerStart_Implementation(AController* Pl
 					CBController->PlayerStartLocation = FVector(-700.0f, 0.0f, 320.0f);
 					CBController->PlayerStartRotation = FVector(0.0f, 0.0f, 0.0f);
 				}
-			}
+			}*/
 		}
 
 	}
@@ -508,7 +505,7 @@ FString ACB_Captureball_GameMode::MockTeamAssign()
 //Load in and start match
 void ACB_Captureball_GameMode::BeginMatch()
 {
-	//this->StartMatch();
+	
 
 	if (GameState != nullptr)
 	{
@@ -521,7 +518,7 @@ void ACB_Captureball_GameMode::BeginMatch()
 			{
 				APlayerController* CurrentPlayerController = *It;
 
-				if (CurrentPlayerController->IsLocalController())
+				if (CurrentPlayerController != nullptr)
 				{
 					CBGameState->m_localPlayerController = Cast<ACB_PlayerController>(CurrentPlayerController);
 					if (CBGameState->m_localPlayerController != nullptr)
@@ -530,16 +527,20 @@ void ACB_Captureball_GameMode::BeginMatch()
 					}
 					CBGameState->m_localPlayerController->SetPlayerControlEnabled(false);
 					//CBGameState->m_localPlayerController->SetPlayerControlEnabled(true);
-					break;
+					//break;
 				}
 			}
 
 			CBGameState->CurrentGameplayMode = 1;
 			CBGameState->RefreshUIHUB();
 			CBGameState->UpdateGameMessage("Capture Round!");
-			GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::StartCaptureMode, 3.0f, false, 3.0f);
+			GetWorldTimerManager().SetTimer(CBGameState->MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::StartCaptureMode, 3.0f, false, 3.0f);
 		}
+
+
 	}
+
+	this->StartMatch();
 }
 
 void ACB_Captureball_GameMode::StartCaptureMode()
@@ -571,11 +572,11 @@ void ACB_Captureball_GameMode::StartCaptureMode()
 			//CBGameState->CurrentGameplayMode = 1;
 			//CBGameState->RefreshUIHUB();
 			CBGameState->EnableCount(true);
-			CBGameState->UpdateCountDownTime(CountDownTime);
+			CBGameState->UpdateCountDownTime(CBGameState->CountDownTime);
 			//this->CountDownTime = 60;
 			//this->EliminationTime = 60;
 			CBGameState->UpdateGameMessage("");
-			GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::UpdateCaptureMode, 1.0f, true, 2.0f);
+			GetWorldTimerManager().SetTimer(CBGameState->MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::UpdateCaptureMode, 1.0f, true, 2.0f);
 			
 		}
 	}
@@ -591,16 +592,16 @@ void ACB_Captureball_GameMode::UpdateCaptureMode()
 
 		if (CBGameState != nullptr)
 		{
-			--CountDownTime;
-			if (CountDownTime <= 0)
+			--CBGameState->CountDownTime;
+			if (CBGameState->CountDownTime <= 0)
 			{
 				CBGameState->UpdateCountDownTime(0);
-				GetWorldTimerManager().ClearTimer(MatchStartCountDownHandle);
-				GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::EndCaptureMode, 1.0f, false, 1.0f);
+				GetWorldTimerManager().ClearTimer(CBGameState->MatchStartCountDownHandle);
+				GetWorldTimerManager().SetTimer(CBGameState->MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::EndCaptureMode, 1.0f, false, 1.0f);
 			}
 			else
 			{
-				CBGameState->UpdateCountDownTime(CountDownTime);
+				CBGameState->UpdateCountDownTime(CBGameState->CountDownTime);
 			}
 		}
 	}
@@ -630,9 +631,9 @@ void ACB_Captureball_GameMode::EndCaptureMode()
 			//CBGameState->CurrentGameplayMode = 1;
 			//CBGameState->RefreshUIHUB();
 			CBGameState->EnableCount(true);
-			CBGameState->UpdateCountDownTime(EliminationTime);
+			CBGameState->UpdateCountDownTime(CBGameState->EliminationTime);
 			CBGameState->UpdateGameMessage("Elimination Round!");
-			GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::StartEliminationMode, 3.0f, false, 5.0f);
+			GetWorldTimerManager().SetTimer(CBGameState->MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::StartEliminationMode, 3.0f, false, 5.0f);
 		}
 	}
 }
@@ -675,9 +676,9 @@ void ACB_Captureball_GameMode::StartEliminationMode()
 			//CountDownTime = 60;
 			//CBGameState->RefreshUIHUB();
 			CBGameState->EnableCount(true);
-			CBGameState->UpdateCountDownTime(CountDownTime);
+			CBGameState->UpdateCountDownTime(CBGameState->CountDownTime);
 			CBGameState->UpdateGameMessage("");
-			GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::UpdateEliminationMode, 1.0f, true, 2.0f);
+			GetWorldTimerManager().SetTimer(CBGameState->MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::UpdateEliminationMode, 1.0f, true, 2.0f);
 		}
 	}
 }
@@ -690,16 +691,16 @@ void ACB_Captureball_GameMode::UpdateEliminationMode()
 
 		if (CBGameState != nullptr)
 		{
-			--EliminationTime;
-			if (EliminationTime <= 0)
+			--CBGameState->EliminationTime;
+			if (CBGameState->EliminationTime <= 0)
 			{
 				CBGameState->UpdateCountDownTime(0);
-				GetWorldTimerManager().ClearTimer(MatchStartCountDownHandle);
-				GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::EndEliminationMode, 1.0f, false, 1.0f);
+				GetWorldTimerManager().ClearTimer(CBGameState->MatchStartCountDownHandle);
+				GetWorldTimerManager().SetTimer(CBGameState->MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::EndEliminationMode, 1.0f, false, 1.0f);
 			}
 			else
 			{
-				CBGameState->UpdateCountDownTime(EliminationTime);
+				CBGameState->UpdateCountDownTime(CBGameState->EliminationTime);
 			}
 		}
 	}
@@ -741,7 +742,7 @@ void ACB_Captureball_GameMode::EndEliminationMode()
 			//CBGameState->RefreshUIHUB();
 			CBGameState->EnableCount(true);
 			CBGameState->UpdateCountDownTime(0);
-			GetWorldTimerManager().SetTimer(MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::PickAWinningTeam, 3.0f, false, 10.0f);
+			GetWorldTimerManager().SetTimer(CBGameState->MatchStartCountDownHandle, this, &ACB_Captureball_GameMode::PickAWinningTeam, 3.0f, false, 10.0f);
 			
 			ACB_GameStateBase* CBGameStatePicker = Cast<ACB_GameStateBase>(GameState);
 			if (CBGameStatePicker != nullptr)
@@ -931,4 +932,13 @@ void ACB_Captureball_GameMode::HandleGameSessionUpdate()
 void ACB_Captureball_GameMode::OnRecordMatchResultResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
 {
 	GetWorldTimerManager().SetTimer(EndGameHandle, this, &ACB_Captureball_GameMode::EndGame, 1.0f, false, 5.0f);
+}
+
+void ACB_Captureball_GameMode::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const 
+{
+	DOREPLIFETIME(ACB_Captureball_GameMode, CountDownTime);
+
+	DOREPLIFETIME(ACB_Captureball_GameMode, EliminationTime);
+
+	DOREPLIFETIME(ACB_Captureball_GameMode, MatchStartCountDownHandle);
 }

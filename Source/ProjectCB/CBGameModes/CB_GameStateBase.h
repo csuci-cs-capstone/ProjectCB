@@ -28,6 +28,14 @@ public:
 
 	UPROPERTY(Replicated)
 		FString WinningTeam;
+
+	UPROPERTY(Replicated)
+		FTimerHandle MatchStartCountDownHandle;
+
+	UPROPERTY(Replicated)
+		int CountDownTime = 60;
+	UPROPERTY(Replicated)
+		int EliminationTime = 60;
 	
 	//Current Modes are as follows
 	// 0 - Initialization Mode
