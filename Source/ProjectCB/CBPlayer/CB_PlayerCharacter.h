@@ -10,6 +10,8 @@
 #include "Animation/BlendSpace1D.h"
 #include "CB_PlayerCharacter.generated.h"
 
+class UMaterialInstanceDynamic;
+
 UCLASS()
 class PROJECTCB_API ACB_PlayerCharacter : public ACharacter, public IGrabbable, public IGrabbableObject
 {
@@ -17,10 +19,28 @@ class PROJECTCB_API ACB_PlayerCharacter : public ACharacter, public IGrabbable, 
 
 public:
 	// Sets default values for this character's properties
-
-	PlayerBasics m_basics;
+	
+	UPROPERTY(Replicated)
+	FPlayerBasics m_basics;
 
 	ACB_PlayerCharacter();
+
+	//Art Model Anim Extra
+	UPROPERTY(Replicated)
+	UMaterialInstanceDynamic* DynamicMaterial;
+
+	UPROPERTY(Replicated)
+	UMaterialInstanceDynamic* DynamicHeadMaterial;
+
+	//Networked Anim Properties
+	UPROPERTY(Replicated)
+	bool bIsOnGroundAnimate;
+
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "PlayerValues")
+	bool bIsMultiplayer = true;
+
+	UPROPERTY(Replicated)
+	bool bIsGhost = false;
 
 private:
 
@@ -34,16 +54,27 @@ private:
 	void adjustGravity(UCharacterMovementComponent* characterMovement);
 
 	Dodge m_dodge = Dodge(this->m_basics);
-	Throw m_throw = Throw(this->m_basics);
+	UPROPERTY(Replicated)
+		UThrow* m_throw;
+
+	UPROPERTY(Replicated)
+		FVector MoveVelocity;
+
+	UPROPERTY(Replicated)
+		FTransform StartTransform;
+
+	// Network Replication Player State
+	virtual void OnRep_PlayerState() override;
+	
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(Replicated, EditAnywhere)
 		USceneComponent* grabRoot;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Components")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Components")
 		UBoxComponent* grabBox;
 
 	UFUNCTION()
@@ -74,6 +105,11 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Anims")
 		UBlendSpace1D* blendspace;
 
+	USkeletalMesh* m_PlayerGhostModel;
+
+	//Networking
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 public:
 
 	UFUNCTION(BlueprintCallable,Category="Options")
@@ -97,6 +133,45 @@ public:
 	void StopShootAction();
 
 	void AliveAction();
+
+	//Networked Moves
+	//TESTING RPC FOR VELOCITY
+	//TODO Make countdown and check head band to orange, set up UI values and players status
+	UFUNCTION(Server, Reliable)
+	void UpdateVelocity(FVector newVelocityVector);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void KnockBackPlayer(FVector HitNormal);
+
+	UFUNCTION(Server, Reliable)
+	void CheckIfPlayerIsAlive();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MakePlayerIntoGhost();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MakePlayerAlive();
+
+	UFUNCTION(Server, Reliable)
+	void SetPlayerStartPosition(FVector incomingPosition, FRotator incomingRotation);
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void SendLocalClientRotationToServer();
+
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+	void SetPlayerMaterialColor();
+
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+	void SetPlayerStartRotation();
+
+	UFUNCTION(Server, Reliable)
+	void LaunchBall();
+
+	UFUNCTION(Server, Reliable)
+	void RemoveBall(ACB_DodgeballProjectile* currentBall);
+
+	UFUNCTION(Server, Reliable)
+	void UpdateGrabbedObjectPosition(UObject* currentGrabbedObject);
 
 	float getRadius() override;
 	bool isGrabbable() override;

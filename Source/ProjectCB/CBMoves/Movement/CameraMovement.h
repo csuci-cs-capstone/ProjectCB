@@ -24,4 +24,10 @@ public:
 	void setCameraSensitivity(float cameraSensitivity);
 
 	const FRotator& getCameraRotation();
+
+	void SetRotationBasedOnTeam(FString TeamName);
+
+public:
+
+	FRotator m_cameraStart;
 };

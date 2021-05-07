@@ -49,5 +49,8 @@ public:
 	bool hasGrabbableObject() override;
 	IGrabbableObject* getGrabbableObject() override;
 	unsigned char getGrabPriority() override;
+
+	UPROPERTY(Replicated)
+	int m_ballsInGoal = 0;
 	
 };

@@ -16,11 +16,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Components")
 		UStaticMeshComponent* BoxMesh;
 
-	UPROPERTY(EditAnywhere)
-		class UMaterial* StandardMaterial;
+	//UPROPERTY(EditAnywhere)
+	//	class UMaterial* StandardMaterial;
 
-	UPROPERTY(EditAnywhere)
-		class UMaterial* FallingMaterial;
+	//UPROPERTY(EditAnywhere)
+	//	class UMaterial* FallingMaterial;
 
 protected:
 

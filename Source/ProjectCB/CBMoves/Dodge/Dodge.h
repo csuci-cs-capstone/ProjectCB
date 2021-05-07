@@ -5,12 +5,13 @@
 #include "../../CBMath/Proportion.h"
 #include "Dodge_Hold.h"
 #include "Dodge_Release.h"
+#include "Net/UnrealNetwork.h"
 
 class PROJECTCB_API Dodge // Dodge Dip Duck Dive Dodge
 {
 private:
 
-	PlayerBasics* m_playerBasics;
+	FPlayerBasics* m_playerBasics;
 
 	unsigned short m_frame;
 
@@ -30,7 +31,7 @@ private:
 
 public:
 
-	Dodge(PlayerBasics& playerBasics);
+	Dodge(FPlayerBasics& playerBasics);
 
 	void onPress();
 	void onRelease();

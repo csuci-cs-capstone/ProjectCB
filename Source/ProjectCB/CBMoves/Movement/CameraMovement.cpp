@@ -1,4 +1,5 @@
 #include "CameraMovement.h"
+#include "Net/UnrealNetwork.h"
 
 const FRotator CameraMovement::CAMERA_START_ROTATION(-20.0f, 0.0f, 0.0f);
 const float CameraMovement::CAMERA_TURN_SPEED = 1.0f * 1.5f;
@@ -54,4 +55,16 @@ void CameraMovement::setCameraSensitivity(float cameraSensitivity)
 const FRotator& CameraMovement::getCameraRotation()
 {
 	return this->m_cameraRotation;
+}
+
+void CameraMovement::SetRotationBasedOnTeam(FString TeamName)
+{
+	if (TeamName == "yellow")
+	{
+		this->m_cameraStart = FRotator(-20.0f, 0.0f, 180.0f);
+	}
+	else
+	{
+		this->m_cameraStart = FRotator(-20.0f, 0.0f, 0.0f);
+	}
 }

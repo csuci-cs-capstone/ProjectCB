@@ -1,6 +1,7 @@
 #include "Movement.h"
 #include <math.h>
 #include "../../CBMath/MathConstants.h"
+#include "Net/UnrealNetwork.h"
 
 // TODO add GHOST_SPEED;
 

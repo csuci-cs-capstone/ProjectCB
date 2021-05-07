@@ -4,10 +4,13 @@
 #include <math.h>
 #include "../CBMoves/Movement/Movement.h"
 #include "../CBMoves/Movement/CameraMovement.h"
+#include "PlayerBasics.generated.h"
 
-
-struct PROJECTCB_API PlayerBasics
+USTRUCT()
+struct PROJECTCB_API FPlayerBasics
 {
+	GENERATED_BODY()
+
 public:
 
 	static const FVector2D MAX_MAP_POSITION;
@@ -48,9 +51,12 @@ public:
 	DodgeState m_dodgeState; // TODO make private
 	ThrowState m_throwState; // TODO make private
 
+	UPROPERTY()
 	float m_currentWorldLocationZ;
-
+	
+	UPROPERTY()
 	float m_currentMobility;
+	UPROPERTY()
 	float m_previousMobility;
 
 	float m_currentRadius;
@@ -60,9 +66,14 @@ public:
 
 	static const short RESET_COLLISION_FRAMES;
 
+	float m_currentScaleAmountX = 0.0;
+	float m_currentScaleAmountY = 0.0;
+
 //////
 
+	
 	Movement m_movement;
+	
 	CameraMovement m_cameraMovement;
 	
 	//a reference to the current level so we can spawn objects from code
@@ -84,8 +95,9 @@ public:
 	FVector m_rootPosition; //TODO remove temporary fix!
 
 /////
-
+	
 	FRotator m_inputRotation;
+	
 	FVector m_velocity; // TODO remove?
 
 	float m_jumpZVelocity;
@@ -93,7 +105,7 @@ public:
 	bool m_shouldJump;
 	bool m_fellOff;
 
-	PlayerBasics();
+	FPlayerBasics();
 
 	float getJumpVelocity(float height);
 
